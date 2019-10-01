@@ -1,0 +1,15 @@
+#version 440
+
+in vec2 out_textureCoords;
+
+out vec4 fragColor;
+
+uniform sampler2D tex;
+
+void main()
+{
+	//fragColor = vec4(out_vertexColor, 1.0f);
+	//fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//fragColor = texture(tex, out_textureCoords) * vec4(out_vertexColor, 1.0);
+	fragColor = texture(tex, out_textureCoords);
+}
