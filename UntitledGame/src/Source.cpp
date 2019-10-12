@@ -1,6 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
+
 #include <stdio.h>
 #include <iostream>
 
@@ -54,6 +59,7 @@ struct objectData {
 */
 //objectData loadObjFileV2(std::string objFileName);
 
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -67,9 +73,9 @@ int main(void)
 
 	/* Create a windowed mode window and its OpenGL context */
 	//window = glfwCreateWindow(640, 480, "Untitled Game", glfwGetPrimaryMonitor(), NULL);
-	int windowWidth = 640;
-	int windowHeight = 480;
-	window = glfwCreateWindow(windowWidth, windowHeight, "Untitled Game", NULL, NULL);
+	int WINDOW_WIDTH = 800;
+	int WINDOW_HEIGHT = 600;
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Untitled Game", NULL, NULL);
 	if (!window)
 	{
 		printf("Error: Window creation was unsuccesful!\n");
@@ -214,6 +220,7 @@ int main(void)
 	// load texture image: https://github.com/nothings/stb/blob/master/stb_image.h
 	int imageWidth, imageHeight, nrChannels;
 	std::string textureFileName = "resources/test grid.png";
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(textureFileName.c_str(), &imageWidth, &imageHeight, &nrChannels, 0);
 	if (data)
 	{
@@ -230,6 +237,7 @@ int main(void)
 	stbi_image_free(data);  // free the image memory
 	//glUniform1i(glGetUniformLocation(programObject, "texSampler"), 0);  // ez vajon kell?
 	
+	/*
 	// get uniform variable locations and make arrays
 	// SCALING
 	int scalingMatrixLocation = glGetUniformLocation(programObject, "scalingMatrix");
@@ -260,18 +268,44 @@ int main(void)
 	float projectionMatrix[16];
 	
 	Transformation transformation;  // static class instantiation
+	*/
 	
-	glUseProgram(programObject);
+
+	// MODEL MATRIX
+	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
+	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	int modelMatrixLocation = glGetUniformLocation(programObject, "modelMatrix");
+	std::cout << "NEW modelMatrix Location: " << modelMatrixLocation << std::endl;
+
+	// VIEW MATRIX
+	glm::mat4 viewMatrix = glm::mat4(1.0f);  // 4x4x identity matrix
+	viewMatrix = glm::lookAt(glm::vec3(0, 0, 4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	int viewMatrixLocation = glGetUniformLocation(programObject, "viewMatrix");
+	std::cout << "NEW viewMatrix Location: " << viewMatrixLocation << std::endl;
+
+	// PROJECTION MATRIX
+	glm::mat4 orthographicMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
+	glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // default projection
+	int projMatrixLocation = glGetUniformLocation(programObject, "projMatrix");
+	std::cout << "NEW projectionMatrix Location: " << projMatrixLocation << std::endl;
+
+	glm::mat4 MVP = perspectiveMatrix * viewMatrix * modelMatrix;
+	int MVPlocation = glGetUniformLocation(programObject, "MVP");
+
+	glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
+		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+		/*
 		// SCALING
 		transformation.makeScalingMatrix(scalingMatrix, xScale, yScale, zScale);
 		glUniformMatrix4fv(scalingMatrixLocation, 1, GL_FALSE, scalingMatrix);
@@ -289,6 +323,14 @@ int main(void)
 		// PROJECTION
 		transformation.makePerspectiveProjectionMatrix(projectionMatrix, windowWidth, windowHeight);
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, projectionMatrix);
+		*/
+
+		// trasformations using glm
+		MVP = perspectiveMatrix * viewMatrix * modelMatrix;
+		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));			// upload model matrix
+		//glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+		//glUniformMatrix4fv(projMatrixLocation, 1, GL_FALSE, glm::value_ptr(perspectiveMatrix));		// upload projection matrix
 
 		glDrawElements(GL_TRIANGLES, iSize, GL_UNSIGNED_INT, 0);
 
@@ -331,6 +373,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
 	{
 		std::cout << "DOWN KEY has been pressed." << std::endl;
+	}
+	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		// change projection mode (perspective vs ortohraphic)
 	}
 }
 
@@ -415,3 +461,7 @@ void cleanUpShader(GLuint programObject, GLuint shaderObject)
 	glDeleteShader(shaderObject);
 }
 
+void changeProjection()
+{
+
+}
