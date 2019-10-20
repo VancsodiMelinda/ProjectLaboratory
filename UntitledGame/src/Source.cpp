@@ -25,12 +25,14 @@
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 std::string shaderSourceCodeReader(std::string shaderFileName);
 GLuint setUpShader(GLenum shaderType, std::string shaderFileName, GLuint programObject);
 void shaderErrorHandling(GLuint shaderObject);
 void linkingErrorHandling(GLuint programObject);
 void cleanUpShader(GLuint programObject, GLuint shaderObject);
 //void loadObjFile(std::string objFileName, std::vector<float>& vVector, std::vector<int>& indVector);
+void processKeyInput(GLFWwindow* window);
 
 /*
 struct vector2f {
@@ -59,6 +61,26 @@ struct objectData {
 */
 //objectData loadObjFileV2(std::string objFileName);
 
+// camera variables
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 4.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+glm::mat4 projectionMatrix;
+glm::mat4 orthographicMatrix;
+glm::mat4 perspectiveMatrix;
+
+int WINDOW_WIDTH = 800;
+int WINDOW_HEIGHT = 600;
+
+float lastX = (float)WINDOW_WIDTH / 2.0f;
+float lastY = (float)WINDOW_HEIGHT / 2.0f;
+float yaw;
+float pitch;
+bool firstMouse;
+float fov = 45.0f;
 
 int main(void)
 {
@@ -73,8 +95,8 @@ int main(void)
 
 	/* Create a windowed mode window and its OpenGL context */
 	//window = glfwCreateWindow(640, 480, "Untitled Game", glfwGetPrimaryMonitor(), NULL);
-	int WINDOW_WIDTH = 800;
-	int WINDOW_HEIGHT = 600;
+	//int WINDOW_WIDTH = 800;
+	//int WINDOW_HEIGHT = 600;
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Untitled Game", NULL, NULL);
 	if (!window)
 	{
@@ -85,6 +107,8 @@ int main(void)
 
 	glfwSetKeyCallback(window, key_callback);  // keyboard input: key input - key callback
 	glfwSetCursorPosCallback(window, cursor_position_callback); // mouse input: cursor position - cursor position callback
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetScrollCallback(window, scroll_callback);  // scroll input
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);  // make current OpenGL context
@@ -275,23 +299,31 @@ int main(void)
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
 	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 	//modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	int modelMatrixLocation = glGetUniformLocation(programObject, "modelMatrix");
-	std::cout << "NEW modelMatrix Location: " << modelMatrixLocation << std::endl;
+	//int modelMatrixLocation = glGetUniformLocation(programObject, "modelMatrix");
+	//std::cout << "NEW modelMatrix Location: " << modelMatrixLocation << std::endl;
 
-	// VIEW MATRIX
-	glm::mat4 viewMatrix = glm::mat4(1.0f);  // 4x4x identity matrix
-	viewMatrix = glm::lookAt(glm::vec3(0, 0, 4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	int viewMatrixLocation = glGetUniformLocation(programObject, "viewMatrix");
-	std::cout << "NEW viewMatrix Location: " << viewMatrixLocation << std::endl;
+	// VIEW MATRIX - FPS- style camera
+	//glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 4.0f);  // x, y, z, camera position in world space
+	//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	//glm::mat4 viewMatrix;// = glm::mat4(1.0f);  // 4x4x identity matrix
+	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0, 0, 4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+	//int viewMatrixLocation = glGetUniformLocation(programObject, "viewMatrix");
+	//std::cout << "NEW viewMatrix Location: " << viewMatrixLocation << std::endl;
 
 	// PROJECTION MATRIX
-	glm::mat4 orthographicMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
-	glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // default projection
-	int projMatrixLocation = glGetUniformLocation(programObject, "projMatrix");
-	std::cout << "NEW projectionMatrix Location: " << projMatrixLocation << std::endl;
-
-	glm::mat4 MVP = perspectiveMatrix * viewMatrix * modelMatrix;
+	orthographicMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);  // ORTHOGRAPHIC PROJECTION
+	perspectiveMatrix = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // PERSPECTIVE PROJECTION
+	//int projMatrixLocation = glGetUniformLocation(programObject, "projMatrix");
+	//std::cout << "NEW projectionMatrix Location: " << projMatrixLocation << std::endl;
+	projectionMatrix = perspectiveMatrix;
+	// MVP
+	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // prspective proj
+	//glm::mat4 MVP = orthographicMatrix * viewMatrix * modelMatrix;  // orthographic proj
 	int MVPlocation = glGetUniformLocation(programObject, "MVP");
+	std::cout << "MVPlocation: " << MVPlocation << std::endl;
 
 	glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
@@ -304,6 +336,8 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
+		processKeyInput(window);
 
 		/*
 		// SCALING
@@ -326,7 +360,12 @@ int main(void)
 		*/
 
 		// trasformations using glm
-		MVP = perspectiveMatrix * viewMatrix * modelMatrix;
+		float currentFrame = (float)glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+		viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+		projectionMatrix = perspectiveMatrix;
+		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));
 		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));			// upload model matrix
 		//glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -358,32 +397,87 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
-	else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-	{
-		std::cout << "LEFT KEY has been pressed." << std::endl;
-	}
-	else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-	{
-		std::cout << "RIGHT KEY has been pressed." << std::endl;
-	}
-	else if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-	{
-		std::cout << "UP KEY has been pressed." << std::endl;
-	}
-	else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-	{
-		std::cout << "DOWN KEY has been pressed." << std::endl;
-	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
 	{
 		// change projection mode (perspective vs ortohraphic)
+		//projectionMatrix = orthographicMatrix;
 	}
 }
 
+void processKeyInput(GLFWwindow* window)
+{
+	float cameraSpeed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		cameraPosition += cameraSpeed * cameraFront;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		cameraPosition -= cameraSpeed * cameraFront;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+}
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	//std::cout << "xpos: " << xpos << "; ypos: " << ypos << std::endl;
+	if (firstMouse)
+	{
+		lastX = (float)xpos;
+		lastY = (float)ypos;
+		firstMouse = false;
+	}
+
+	float xOffset = (float)xpos - lastX;
+	float yOffset = lastY - (float)ypos;
+	lastX = (float)xpos;
+	lastY = (float)ypos;
+
+	float sensitivity = 0.05f;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if (pitch > 89.0f)
+	{
+		pitch = 89.0f;
+	}
+	else if (pitch < -89.0f)
+	{
+		pitch = -89.0f;
+	}
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+	front.y = sin(glm::radians(pitch));
+	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (fov >= 1.0f && fov <= 45.0f)
+	{
+		fov -= (float)yoffset;
+	}
+	if (fov <= 1.0f)
+	{
+		fov = 1.0f;
+	}
+	if (fov >= 45.0f)
+	{
+		fov = 45.0f;
+	}
+
+	perspectiveMatrix = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 }
 
 
