@@ -19,6 +19,7 @@
 
 #include "Transformation.h"
 #include "ObjLoader.h"
+#include "Camera.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -34,53 +35,24 @@ void cleanUpShader(GLuint programObject, GLuint shaderObject);
 //void loadObjFile(std::string objFileName, std::vector<float>& vVector, std::vector<int>& indVector);
 void processKeyInput(GLFWwindow* window);
 
-/*
-struct vector2f {
-	float x;
-	float y;
-};
 
-struct vector3f {
-	float x;
-	float y;
-	float z;
-};
+// global camera variables
+Camera camera;  // create object with default constructor
 
-struct vector3i {
-	int x;
-	int y;
-	int z;
-};
-
-struct objectData {
-	std::vector<float> vertices;
-	std::vector<float> uvs;
-	std::vector<float> normals;
-	std::vector<int> indices;
-};
-*/
-//objectData loadObjFileV2(std::string objFileName);
-
-// camera variables
-glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 4.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 glm::mat4 projectionMatrix;
 glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
+bool isPerspective;
 
-int WINDOW_WIDTH = 800;
-int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 600;
 
 float lastX = (float)WINDOW_WIDTH / 2.0f;
 float lastY = (float)WINDOW_HEIGHT / 2.0f;
-float yaw;
-float pitch;
 bool firstMouse;
-float fov = 45.0f;
 
 int main(void)
 {
@@ -106,8 +78,8 @@ int main(void)
 	}
 
 	glfwSetKeyCallback(window, key_callback);  // keyboard input: key input - key callback
-	glfwSetCursorPosCallback(window, cursor_position_callback); // mouse input: cursor position - cursor position callback
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, cursor_position_callback); // mouse input: cursor position - cursor position callback
 	glfwSetScrollCallback(window, scroll_callback);  // scroll input
 
 	/* Make the window's context current */
@@ -131,36 +103,6 @@ int main(void)
 	std::string objFileName = "resources/Suzanne texture test custom unwrapped.obj";
 	objectData test = objLoader.loadObjFileV2(objFileName);
 	std::cout << "Loaded object file: " << objFileName << std::endl;
-
-	// TEST DATA
-	/*
-	objectData.vertices = {
-	 .5f, .5f, .5f,  -.5f, .5f, .5f,  -.5f,-.5f, .5f,  .5f,-.5f, .5f, // v0,v1,v2,v3 (front)
-	 .5f, .5f, .5f,   .5f,-.5f, .5f,   .5f,-.5f,-.5f,  .5f, .5f,-.5f, // v0,v3,v4,v5 (right)
-	 .5f, .5f, .5f,   .5f, .5f,-.5f,  -.5f, .5f,-.5f, -.5f, .5f, .5f, // v0,v5,v6,v1 (top)
-	-.5f, .5f, .5f,  -.5f, .5f,-.5f,  -.5f,-.5f,-.5f, -.5f,-.5f, .5f, // v1,v6,v7,v2 (left)
-	-.5f,-.5f,-.5f,   .5f,-.5f,-.5f,   .5f,-.5f, .5f, -.5f,-.5f, .5f, // v7,v4,v3,v2 (bottom)
-	 .5f,-.5f,-.5f,  -.5f,-.5f,-.5f,  -.5f, .5f,-.5f,  .5f, .5f,-.5f  // v4,v7,v6,v5 (back)
-	};
-	
-	objectData.colors = {
-	 1, 0, 0,   0, 1, 0,   0, 0, 1,   0, 0, 0,  // v0,v1,v2,v3 (front)
-	 1, 1, 1,   1, 0, 0,   0, 1, 0,   0, 0, 1,  // v0,v3,v4,v5 (right)
-	 0, 0, 0,   1, 1, 1,   1, 0, 0,   0, 1, 0,  // v0,v5,v6,v1 (top)
-	 0, 0, 1,   0, 0, 0,   1, 1, 1,   1, 0, 0,  // v1,v6,v7,v2 (left)
-	 0, 1, 0,   0, 0, 1,   0, 0, 0,   1, 1, 1,  // v7,v4,v3,v2 (bottom)
-	 1, 0, 0,   0, 1, 0,   0, 0, 1,   0, 0, 0   // v4,v7,v6,v5 (back)
-	};
-	
-	objectData.indices = {
-	 0, 1, 2,   2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
-	 4, 5, 6,   6, 7, 4,    // v0-v3-v4, v4-v5-v0 (right)
-	 8, 9,10,  10,11, 8,    // v0-v5-v6, v6-v1-v0 (top)
-	12,13,14,  14,15,12,    // v1-v6-v7, v7-v2-v1 (left)
-	16,17,18,  18,19,16,    // v7-v4-v3, v3-v2-v7 (bottom)
-	20,21,22,  22,23,20     // v4-v7-v6, v6-v5-v4 (back)
-	};
-	*/
 
 	// SHADER CODE
 	GLuint programObject = glCreateProgram();  // empty program object
@@ -260,68 +202,22 @@ int main(void)
 
 	stbi_image_free(data);  // free the image memory
 	//glUniform1i(glGetUniformLocation(programObject, "texSampler"), 0);  // ez vajon kell?
-	
-	/*
-	// get uniform variable locations and make arrays
-	// SCALING
-	int scalingMatrixLocation = glGetUniformLocation(programObject, "scalingMatrix");
-	std::cout << "scalingMatrix Location: " << scalingMatrixLocation << std::endl;
-	float scalingMatrix[16];
-	float xScale = 0.5f;
-	float yScale = 0.5f;
-	float zScale = 0.5f;
-	
-	// ROTATION
-	int rotationMatrixLocation = glGetUniformLocation(programObject, "rotationMatrix");
-	std::cout << "rotationMatrix Location: " << rotationMatrixLocation << std::endl;
-	float rotationMatrix[16];
-	std::string axis = "y";
-	float angle = 0;
-	
-	// TRANSLATION
-	int translationMatrixLocation = glGetUniformLocation(programObject, "translationMatrix");
-	std::cout << "translationMatrix Location: " << translationMatrixLocation << std::endl;
-	float translationMatrix[16];
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
-	
-	// PROJECTION
-	int projectionMatrixLocation = glGetUniformLocation(programObject, "projectionMatrix");
-	std::cout << "projectionMatrix Location: " << projectionMatrixLocation << std::endl;
-	float projectionMatrix[16];
-	
-	Transformation transformation;  // static class instantiation
-	*/
-	
 
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
 	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
-	//modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//int modelMatrixLocation = glGetUniformLocation(programObject, "modelMatrix");
-	//std::cout << "NEW modelMatrix Location: " << modelMatrixLocation << std::endl;
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	// VIEW MATRIX - FPS- style camera
-	//glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 4.0f);  // x, y, z, camera position in world space
-	//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	//glm::mat4 viewMatrix;// = glm::mat4(1.0f);  // 4x4x identity matrix
-	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0, 0, 4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-	//int viewMatrixLocation = glGetUniformLocation(programObject, "viewMatrix");
-	//std::cout << "NEW viewMatrix Location: " << viewMatrixLocation << std::endl;
+	// VIEW MATRIX - FPS-style camera
+	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // create viewMatrix with default parameters
 
 	// PROJECTION MATRIX
 	orthographicMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);  // ORTHOGRAPHIC PROJECTION
-	perspectiveMatrix = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // PERSPECTIVE PROJECTION
-	//int projMatrixLocation = glGetUniformLocation(programObject, "projMatrix");
-	//std::cout << "NEW projectionMatrix Location: " << projMatrixLocation << std::endl;
+	perspectiveMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // PERSPECTIVE PROJECTION
 	projectionMatrix = perspectiveMatrix;
+
 	// MVP
-	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // prspective proj
-	//glm::mat4 MVP = orthographicMatrix * viewMatrix * modelMatrix;  // orthographic proj
+	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // perspective projection
 	int MVPlocation = glGetUniformLocation(programObject, "MVP");
 	std::cout << "MVPlocation: " << MVPlocation << std::endl;
 
@@ -337,39 +233,19 @@ int main(void)
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
-		processKeyInput(window);
+		processKeyInput(window);  // changes cameraPosition
 
-		/*
-		// SCALING
-		transformation.makeScalingMatrix(scalingMatrix, xScale, yScale, zScale);
-		glUniformMatrix4fv(scalingMatrixLocation, 1, GL_FALSE, scalingMatrix);
-
-		// ROTATION
-		angle = angle + 0.04f;
-		transformation.makeRotationMatrix(rotationMatrix, axis, angle);
-		glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, rotationMatrix);
-
-		// TRANSLATION
-		//x = x + 0.0001f;
-		transformation.makeTranslationMatrix(translationMatrix, x, y, z);
-		glUniformMatrix4fv(translationMatrixLocation, 1, GL_FALSE, translationMatrix);
-
-		// PROJECTION
-		transformation.makePerspectiveProjectionMatrix(projectionMatrix, windowWidth, windowHeight);
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, projectionMatrix);
-		*/
-
-		// trasformations using glm
+		// time calculations
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-		projectionMatrix = perspectiveMatrix;
+
+		// recalculate viewMatrix and projectionMatrix in every farem in case of input
+		//projectionMatrix = perspectiveMatrix;
+		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
-		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));
-		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));			// upload model matrix
-		//glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		//glUniformMatrix4fv(projMatrixLocation, 1, GL_FALSE, glm::value_ptr(perspectiveMatrix));		// upload projection matrix
+		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
 
 		glDrawElements(GL_TRIANGLES, iSize, GL_UNSIGNED_INT, 0);
 
@@ -400,32 +276,43 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
 	{
 		// change projection mode (perspective vs ortohraphic)
-		//projectionMatrix = orthographicMatrix;
+		/*
+		if (isPerspective)
+		{
+			projectionMatrix = orthographicMatrix;
+			isPerspective = false;
+		}
+		else if (!isPerspective)
+		{
+			projectionMatrix = perspectiveMatrix;
+			isPerspective = true;
+		}
+		*/
 	}
 }
 
-void processKeyInput(GLFWwindow* window)
+void processKeyInput(GLFWwindow* window)  // gets called every frame
 {
 	float cameraSpeed = 2.5f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		cameraPosition += cameraSpeed * cameraFront;
+		camera.ProcessKeyInput("W", deltaTime);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		cameraPosition -= cameraSpeed * cameraFront;
+		camera.ProcessKeyInput("S", deltaTime);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyInput("A", deltaTime);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyInput("D", deltaTime);
 	}
 }
 
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)  // changes cameraFront
 {
 	if (firstMouse)
 	{
@@ -436,48 +323,16 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 
 	float xOffset = (float)xpos - lastX;
 	float yOffset = lastY - (float)ypos;
+
 	lastX = (float)xpos;
 	lastY = (float)ypos;
 
-	float sensitivity = 0.05f;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
-
-	yaw += xOffset;
-	pitch += yOffset;
-
-	if (pitch > 89.0f)
-	{
-		pitch = 89.0f;
-	}
-	else if (pitch < -89.0f)
-	{
-		pitch = -89.0f;
-	}
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-	front.y = sin(glm::radians(pitch));
-	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-	cameraFront = glm::normalize(front);
+	camera.ProcessMouseMovement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	if (fov >= 1.0f && fov <= 45.0f)
-	{
-		fov -= (float)yoffset;
-	}
-	if (fov <= 1.0f)
-	{
-		fov = 1.0f;
-	}
-	if (fov >= 45.0f)
-	{
-		fov = 45.0f;
-	}
-
-	perspectiveMatrix = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+	camera.ProcessMouseScroll(yoffset);
 }
 
 
@@ -553,9 +408,4 @@ void cleanUpShader(GLuint programObject, GLuint shaderObject)
 {
 	glDetachShader(programObject, shaderObject);
 	glDeleteShader(shaderObject);
-}
-
-void changeProjection()
-{
-
 }
