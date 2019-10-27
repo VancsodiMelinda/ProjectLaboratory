@@ -20,6 +20,7 @@
 #include "Transformation.h"
 #include "ObjLoader.h"
 #include "Camera.h"
+#include "Shader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -27,11 +28,11 @@
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-std::string shaderSourceCodeReader(std::string shaderFileName);
-GLuint setUpShader(GLenum shaderType, std::string shaderFileName, GLuint programObject);
-void shaderErrorHandling(GLuint shaderObject);
-void linkingErrorHandling(GLuint programObject);
-void cleanUpShader(GLuint programObject, GLuint shaderObject);
+//std::string shaderSourceCodeReader(std::string shaderFileName);
+//GLuint setUpShader(GLenum shaderType, std::string shaderFileName, GLuint programObject);
+//void shaderErrorHandling(GLuint shaderObject);
+//void linkingErrorHandling(GLuint programObject);
+//void cleanUpShader(GLuint programObject, GLuint shaderObject);
 //void loadObjFile(std::string objFileName, std::vector<float>& vVector, std::vector<int>& indVector);
 void processKeyInput(GLFWwindow* window);
 
@@ -104,22 +105,27 @@ int main(void)
 	objectData test = objLoader.loadObjFileV2(objFileName);
 	std::cout << "Loaded object file: " << objFileName << std::endl;
 
+	Shader shader;
+	shader.runShaderCode();
+
 	// SHADER CODE
+	/*
 	GLuint programObject = glCreateProgram();  // empty program object
 	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, "src/VertexShader.txt", programObject);  // create, compile and attach vertex shader
 	GLuint fragmentShaderObject = setUpShader(GL_FRAGMENT_SHADER, "src/FragmentShader.txt", programObject);  // create, compile and attach fragment shader
+	
 
 	// before linking you have to set up attribute locations, do NOT do this if layout(location = #) is in the shader code
 	//glBindAttribLocation(programObject, positionLocation, "in_vertexPosition");
 	//glBindAttribLocation(programObject, colorLocation, "in_vertexColor");
 	//glBindAttribLocation(programObject, textureLocation, "in_vertexTexture");
-
+	
 	glLinkProgram(programObject);
 	linkingErrorHandling(programObject);
 	cleanUpShader(programObject, vertexShaderObject);
 	cleanUpShader(programObject, fragmentShaderObject);
 	//glUseProgram(programObject);
-
+	*/
 	////////////////////////////////////////////
 
 	int vSize = test.vertices.size();
@@ -142,20 +148,20 @@ int main(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);  // bind VBO
 	glBufferData(GL_ARRAY_BUFFER, (vSize + vtSize) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize * sizeof(GL_FLOAT), &test.vertices[0]);							// VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, vSize * sizeof(GL_FLOAT), vtSize * sizeof(GL_FLOAT), &test.uvs[0]);		// TEXTURE COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize * sizeof(GL_FLOAT), &test.vertices[0]);  // VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, vSize * sizeof(GL_FLOAT), vtSize * sizeof(GL_FLOAT), &test.uvs[0]);  // TEXTURE COORDINATES
 	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);						// INDICES
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);  // INDICES
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
 	//glUseProgram(programObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-	GLuint positionAttribIndex = glGetAttribLocation(programObject, "in_vertexPosition");
-	GLuint textureAttribIndex = glGetAttribLocation(programObject, "in_textureCoords");
+	GLuint positionAttribIndex = glGetAttribLocation(shader.programObject, "in_vertexPosition");
+	GLuint textureAttribIndex = glGetAttribLocation(shader.programObject, "in_textureCoords");
 
 	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
 	std::cout << "textureAttribIndex: " << textureAttribIndex << std::endl;
@@ -170,7 +176,6 @@ int main(void)
 
 	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, 0);
 	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)tOffset);
-
 
 	// TEXTURE
 	GLuint tex;
@@ -218,10 +223,10 @@ int main(void)
 
 	// MVP
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // perspective projection
-	int MVPlocation = glGetUniformLocation(programObject, "MVP");
+	int MVPlocation = glGetUniformLocation(shader.programObject, "MVP");
 	std::cout << "MVPlocation: " << MVPlocation << std::endl;
 
-	glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
+	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -256,10 +261,11 @@ int main(void)
 		glfwPollEvents();
 	}
 
-	glUseProgram(0);
+	//glUseProgram(0);
 	glDisableVertexAttribArray(positionAttribIndex);
 	glDisableVertexAttribArray(textureAttribIndex);
-	glDeleteProgram(programObject);
+	//glDeleteProgram(shader.programObject);
+	shader.cleanUpProgram();
 
 	glfwTerminate();  // terminate GLFW
 	return 0;
@@ -335,7 +341,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	camera.ProcessMouseScroll(yoffset);
 }
 
-
+/*
 std::string shaderSourceCodeReader(std::string shaderFileName)
 {
 	std::ifstream ifs(shaderFileName, std::ifstream::in);
@@ -409,3 +415,4 @@ void cleanUpShader(GLuint programObject, GLuint shaderObject)
 	glDetachShader(programObject, shaderObject);
 	glDeleteShader(shaderObject);
 }
+*/
