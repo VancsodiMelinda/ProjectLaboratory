@@ -141,6 +141,7 @@
     <ClCompile Include="src\ObjLoader.cpp" />
     <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\Transformation.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\FragmentShader.txt" />
@@ -152,6 +153,7 @@
     <ClInclude Include="src\ObjLoader.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Transformation.h" />
+    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

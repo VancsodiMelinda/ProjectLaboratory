@@ -100,10 +100,31 @@ int main(void)
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	// load objects
 	ObjLoader objLoader;
+	// load Suzanne model
 	std::string objFileName = "resources/Suzanne texture test custom unwrapped.obj";
 	objectData test = objLoader.loadObjFileV2(objFileName);
 	std::cout << "Loaded object file: " << objFileName << std::endl;
+
+	// load cube model (lightsource)
+	std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
+	objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
+	std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
+
+	// create plane
+	objectData plane;
+	plane.vertices = { -1.0f, -1.0f, 1.0f,
+						1.0f, -1.0f, 1.0f,
+						1.0f, -1.0f, -1.0f,
+						-1.f, -1.0f, -1.0f };
+	plane.uvs = { 0.0f, 0.0f,
+				  1.0f, 0.0f,
+				  1.0f, 1.0f,
+				  0.0f, 1.0f };
+	plane.indices = { 0, 1, 2,
+					  0, 2, 3 };
+
 
 	Shader shader;
 	shader.runShaderCode();
@@ -139,10 +160,10 @@ int main(void)
 	std::cout << "iSize: " << iSize << std::endl;
 
 	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	glGenVertexArrays(1, &vao);  // create VAO
+	glBindVertexArray(vao);  // bind 1st VAO
 
-	GLuint vbo, ibo;
+	GLuint vbo, ibo;  // create VBOs
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ibo);
 
@@ -156,7 +177,6 @@ int main(void)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);  // INDICES
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
-	//glUseProgram(programObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
@@ -177,11 +197,88 @@ int main(void)
 	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, 0);
 	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)tOffset);
 
-	// TEXTURE
-	GLuint tex;
-	glGenTextures(1, &tex);
+	glBindVertexArray(0);  // unbind 1st VAO
+
+	
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	GLuint lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);  // bind 2nd VAO
+
+	GLuint lightVbo, lightIbo;  // create VBOs
+	glGenBuffers(1, &lightVbo);
+	glGenBuffers(1, &lightIbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);  // bind VBO
+	glBufferData(GL_ARRAY_BUFFER, (lightSourceObject.vertices.size() + lightSourceObject.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), &lightSourceObject.vertices[0]);  // VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), lightSourceObject.uvs.size() * sizeof(GL_FLOAT), &lightSourceObject.uvs[0]);  // TEXTURE COORDINATES
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);  // bind IBO
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, lightSourceObject.indices.size() * sizeof(GLuint), &lightSourceObject.indices[0], GL_STATIC_DRAW);  // INDICES
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
+
+	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);
+
+	glEnableVertexAttribArray(positionAttribIndex);
+	glEnableVertexAttribArray(textureAttribIndex);
+	
+	GLintptr vOffset2 = 0 * sizeof(GL_FLOAT);
+	GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
+	int stride3_ = 3 * sizeof(GL_FLOAT);
+	int stride2_ = 2 * sizeof(GL_FLOAT);
+
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3_, 0);
+	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2_, (GLvoid*)tOffset2);
+
+	glBindVertexArray(0);  // unbind 2nd VAO
+
+	// %%%%%%%%%%%%%%%%%%%%
+	GLuint planeVAO;
+	glGenVertexArrays(1, &planeVAO);
+	glBindVertexArray(planeVAO);  // bind 3rd VAO
+
+	GLuint planeVbo, planeIbo;  // create VBOs
+	glGenBuffers(1, &planeVbo);
+	glGenBuffers(1, &planeIbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);  // bind VBO
+	glBufferData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, plane.vertices.size() * sizeof(GL_FLOAT), &plane.vertices[0]);  // VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, plane.vertices.size() * sizeof(GL_FLOAT), plane.uvs.size() * sizeof(GL_FLOAT), &plane.uvs[0]);  // TEXTURE COORDINATES
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);  // bind IBO
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, plane.indices.size() * sizeof(GLuint), &plane.indices[0], GL_STATIC_DRAW);  // INDICES
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
+
+	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);
+
+	glEnableVertexAttribArray(positionAttribIndex);
+	glEnableVertexAttribArray(textureAttribIndex);
+
+	GLintptr vOffset3 = 0 * sizeof(GL_FLOAT);
+	GLintptr tOffset3 = plane.vertices.size() * sizeof(GL_FLOAT);
+	int stride3x = 3 * sizeof(GL_FLOAT);
+	int stride2x = 2 * sizeof(GL_FLOAT);
+
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3x, 0);
+	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2x, (GLvoid*)tOffset3);
+
+	glBindVertexArray(0);  // unbind 2nd VAO
+
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	///// TEXTURE
+	//GLuint tex;
+	//glGenTextures(1, &tex);
+	GLuint texture[2];
+	glGenTextures(2, texture);
+
 	//glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);  // bind texture
+	glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // wrapping
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // wrapping
@@ -196,7 +293,7 @@ int main(void)
 	if (data)
 	{
 		std::cout << "Texture image has been loaded succesfully: " << textureFileName << std::endl;
-		std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;;
+		std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -207,6 +304,33 @@ int main(void)
 
 	stbi_image_free(data);  // free the image memory
 	//glUniform1i(glGetUniformLocation(programObject, "texSampler"), 0);  // ez vajon kell?
+
+	//%%%%%%%%%%%%%%%%%
+	glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // wrapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // wrapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // filtering
+
+	int imageWidth_, imageHeight_, nrChannels_;
+	std::string textureFileName_ = "resources/WhiteTexture.png";
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data_ = stbi_load(textureFileName_.c_str(), &imageWidth_, &imageHeight_, &nrChannels_, 0);
+	if (data_)
+	{
+		std::cout << "Texture image has been loaded succesfully: " << textureFileName_ << std::endl;
+		std::cout << "imageWidth: " << imageWidth_ << std::endl << "imageHeight: " << imageHeight_ << std::endl << "nrChannels: " << nrChannels_ << std::endl;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth_, imageHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Texture image loading has failed!" << std::endl;
+	}
+
+	stbi_image_free(data_);  // free the image memory
+
 
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
@@ -247,12 +371,40 @@ int main(void)
 
 		// recalculate viewMatrix and projectionMatrix in every farem in case of input
 		//projectionMatrix = perspectiveMatrix;
+		modelMatrix = glm::mat4(1.0f);
 		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
 
+		// draw Suzanne
+		glBindVertexArray(vao);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 		glDrawElements(GL_TRIANGLES, iSize, GL_UNSIGNED_INT, 0);
+
+		// draw light source
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(3.0f, 1.0f, -3.0f));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+		MVP = projectionMatrix * viewMatrix * modelMatrix;
+		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+
+		glBindVertexArray(lightVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
+		glDrawElements(GL_TRIANGLES, lightSourceObject.indices.size(), GL_UNSIGNED_INT, 0);
+		
+		// draw plane
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
+		MVP = projectionMatrix * viewMatrix * modelMatrix;
+		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+
+		glBindVertexArray(planeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
+		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -262,6 +414,7 @@ int main(void)
 	}
 
 	//glUseProgram(0);
+	glBindVertexArray(0);
 	glDisableVertexAttribArray(positionAttribIndex);
 	glDisableVertexAttribArray(textureAttribIndex);
 	//glDeleteProgram(shader.programObject);
