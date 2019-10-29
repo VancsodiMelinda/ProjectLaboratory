@@ -16,9 +16,10 @@ public:
 	Shader();  // default constructor
 	Shader(GLuint programObject_, std::string vertexShaderFileName_, std::string fragmentShaderFileName_);  // parameterized constructor
 
-	// methods
+	// public methods
 	void runShaderCode();
 	void cleanUpProgram();
+	void useShader();
 
 private:
 	// private attributes

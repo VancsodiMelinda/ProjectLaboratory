@@ -30,6 +30,11 @@ void Shader::runShaderCode()
 	cleanUpShader(programObject, vertexShaderObject);
 	cleanUpShader(programObject, fragmentShaderObject);
 
+	//glUseProgram(programObject);
+}
+
+void Shader::useShader()
+{
 	glUseProgram(programObject);
 }
 

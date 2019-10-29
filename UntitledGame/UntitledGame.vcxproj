@@ -145,6 +145,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\FragmentShader.txt" />
+    <Text Include="src\LightObjFragmentShader.txt" />
+    <Text Include="src\LightObjVertexShader.txt" />
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>

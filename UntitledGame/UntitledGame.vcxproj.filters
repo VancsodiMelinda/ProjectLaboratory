@@ -40,6 +40,8 @@
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
     <Text Include="src\FragmentShader.txt" />
+    <Text Include="src\LightObjVertexShader.txt" />
+    <Text Include="src\LightObjFragmentShader.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Transformation.h">

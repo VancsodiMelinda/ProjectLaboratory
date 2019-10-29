@@ -5,10 +5,10 @@ layout (location = 1) in vec2 in_textureCoords;
 
 out vec2 out_textureCoords;
 
-uniform mat4 scalingMatrix;
-uniform mat4 rotationMatrix;
-uniform mat4 translationMatrix;
-uniform mat4 projectionMatrix;
+//uniform mat4 scalingMatrix;
+//uniform mat4 rotationMatrix;
+//uniform mat4 translationMatrix;
+//uniform mat4 projectionMatrix;
 
 uniform mat4 MVP;
 

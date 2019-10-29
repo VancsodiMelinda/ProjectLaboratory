@@ -5,6 +5,7 @@ in vec2 out_textureCoords;
 out vec4 fragColor;
 
 uniform sampler2D tex;
+uniform vec3 lightColor;
 
 void main()
 {

@@ -21,6 +21,7 @@
 #include "ObjLoader.h"
 #include "Camera.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -274,8 +275,10 @@ int main(void)
 	///// TEXTURE
 	//GLuint tex;
 	//glGenTextures(1, &tex);
+	/*
 	GLuint texture[2];
 	glGenTextures(2, texture);
+	std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << std::endl;
 
 	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
@@ -314,7 +317,7 @@ int main(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // filtering
 
 	int imageWidth_, imageHeight_, nrChannels_;
-	std::string textureFileName_ = "resources/WhiteTexture.png";
+	std::string textureFileName_ = "resources/rubik texture.png";
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data_ = stbi_load(textureFileName_.c_str(), &imageWidth_, &imageHeight_, &nrChannels_, 0);
 	if (data_)
@@ -330,7 +333,24 @@ int main(void)
 	}
 
 	stbi_image_free(data_);  // free the image memory
+	*/
 
+	
+	GLuint texture[3];
+
+	Texture tex1("resources/test grid.png");
+	tex1.setUpTexture();
+	texture[0] = tex1.textureID;
+
+	Texture tex2("resources/rubik texture.png");
+	tex2.setUpTexture();
+	texture[1] = tex2.textureID;
+
+	Texture tex3("resources/WhiteTexture.png");
+	tex3.setUpTexture();
+	texture[2] = tex3.textureID;
+
+	std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
 
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
@@ -369,6 +389,7 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		shader.useShader();
 		// recalculate viewMatrix and projectionMatrix in every farem in case of input
 		//projectionMatrix = perspectiveMatrix;
 		modelMatrix = glm::mat4(1.0f);
@@ -403,7 +424,7 @@ int main(void)
 
 		glBindVertexArray(planeVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
+		glBindTexture(GL_TEXTURE_2D, texture[2]);  // bind texture
 		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
 
 		/* Swap front and back buffers */
