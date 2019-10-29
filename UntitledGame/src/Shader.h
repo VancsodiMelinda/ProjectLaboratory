@@ -14,7 +14,7 @@ public:
 
 	// constructors
 	Shader();  // default constructor
-	Shader(GLuint programObject_, std::string vertexShaderFileName_, std::string fragmentShaderFileName_);  // parameterized constructor
+	Shader(std::string vertexShaderFileName_, std::string fragmentShaderFileName_);  // parameterized constructor
 
 	// public methods
 	void runShaderCode();

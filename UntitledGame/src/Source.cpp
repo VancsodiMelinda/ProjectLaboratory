@@ -108,7 +108,7 @@ int main(void)
 	objectData test = objLoader.loadObjFileV2(objFileName);
 	std::cout << "Loaded object file: " << objFileName << std::endl;
 
-	// load cube model (lightsource)
+	// load cube model (lightsource object)
 	std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
 	objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
 	std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
@@ -126,9 +126,13 @@ int main(void)
 	plane.indices = { 0, 1, 2,
 					  0, 2, 3 };
 
+	// shader for objects
+	Shader objShader("src/VertexShader.txt", "src/FragmentShader.txt");
+	objShader.runShaderCode();
 
-	Shader shader;
-	shader.runShaderCode();
+	// shader for lightsource object
+	Shader lightObjShader("src/LightObjVertexShader.txt", "src/LightObjFragmentShader.txt");
+	lightObjShader.runShaderCode();
 
 	// SHADER CODE
 	/*
@@ -169,20 +173,20 @@ int main(void)
 	glGenBuffers(1, &ibo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (vSize + vtSize) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize * sizeof(GL_FLOAT), &test.vertices[0]);  // VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, vSize * sizeof(GL_FLOAT), vtSize * sizeof(GL_FLOAT), &test.uvs[0]);  // TEXTURE COORDINATES
+	glBufferData(GL_ARRAY_BUFFER, (test.vertices.size() + test.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, test.vertices.size() * sizeof(GL_FLOAT), &test.vertices[0]);  // VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, test.vertices.size() * sizeof(GL_FLOAT), test.uvs.size() * sizeof(GL_FLOAT), &test.uvs[0]);  // TEXTURE COORDINATES
 	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);  // INDICES
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, test.indices.size() * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);  // INDICES
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-	GLuint positionAttribIndex = glGetAttribLocation(shader.programObject, "in_vertexPosition");
-	GLuint textureAttribIndex = glGetAttribLocation(shader.programObject, "in_textureCoords");
+	GLuint positionAttribIndex = glGetAttribLocation(objShader.programObject, "in_vertexPosition");
+	GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");
 
 	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
 	std::cout << "textureAttribIndex: " << textureAttribIndex << std::endl;
@@ -223,16 +227,17 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);
 
-	glEnableVertexAttribArray(positionAttribIndex);
-	glEnableVertexAttribArray(textureAttribIndex);
+	GLuint lightPosAttrIndex = glGetAttribLocation(lightObjShader.programObject, "in_vertexPosition");
+	//GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");
+
+	glEnableVertexAttribArray(lightPosAttrIndex);
+	//glEnableVertexAttribArray(textureAttribIndex);
 	
 	GLintptr vOffset2 = 0 * sizeof(GL_FLOAT);
 	GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
-	int stride3_ = 3 * sizeof(GL_FLOAT);
-	int stride2_ = 2 * sizeof(GL_FLOAT);
 
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3_, 0);
-	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2_, (GLvoid*)tOffset2);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, 0);
+	//glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)(lightSourceObject.vertices.size() * sizeof(GL_FLOAT)));
 
 	glBindVertexArray(0);  // unbind 2nd VAO
 
@@ -346,7 +351,7 @@ int main(void)
 	tex2.setUpTexture();
 	texture[1] = tex2.textureID;
 
-	Texture tex3("resources/WhiteTexture.png");
+	Texture tex3("resources/DefaultTexture.png");
 	tex3.setUpTexture();
 	texture[2] = tex3.textureID;
 
@@ -367,7 +372,7 @@ int main(void)
 
 	// MVP
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // perspective projection
-	int MVPlocation = glGetUniformLocation(shader.programObject, "MVP");
+	int MVPlocation = glGetUniformLocation(objShader.programObject, "MVP");
 	std::cout << "MVPlocation: " << MVPlocation << std::endl;
 
 	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
@@ -389,7 +394,8 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		shader.useShader();
+		// draw Suzanne
+		objShader.useShader();
 		// recalculate viewMatrix and projectionMatrix in every farem in case of input
 		//projectionMatrix = perspectiveMatrix;
 		modelMatrix = glm::mat4(1.0f);
@@ -398,13 +404,13 @@ int main(void)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
 
-		// draw Suzanne
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
-		glDrawElements(GL_TRIANGLES, iSize, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, test.indices.size(), GL_UNSIGNED_INT, 0);
 
 		// draw light source
+		lightObjShader.useShader();
 		modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(3.0f, 1.0f, -3.0f));
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
@@ -412,11 +418,12 @@ int main(void)
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
 
 		glBindVertexArray(lightVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
 		glDrawElements(GL_TRIANGLES, lightSourceObject.indices.size(), GL_UNSIGNED_INT, 0);
 		
 		// draw plane
+		objShader.useShader();
 		modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
@@ -439,7 +446,7 @@ int main(void)
 	glDisableVertexAttribArray(positionAttribIndex);
 	glDisableVertexAttribArray(textureAttribIndex);
 	//glDeleteProgram(shader.programObject);
-	shader.cleanUpProgram();
+	objShader.cleanUpProgram();
 
 	glfwTerminate();  // terminate GLFW
 	return 0;

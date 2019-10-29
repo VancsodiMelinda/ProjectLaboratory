@@ -1,10 +1,10 @@
 #version 440
 
-out vec4 fragColor;
+layout (location = 0) in vec3 in_vertexPosition;
 
-uniform vec3 lightColor;
+uniform mat4 MVP;
 
 void main()
 {
-	fragColor = vec4(lightColor, 1.0f);
+	gl_Position = MVP * vec4(in_vertexPosition, 1.0);
 }

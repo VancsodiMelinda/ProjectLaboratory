@@ -8,9 +8,9 @@ Shader::Shader()
 	fragmentShaderFileName = "src/FragmentShader.txt";
 }
 
-Shader::Shader(GLuint programObject_, std::string vertexShaderFileName_, std::string fragmentShaderFileName_)
+Shader::Shader(std::string vertexShaderFileName_, std::string fragmentShaderFileName_)
 {
-	programObject = programObject_;
+	programObject = glCreateProgram();
 	vertexShaderFileName = vertexShaderFileName_;
 	fragmentShaderFileName = fragmentShaderFileName_;
 }
