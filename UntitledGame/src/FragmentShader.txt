@@ -12,5 +12,10 @@ void main()
 	//fragColor = vec4(out_vertexColor, 1.0f);
 	//fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//fragColor = texture(tex, out_textureCoords) * vec4(out_vertexColor, 1.0);
-	fragColor = texture(tex, out_textureCoords);
+
+	// AMBIENT lighting
+	float ambientStrength = 0.1;
+	vec3 ambient = ambientStrength * lightColor;
+
+	fragColor = texture(tex, out_textureCoords) * vec4(ambient, 1.0f);
 }

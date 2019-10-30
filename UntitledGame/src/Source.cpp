@@ -375,6 +375,11 @@ int main(void)
 	int MVPlocation = glGetUniformLocation(objShader.programObject, "MVP");
 	std::cout << "MVPlocation: " << MVPlocation << std::endl;
 
+	// light stuff
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);  // white light
+	int lightColorPos = glGetUniformLocation(objShader.programObject, "lightColor");
+	std::cout << "lightColorPos: " << lightColorPos << std::endl;
+
 	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
 	/* Loop until the user closes the window */
@@ -403,6 +408,8 @@ int main(void)
 		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+
+		glUniform3fv(lightColorPos, 1,  glm::value_ptr(lightColor));
 
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
