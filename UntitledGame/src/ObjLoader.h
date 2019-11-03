@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 struct vector2f {
 	float x;
@@ -34,5 +35,6 @@ class ObjLoader
 {
 public:
 	objectData loadObjFileV2(std::string objFileName);
+	objectData advancedObjLoader(std::string objFileName);
 };
 

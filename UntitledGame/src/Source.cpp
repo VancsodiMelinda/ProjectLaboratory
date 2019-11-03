@@ -49,8 +49,10 @@ glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
 bool isPerspective;
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+//const int WINDOW_WIDTH = 800;
+//const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
 
 float lastX = (float)WINDOW_WIDTH / 2.0f;
 float lastY = (float)WINDOW_HEIGHT / 2.0f;
@@ -108,6 +110,15 @@ int main(void)
 	objectData test = objLoader.loadObjFileV2(objFileName);
 	std::cout << "Loaded object file: " << objFileName << std::endl;
 
+	// test loading with advanced obj loader
+	std::string objFileName_ = "resources/NewSuzanne.obj";
+	objectData notSplitted = objLoader.advancedObjLoader(objFileName_);
+	std::cout << "Loaded object file: " << objFileName_ << std::endl;
+	std::cout << "THIS v: " << notSplitted.vertices.size() << std::endl;
+	std::cout << "THIS vt: " << notSplitted.uvs.size() << std::endl;
+	std::cout << "THIS vn: " << notSplitted.normals.size() << std::endl;
+	std::cout << "THIS i: " << notSplitted.indices.size() << std::endl;
+
 	// load cube model (lightsource object)
 	std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
 	objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
@@ -123,6 +134,12 @@ int main(void)
 				  1.0f, 0.0f,
 				  1.0f, 1.0f,
 				  0.0f, 1.0f };
+	
+	plane.normals = { 0.0f, 1.0f, 0.0f,
+					  0.0f, 1.0f, 0.0f,
+					  0.0f, 1.0f, 0.0f,
+					  0.0f, 1.0f, 0.0f };
+	
 	plane.indices = { 0, 1, 2,
 					  0, 2, 3 };
 
@@ -173,34 +190,40 @@ int main(void)
 	glGenBuffers(1, &ibo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (test.vertices.size() + test.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, test.vertices.size() * sizeof(GL_FLOAT), &test.vertices[0]);  // VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, test.vertices.size() * sizeof(GL_FLOAT), test.uvs.size() * sizeof(GL_FLOAT), &test.uvs[0]);  // TEXTURE COORDINATES
+	glBufferData(GL_ARRAY_BUFFER, (notSplitted.vertices.size() + notSplitted.uvs.size() + notSplitted.normals.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, notSplitted.vertices.size() * sizeof(GL_FLOAT), &notSplitted.vertices[0]);															// VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, notSplitted.vertices.size() * sizeof(GL_FLOAT), notSplitted.uvs.size() * sizeof(GL_FLOAT), &notSplitted.uvs[0]);								// TEXTURE COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, (notSplitted.vertices.size() + notSplitted.uvs.size()) * sizeof(GL_FLOAT), notSplitted.normals.size() * sizeof(GL_FLOAT), &notSplitted.normals[0]);	// NORMAL COORDINATES
 	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, test.indices.size() * sizeof(GLuint), &test.indices[0], GL_STATIC_DRAW);  // INDICES
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, notSplitted.indices.size() * sizeof(GLuint), &notSplitted.indices[0], GL_STATIC_DRAW);  // INDICES
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-	GLuint positionAttribIndex = glGetAttribLocation(objShader.programObject, "in_vertexPosition");
-	GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");
+	GLuint positionAttribIndex = glGetAttribLocation(objShader.programObject, "in_vertexPosition");		// layout (location = 0) in vec3 in_vertexPosition;
+	GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
+	GLuint normalAttribIndex = glGetAttribLocation(objShader.programObject, "in_normalVec");			// layout (location = 2) in vec3 in_normalVec;
 
-	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
-	std::cout << "textureAttribIndex: " << textureAttribIndex << std::endl;
+	std::cout << "THIS positionAttribIndex: " << positionAttribIndex << std::endl;
+	std::cout << "THIS textureAttribIndex: " << textureAttribIndex << std::endl;
+	std::cout << "THIS normalAttribIndex: " << normalAttribIndex << std::endl;
 
 	glEnableVertexAttribArray(positionAttribIndex);
 	glEnableVertexAttribArray(textureAttribIndex);
+	glEnableVertexAttribArray(normalAttribIndex);
 
 	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
-	GLintptr tOffset = vSize * sizeof(GL_FLOAT);
+	GLintptr tOffset = notSplitted.vertices.size() * sizeof(GL_FLOAT);
+	GLintptr nOffset = (notSplitted.vertices.size() + notSplitted.uvs.size()) * sizeof(GL_FLOAT);
 	int stride3 = 3 * sizeof(GL_FLOAT);
 	int stride2 = 2 * sizeof(GL_FLOAT);
 
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, 0);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)vOffset);
 	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)tOffset);
+	glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)nOffset);
 
 	glBindVertexArray(0);  // unbind 1st VAO
 
@@ -215,9 +238,9 @@ int main(void)
 	glGenBuffers(1, &lightIbo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (lightSourceObject.vertices.size() + lightSourceObject.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
 	glBufferSubData(GL_ARRAY_BUFFER, 0, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), &lightSourceObject.vertices[0]);  // VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), lightSourceObject.uvs.size() * sizeof(GL_FLOAT), &lightSourceObject.uvs[0]);  // TEXTURE COORDINATES
+	//glBufferSubData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), lightSourceObject.uvs.size() * sizeof(GL_FLOAT), &lightSourceObject.uvs[0]);  // TEXTURE COORDINATES
 	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);  // bind IBO
@@ -229,14 +252,15 @@ int main(void)
 
 	GLuint lightPosAttrIndex = glGetAttribLocation(lightObjShader.programObject, "in_vertexPosition");
 	//GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");
+	std::cout << "THAT lightPosAttrIndex: " << lightPosAttrIndex << std::endl;
 
 	glEnableVertexAttribArray(lightPosAttrIndex);
 	//glEnableVertexAttribArray(textureAttribIndex);
 	
-	GLintptr vOffset2 = 0 * sizeof(GL_FLOAT);
-	GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
+	GLintptr light_vOffset = 0 * sizeof(GL_FLOAT);
+	//GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
 
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, 0);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)light_vOffset);
 	//glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)(lightSourceObject.vertices.size() * sizeof(GL_FLOAT)));
 
 	glBindVertexArray(0);  // unbind 2nd VAO
@@ -251,9 +275,10 @@ int main(void)
 	glGenBuffers(1, &planeIbo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, plane.vertices.size() * sizeof(GL_FLOAT), &plane.vertices[0]);  // VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, plane.vertices.size() * sizeof(GL_FLOAT), plane.uvs.size() * sizeof(GL_FLOAT), &plane.uvs[0]);  // TEXTURE COORDINATES
+	glBufferData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size() + plane.normals.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, plane.vertices.size() * sizeof(GL_FLOAT), &plane.vertices[0]);																// VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, plane.vertices.size() * sizeof(GL_FLOAT), plane.uvs.size() * sizeof(GL_FLOAT), &plane.uvs[0]);									// TEXTURE COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT), plane.normals.size() * sizeof(GL_FLOAT), &plane.normals[0]);	// NORMAL COORDINATES
 	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);  // bind IBO
@@ -263,16 +288,25 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);
 
-	glEnableVertexAttribArray(positionAttribIndex);
-	glEnableVertexAttribArray(textureAttribIndex);
+	GLuint positionAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_vertexPosition");		// layout (location = 0) in vec3 in_vertexPosition;
+	GLuint textureAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
+	GLuint normalAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_normalVec");			// layout (location = 2) in vec3 in_normalVec;
 
-	GLintptr vOffset3 = 0 * sizeof(GL_FLOAT);
-	GLintptr tOffset3 = plane.vertices.size() * sizeof(GL_FLOAT);
-	int stride3x = 3 * sizeof(GL_FLOAT);
-	int stride2x = 2 * sizeof(GL_FLOAT);
+	std::cout << "THIS positionAttribIndex_: " << positionAttribIndex_ << std::endl;
+	std::cout << "THIS textureAttribIndex_: " << textureAttribIndex_ << std::endl;
+	std::cout << "THIS normalAttribIndex_: " << normalAttribIndex_ << std::endl;
 
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3x, 0);
-	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2x, (GLvoid*)tOffset3);
+	glEnableVertexAttribArray(positionAttribIndex_);
+	glEnableVertexAttribArray(textureAttribIndex_);
+	glEnableVertexAttribArray(normalAttribIndex_);
+
+	GLintptr plane_vOffset = 0 * sizeof(GL_FLOAT);
+	GLintptr plane_tOffset = plane.vertices.size() * sizeof(GL_FLOAT);
+	GLintptr plane_nOffset = (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT);
+
+	glVertexAttribPointer(positionAttribIndex_, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)plane_vOffset);
+	glVertexAttribPointer(textureAttribIndex_, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)plane_tOffset);
+	glVertexAttribPointer(normalAttribIndex_, 2, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)plane_nOffset);
 
 	glBindVertexArray(0);  // unbind 2nd VAO
 
@@ -343,7 +377,7 @@ int main(void)
 	
 	GLuint texture[3];
 
-	Texture tex1("resources/test grid.png");
+	Texture tex1("resources/Color Grid Texture.png");
 	tex1.setUpTexture();
 	texture[0] = tex1.textureID;
 
@@ -351,7 +385,7 @@ int main(void)
 	tex2.setUpTexture();
 	texture[1] = tex2.textureID;
 
-	Texture tex3("resources/DefaultTexture.png");
+	Texture tex3("resources/test grid.png");
 	tex3.setUpTexture();
 	texture[2] = tex3.textureID;
 
@@ -361,6 +395,7 @@ int main(void)
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
 	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//int modelMatrixLoc = glGetUniformLocation(objShader.programObject, "modelMatrix");  // THIS
 
 	// VIEW MATRIX - FPS-style camera
 	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // create viewMatrix with default parameters
@@ -377,8 +412,11 @@ int main(void)
 
 	// light stuff
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);  // white light
-	int lightColorPos = glGetUniformLocation(objShader.programObject, "lightColor");
-	std::cout << "lightColorPos: " << lightColorPos << std::endl;
+	glm::vec3 lightPos = glm::vec3(3.0f, 1.0f, -3.0f);  // position of light object
+	int lightColorLoc = glGetUniformLocation(objShader.programObject, "lightColor");
+	int lightPosLoc = glGetUniformLocation(objShader.programObject, "lightPos");
+	std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
+	std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
 
 	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
@@ -408,8 +446,10 @@ int main(void)
 		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+		//glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
 
-		glUniform3fv(lightColorPos, 1,  glm::value_ptr(lightColor));
+		glUniform3fv(lightColorLoc, 1,  glm::value_ptr(lightColor));
+		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
 
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
@@ -419,7 +459,7 @@ int main(void)
 		// draw light source
 		lightObjShader.useShader();
 		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(3.0f, 1.0f, -3.0f));
+		modelMatrix = glm::translate(modelMatrix, lightPos);
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
@@ -454,6 +494,7 @@ int main(void)
 	glDisableVertexAttribArray(textureAttribIndex);
 	//glDeleteProgram(shader.programObject);
 	objShader.cleanUpProgram();
+	lightObjShader.cleanUpProgram();
 
 	glfwTerminate();  // terminate GLFW
 	return 0;
