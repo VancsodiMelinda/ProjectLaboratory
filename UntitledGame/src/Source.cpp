@@ -104,13 +104,14 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// load objects
-	ObjLoader objLoader;
+	//ObjLoader objLoader;
 	// load Suzanne model
-	std::string objFileName = "resources/Suzanne texture test custom unwrapped.obj";
-	objectData test = objLoader.loadObjFileV2(objFileName);
-	std::cout << "Loaded object file: " << objFileName << std::endl;
+	//std::string objFileName = "resources/Suzanne texture test custom unwrapped.obj";
+	//objectData test = objLoader.loadObjFileV2(objFileName);
+	//std::cout << "Loaded object file: " << objFileName << std::endl;
 
 	// test loading with advanced obj loader
+	ObjLoader objLoader;
 	std::string objFileName_ = "resources/NewSuzanne.obj";
 	objectData notSplitted = objLoader.advancedObjLoader(objFileName_);
 	std::cout << "Loaded object file: " << objFileName_ << std::endl;
@@ -171,15 +172,15 @@ int main(void)
 	*/
 	////////////////////////////////////////////
 
-	int vSize = test.vertices.size();
-	int vtSize = test.uvs.size();
-	int vnSize = test.normals.size();
-	int iSize = test.indices.size();
+	//int vSize = test.vertices.size();
+	//int vtSize = test.uvs.size();
+	//int vnSize = test.normals.size();
+	//int iSize = test.indices.size();
 
-	std::cout << "vSize: " << vSize << std::endl;
-	std::cout << "vtSize: " << vtSize << std::endl;
-	std::cout << "vnSize: " << vnSize << std::endl;
-	std::cout << "iSize: " << iSize << std::endl;
+	//std::cout << "vSize: " << vSize << std::endl;
+	//std::cout << "vtSize: " << vtSize << std::endl;
+	//std::cout << "vnSize: " << vnSize << std::endl;
+	//std::cout << "iSize: " << iSize << std::endl;
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);  // create VAO
@@ -395,7 +396,8 @@ int main(void)
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
 	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//int modelMatrixLoc = glGetUniformLocation(objShader.programObject, "modelMatrix");  // THIS
+	int modelMatrixLoc = glGetUniformLocation(objShader.programObject, "modelMatrix");  // THIS
+	std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
 
 	// VIEW MATRIX - FPS-style camera
 	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // create viewMatrix with default parameters
@@ -446,7 +448,7 @@ int main(void)
 		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
-		//glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
+		glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
 
 		glUniform3fv(lightColorLoc, 1,  glm::value_ptr(lightColor));
 		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
@@ -454,7 +456,7 @@ int main(void)
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
-		glDrawElements(GL_TRIANGLES, test.indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, notSplitted.indices.size(), GL_UNSIGNED_INT, 0);
 
 		// draw light source
 		lightObjShader.useShader();

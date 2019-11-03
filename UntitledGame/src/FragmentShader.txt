@@ -2,7 +2,7 @@
 
 in vec2 out_textureCoords;
 in vec3 out_normalVec;
-//in vec3 out_worldVertexPos;
+in vec3 out_worldVertexPos;
 
 out vec4 fragColor;
 
@@ -16,9 +16,19 @@ void main()
 	//fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//fragColor = texture(tex, out_textureCoords) * vec4(out_vertexColor, 1.0);
 
-	// AMBIENT lighting
-	float ambientStrength = 1.0;
+	// AMBIENT LIGHTING
+	float ambientStrength = 0.1;
 	vec3 ambient = ambientStrength * lightColor;
 	//fragColor = vec4(out_normalVec, 1.0f);
-	fragColor = texture(tex, out_textureCoords) * vec4(ambient, 1.0f);
+	//fragColor = texture(tex, out_textureCoords) * vec4(ambient, 1.0f);
+
+	// DIFFUSE LIGHTING
+	vec3 n_normalVec = normalize(out_normalVec);
+	vec3 n_lightDirection = normalize(lightPos - out_worldVertexPos);
+	float diffuseImpact = max(dot(n_normalVec, n_lightDirection), 0.0);  // cos of angle
+	vec3 diffuse = diffuseImpact * lightColor;
+
+	vec3 light = (ambient + diffuse);
+
+	fragColor = texture(tex, out_textureCoords) * vec4(light, 1.0f);
 }
