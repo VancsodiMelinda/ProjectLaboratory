@@ -454,7 +454,7 @@ int main(void)
 		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
 
 		glBindVertexArray(vao);
-		glActiveTexture(GL_TEXTURE0);
+		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 		glDrawElements(GL_TRIANGLES, notSplitted.indices.size(), GL_UNSIGNED_INT, 0);
 
