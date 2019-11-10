@@ -130,6 +130,7 @@ int main(void)
 	objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
 	std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
 
+	/*
 	// create plane
 	objectData plane;
 	plane.vertices = { -1.0f, -1.0f, 1.0f,
@@ -148,6 +149,8 @@ int main(void)
 	
 	plane.indices = { 0, 1, 2,
 					  0, 2, 3 };
+
+	*/
 
 	// shader for objects
 	Shader objShader("src/VertexShader.txt", "src/FragmentShader.txt");
@@ -276,6 +279,7 @@ int main(void)
 	glBindVertexArray(0);  // unbind 2nd VAO
 
 	// %%%%%%%%%%%%%%%%%%%%
+	/*
 	GLuint planeVAO;
 	glGenVertexArrays(1, &planeVAO);
 	glBindVertexArray(planeVAO);  // bind 3rd VAO
@@ -319,6 +323,7 @@ int main(void)
 	glVertexAttribPointer(normalAttribIndex_, 2, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)plane_nOffset);
 
 	glBindVertexArray(0);  // unbind 2nd VAO
+	*/
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	///// TEXTURE
@@ -385,7 +390,7 @@ int main(void)
 	*/
 
 	
-	GLuint texture[4];
+	GLuint texture[5];
 
 	Texture tex1("resources/Color Grid Texture.png");
 	tex1.setUpTexture();
@@ -399,11 +404,15 @@ int main(void)
 	tex3.setUpTexture();
 	texture[2] = tex3.textureID;
 
-	Texture tex4("resources/Black tex.png");
+	Texture tex4("resources/Wood texture.jpg");
 	tex4.setUpTexture();
 	texture[3] = tex4.textureID;
 
-	std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
+	Texture tex5("resources/Velociraptor texture.png");
+	tex5.setUpTexture();
+	texture[4] = tex5.textureID;
+
+	//std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
 
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
@@ -446,6 +455,14 @@ int main(void)
 	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
 		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
 	obj3.initialize();
+
+	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+	obj4.initialize();
+
+	Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+	obj5.initialize();
 
 	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
@@ -494,6 +511,7 @@ int main(void)
 		*/
 		
 		// draw plane
+		/*
 		objShader.useShader();
 		modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
@@ -508,7 +526,7 @@ int main(void)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
-
+		*/
 
 		// draw light source
 		lightObjShader.useShader();
@@ -526,6 +544,8 @@ int main(void)
 		obj1.render(camera);
 		obj2.render(camera);
 		obj3.render(camera);
+		obj4.render(camera);
+		obj5.render(camera);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
