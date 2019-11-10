@@ -385,7 +385,7 @@ int main(void)
 	*/
 
 	
-	GLuint texture[3];
+	GLuint texture[4];
 
 	Texture tex1("resources/Color Grid Texture.png");
 	tex1.setUpTexture();
@@ -398,6 +398,10 @@ int main(void)
 	Texture tex3("resources/test grid.png");
 	tex3.setUpTexture();
 	texture[2] = tex3.textureID;
+
+	Texture tex4("resources/Black tex.png");
+	tex4.setUpTexture();
+	texture[3] = tex4.textureID;
 
 	std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
 
@@ -430,13 +434,6 @@ int main(void)
 	std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
 	std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
 
-	objShader.useShader();
-	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-	glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-	modelMatrix = glm::mat4(1.0f);
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
-	glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
-
 	/////////////////////////// use Object Class ///////////////////////////
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
 		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
@@ -446,7 +443,7 @@ int main(void)
 		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
 	obj2.initialize();
 
-	Object obj3("resources/texturePractice.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
+	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
 		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
 	obj3.initialize();
 
@@ -509,7 +506,7 @@ int main(void)
 
 		glBindVertexArray(planeVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[2]);  // bind texture
+		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
 
 

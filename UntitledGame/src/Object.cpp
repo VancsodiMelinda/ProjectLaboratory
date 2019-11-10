@@ -155,12 +155,15 @@ void Object::getUniformLocations()  // need to do this only once
 
 	int lightColorLoc = glGetUniformLocation(shaderID, "lightColor");
 	int lightPosLoc = glGetUniformLocation(shaderID, "lightPos");
+	
+	int cameraPosLoc = glGetUniformLocation(shaderID, "cameraPos");
 
 	// full up uniforms struct
 	uniLocs.modelMatrixLoc = modelMatrixLoc;
 	uniLocs.MVPloc = MVPloc;
 	uniLocs.lightColorLoc = lightColorLoc;
 	uniLocs.lightPosLoc = lightPosLoc;
+	uniLocs.cameraPosLoc = cameraPosLoc;
 
 	//std::cout << "6. In Object Class got uniform locations." << std::endl;
 	//std::cout << "MVPloc: " << MVPloc << std::endl;
@@ -184,6 +187,7 @@ void Object::uploadUniforms()  // in every frame
 	glUniformMatrix4fv(uniLocs.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniform3fv(uniLocs.lightColorLoc, 1, glm::value_ptr(lightColor));
 	glUniform3fv(uniLocs.lightPosLoc, 1, glm::value_ptr(lightPos));
+	glUniform3fv(uniLocs.cameraPosLoc, 1, glm::value_ptr(camera.cameraPosition));
 }
 
 /*

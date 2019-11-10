@@ -9,6 +9,7 @@ out vec4 fragColor;
 uniform sampler2D tex;
 uniform vec3 lightColor;  // white light
 uniform vec3 lightPos;  // position in world space
+uniform vec3 cameraPos;
 
 void main()
 {
@@ -17,7 +18,7 @@ void main()
 	//fragColor = texture(tex, out_textureCoords) * vec4(out_vertexColor, 1.0);
 
 	// AMBIENT LIGHTING
-	float ambientStrength = 0.1;
+	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * lightColor;
 	//fragColor = vec4(out_normalVec, 1.0f);
 	//fragColor = texture(tex, out_textureCoords) * vec4(ambient, 1.0f);
@@ -28,7 +29,14 @@ void main()
 	float diffuseImpact = max(dot(n_normalVec, n_lightDirection), 0.0);  // cos of angle
 	vec3 diffuse = diffuseImpact * lightColor;
 
-	vec3 light = (ambient + diffuse);
+	// SPECULAR LIGHTING
+	float specularStrength = 0.5f;
+	vec3 n_viewVector = normalize(cameraPos - out_worldVertexPos);
+	vec3 reflectDir = reflect(-n_lightDirection, n_normalVec);
+	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), 64);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	vec3 light = (ambient + diffuse + specular);
 
 	fragColor = texture(tex, out_textureCoords) * vec4(light, 1.0f);
 }

@@ -21,6 +21,7 @@ struct uniforms {
 	int MVPloc;
 	int lightColorLoc;
 	int lightPosLoc;
+	int cameraPosLoc;
 };
 
 class Object
