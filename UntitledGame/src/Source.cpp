@@ -22,6 +22,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Object.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -111,7 +112,10 @@ int main(void)
 	//std::cout << "Loaded object file: " << objFileName << std::endl;
 
 	// test loading with advanced obj loader
+	
 	ObjLoader objLoader;
+
+	/*
 	std::string objFileName_ = "resources/NewSuzanne.obj";
 	objectData notSplitted = objLoader.advancedObjLoader(objFileName_);
 	std::cout << "Loaded object file: " << objFileName_ << std::endl;
@@ -119,6 +123,7 @@ int main(void)
 	std::cout << "THIS vt: " << notSplitted.uvs.size() << std::endl;
 	std::cout << "THIS vn: " << notSplitted.normals.size() << std::endl;
 	std::cout << "THIS i: " << notSplitted.indices.size() << std::endl;
+	*/
 
 	// load cube model (lightsource object)
 	std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
@@ -182,6 +187,7 @@ int main(void)
 	//std::cout << "vnSize: " << vnSize << std::endl;
 	//std::cout << "iSize: " << iSize << std::endl;
 
+	/*
 	GLuint vao;
 	glGenVertexArrays(1, &vao);  // create VAO
 	glBindVertexArray(vao);  // bind 1st VAO
@@ -227,7 +233,7 @@ int main(void)
 	glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)nOffset);
 
 	glBindVertexArray(0);  // unbind 1st VAO
-
+	*/
 	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	GLuint lightVAO;
@@ -261,7 +267,10 @@ int main(void)
 	GLintptr light_vOffset = 0 * sizeof(GL_FLOAT);
 	//GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
 
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)light_vOffset);
+	int stride3 = 3 * sizeof(GL_FLOAT);
+	int stride2 = 2 * sizeof(GL_FLOAT);
+
+	glVertexAttribPointer(lightPosAttrIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)light_vOffset);
 	//glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)(lightSourceObject.vertices.size() * sizeof(GL_FLOAT)));
 
 	glBindVertexArray(0);  // unbind 2nd VAO
@@ -394,6 +403,7 @@ int main(void)
 
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
+	//modelMatrix = glm::translate(modelMatrix, glm::vec3(100.0f, 0.0f, 0.0f));
 	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	int modelMatrixLoc = glGetUniformLocation(objShader.programObject, "modelMatrix");  // THIS
@@ -420,6 +430,26 @@ int main(void)
 	std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
 	std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
 
+	objShader.useShader();
+	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
+	glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
+	glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
+
+	/////////////////////////// use Object Class ///////////////////////////
+	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
+		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+	obj1.initialize();
+
+	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
+		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+	obj2.initialize();
+
+	Object obj3("resources/texturePractice.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
+		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+	obj3.initialize();
+
 	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
 
 	/* Loop until the user closes the window */
@@ -439,11 +469,18 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+
+		//obj.render(camera);
+
 		// draw Suzanne
+		/*
 		objShader.useShader();
 		// recalculate viewMatrix and projectionMatrix in every farem in case of input
 		//projectionMatrix = perspectiveMatrix;
 		modelMatrix = glm::mat4(1.0f);
+		//modelMatrix = glm::translate(modelMatrix, glm::vec3(10.0f, 0.0f, 0.0f));
 		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
@@ -457,6 +494,24 @@ int main(void)
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
 		glDrawElements(GL_TRIANGLES, notSplitted.indices.size(), GL_UNSIGNED_INT, 0);
+		*/
+		
+		// draw plane
+		objShader.useShader();
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
+		MVP = projectionMatrix * viewMatrix * modelMatrix;
+		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+		glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
+
+		glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
+		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+
+		glBindVertexArray(planeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[2]);  // bind texture
+		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
+
 
 		// draw light source
 		lightObjShader.useShader();
@@ -470,18 +525,10 @@ int main(void)
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
 		glDrawElements(GL_TRIANGLES, lightSourceObject.indices.size(), GL_UNSIGNED_INT, 0);
-		
-		// draw plane
-		objShader.useShader();
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
-		MVP = projectionMatrix * viewMatrix * modelMatrix;
-		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
 
-		glBindVertexArray(planeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[2]);  // bind texture
-		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
+		obj1.render(camera);
+		obj2.render(camera);
+		obj3.render(camera);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -492,8 +539,8 @@ int main(void)
 
 	//glUseProgram(0);
 	glBindVertexArray(0);
-	glDisableVertexAttribArray(positionAttribIndex);
-	glDisableVertexAttribArray(textureAttribIndex);
+	//glDisableVertexAttribArray(positionAttribIndex);
+	//glDisableVertexAttribArray(textureAttribIndex);
 	//glDeleteProgram(shader.programObject);
 	objShader.cleanUpProgram();
 	lightObjShader.cleanUpProgram();

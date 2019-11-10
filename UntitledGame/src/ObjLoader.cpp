@@ -225,12 +225,14 @@ objectData ObjLoader::advancedObjLoader(std::string objFileName)
 
 	} // end of while, lists are filled
 
+	ifs.close();
+
 	// new approach: (VVVVTTTTNNNN) batch format
 
 	int numberOfFaces = fList.size() / 3;
-	std::cout << "THIS numberOfFaces: " << numberOfFaces << std::endl;
+	//std::cout << "THIS numberOfFaces: " << numberOfFaces << std::endl;
 	int numberOfElements = fList.size();
-	std::cout << "THIS numberOfElements: " << numberOfElements << std::endl;
+	//std::cout << "THIS numberOfElements: " << numberOfElements << std::endl;
 
 	std::vector<float> vVector(numberOfElements * 3);
 	std::vector<float> vtVector(numberOfElements * 2);
@@ -283,6 +285,8 @@ objectData ObjLoader::advancedObjLoader(std::string objFileName)
 	allData.uvs = vtVector;
 	allData.normals = vnVector;
 	allData.indices = iVector;
+
+	std::cout << "Obj file has been loaded succesfully: " << objFileName << std::endl;
 
 	return allData;
 }
