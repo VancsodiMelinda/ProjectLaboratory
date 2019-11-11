@@ -23,6 +23,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Object.h"
+#include "Light.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -113,7 +114,7 @@ int main(void)
 
 	// test loading with advanced obj loader
 	
-	ObjLoader objLoader;
+	//ObjLoader objLoader;
 
 	/*
 	std::string objFileName_ = "resources/NewSuzanne.obj";
@@ -126,9 +127,9 @@ int main(void)
 	*/
 
 	// load cube model (lightsource object)
-	std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
-	objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
-	std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
+	//std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
+	//objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
+	//std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
 
 	/*
 	// create plane
@@ -239,6 +240,7 @@ int main(void)
 	*/
 	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	/*
 	GLuint lightVAO;
 	glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);  // bind 2nd VAO
@@ -277,6 +279,7 @@ int main(void)
 	//glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)(lightSourceObject.vertices.size() * sizeof(GL_FLOAT)));
 
 	glBindVertexArray(0);  // unbind 2nd VAO
+	*/
 
 	// %%%%%%%%%%%%%%%%%%%%
 	/*
@@ -413,7 +416,7 @@ int main(void)
 	texture[4] = tex5.textureID;
 
 	//std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
-
+	/*
 	// MODEL MATRIX
 	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
 	//modelMatrix = glm::translate(modelMatrix, glm::vec3(100.0f, 0.0f, 0.0f));
@@ -438,10 +441,15 @@ int main(void)
 	// light stuff
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);  // white light
 	glm::vec3 lightPos = glm::vec3(3.0f, 1.0f, -3.0f);  // position of light object
-	int lightColorLoc = glGetUniformLocation(objShader.programObject, "lightColor");
-	int lightPosLoc = glGetUniformLocation(objShader.programObject, "lightPos");
-	std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
-	std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
+	int lightColorLoc = glGetUniformLocation(lightObjShader.programObject, "lightColor");
+	//int lightPosLoc = glGetUniformLocation(objShader.programObject, "lightPos");
+	std::cout << "IN LAMP SHADER lightColorLoc: " << lightColorLoc << std::endl;
+	//std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
+	*/
+	/////////////////////////// use Light Class ///////////////////////////
+	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "x",
+		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
+	light.initialize();
 
 	/////////////////////////// use Object Class ///////////////////////////
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
@@ -483,8 +491,8 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
-		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+		//viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+		//projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 
 		//obj.render(camera);
 
@@ -529,17 +537,22 @@ int main(void)
 		*/
 
 		// draw light source
+		/*
 		lightObjShader.useShader();
 		modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::translate(modelMatrix, lightPos);
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 		MVP = projectionMatrix * viewMatrix * modelMatrix;
 		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
+		glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
 
 		glBindVertexArray(lightVAO);
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
 		glDrawElements(GL_TRIANGLES, lightSourceObject.indices.size(), GL_UNSIGNED_INT, 0);
+		*/
+
+		light.render(camera);
 
 		obj1.render(camera);
 		obj2.render(camera);

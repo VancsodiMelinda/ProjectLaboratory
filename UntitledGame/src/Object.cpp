@@ -24,7 +24,7 @@ Object::Object(std::string objectFileName_, GLuint shaderID_, glm::vec3 translat
 
 void Object::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
 {
-	modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
+	modelMatrix = glm::mat4(1.0f);
 	
 	modelMatrix = glm::translate(modelMatrix, translate);
 	

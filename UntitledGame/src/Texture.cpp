@@ -22,7 +22,7 @@ void Texture::setUpTexture()
 	glGenTextures(1, &textureID);
 	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);  // bind texture
-	std::cout << "in class textureID: " << textureID << std::endl;
+	//std::cout << "in class textureID: " << textureID << std::endl;
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // wrapping
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // wrapping
@@ -41,17 +41,17 @@ void Texture::loadTexture()
 	if (data)
 	{
 		std::cout << "Texture image has been loaded succesfully: " << textureFileName << std::endl;
-		std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
+		//std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
 		GLenum format = GL_RGB;
 		if (nrChannels == 3)
 		{
 			format = GL_RGB;
-			std::cout << "format: GL_RGB" << std::endl;
+			//std::cout << "format: GL_RGB" << std::endl;
 		}
 		else if (nrChannels == 4)
 		{
 			format = GL_RGBA;
-			std::cout << "format: GL_RGBA" << std::endl;
+			//std::cout << "format: GL_RGBA" << std::endl;
 		}
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
