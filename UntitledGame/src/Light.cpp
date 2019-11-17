@@ -48,8 +48,6 @@ void Light::initialize()
 	configVertexAttributes();
 	createMVP();
 	getUniformLocations();
-	//glUseProgram(shaderID);
-	//uploadUniforms();
 }
 
 void Light::loadObjectData()
@@ -57,7 +55,7 @@ void Light::loadObjectData()
 	ObjLoader objLoader;
 	data = objLoader.advancedObjLoader(objectFileName);
 
-	std::cout << "1. In Light Class .obj file has been loaded succesfully: " << objectFileName << std::endl;
+	//std::cout << "1. In Light Class .obj file has been loaded succesfully: " << objectFileName << std::endl;
 }
 
 void Light::createVAOandVBOs()
@@ -68,10 +66,10 @@ void Light::createVAOandVBOs()
 	glGenBuffers(1, &vbo);  // create VBO
 	glGenBuffers(1, &ibo);  // create IBO
 
-	std::cout << "2. In Light Class VAO and VBO has been created." << std::endl;
-	std::cout << "VAO: " << vao << std::endl;
-	std::cout << "VBO: " << vbo << std::endl;
-	std::cout << "IBO: " << ibo << std::endl;
+	//std::cout << "2. In Light Class VAO and VBO has been created." << std::endl;
+	//std::cout << "VAO: " << vao << std::endl;
+	//std::cout << "VBO: " << vbo << std::endl;
+	//std::cout << "IBO: " << ibo << std::endl;
 }
 
 void Light::fillVBOs()
@@ -88,7 +86,7 @@ void Light::fillVBOs()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-	std::cout << "3. In Light Class VBOs have been filled with object data." << std::endl;
+	//std::cout << "3. In Light Class VBOs have been filled with object data." << std::endl;
 }
 
 void Light::configVertexAttributes()
@@ -108,8 +106,8 @@ void Light::configVertexAttributes()
 
 	glBindVertexArray(0);  // unbind VAO
 
-	std::cout << "4. In Light Class vertex attributes have been configured." << std::endl;
-	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
+	//std::cout << "4. In Light Class vertex attributes have been configured." << std::endl;
+	//std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
 }
 
 void Light::createMVP()  // only once
@@ -123,7 +121,7 @@ void Light::createMVP()  // only once
 	// create MVP
 	MVP = projectionMatrix * viewMatrix * modelMatrix;
 
-	std::cout << "5. In Light Class MVP has been created." << std::endl;
+	//std::cout << "5. In Light Class MVP has been created." << std::endl;
 }
 
 void Light::getUniformLocations()  // need to do this only once
@@ -136,9 +134,9 @@ void Light::getUniformLocations()  // need to do this only once
 	uniLocs.MVPloc = MVPloc;
 	uniLocs.lightColorLoc = lightColorLoc;
 
-	std::cout << "6. In Light Class got uniform locations." << std::endl;
-	std::cout << "MVPloc: " << MVPloc << std::endl;
-	std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
+	//std::cout << "6. In Light Class got uniform locations." << std::endl;
+	//std::cout << "MVPloc: " << MVPloc << std::endl;
+	//std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
 }
 
 void Light::updateMVP()  // every frame

@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\Shadow.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Object.cpp" />
     <ClCompile Include="src\Shader.cpp" />
@@ -146,12 +147,17 @@
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="src\DebugQuadFS.txt" />
+    <Text Include="src\DebugQuadVS.txt" />
     <Text Include="src\FragmentShader.txt" />
     <Text Include="src\LightObjFragmentShader.txt" />
     <Text Include="src\LightObjVertexShader.txt" />
+    <Text Include="src\ShadowFS.txt" />
+    <Text Include="src\ShadowVS.txt" />
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\Shader.h" />

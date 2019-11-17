@@ -42,12 +42,19 @@
     <ClCompile Include="src\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
     <Text Include="src\FragmentShader.txt" />
     <Text Include="src\LightObjVertexShader.txt" />
     <Text Include="src\LightObjFragmentShader.txt" />
+    <Text Include="src\ShadowVS.txt" />
+    <Text Include="src\ShadowFS.txt" />
+    <Text Include="src\DebugQuadVS.txt" />
+    <Text Include="src\DebugQuadFS.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Transformation.h">
@@ -72,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -38,6 +38,7 @@ glm::mat4 Camera::CreateViewMatrix()
 {
 	//glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
+	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // light point of view
 	return viewMatrix;
 }
 

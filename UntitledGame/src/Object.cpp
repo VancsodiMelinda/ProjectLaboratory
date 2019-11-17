@@ -57,8 +57,6 @@ void Object::initialize()
 	configVertexAttributes();
 	createMVP();  // even if render method doesn't get called, the object still has an initial MVP matrix, maybe its not neccesary
 	getUniformLocations();
-	//glUseProgram(shaderID);
-	//uploadUniforms();
 }
 
 void Object::loadObjectData()
@@ -141,6 +139,7 @@ void Object::createMVP()  // only once
 
 	// create projection matrix
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // PERSPECTIVE PROJECTION
+	//glm::mat4 projectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
 
 	// create MVP
 	MVP = projectionMatrix * viewMatrix * modelMatrix;
@@ -176,6 +175,7 @@ void Object::updateMVP()  // every frame
 {
 	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+	//glm::mat4 projectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
 
 	MVP = projectionMatrix * viewMatrix * modelMatrix;
 }
@@ -202,6 +202,7 @@ void Object::updateUniforms()  // uniforms that get uploaded in every frame
 void Object::render(Camera camera_)
 {
 	camera = camera_;  // update camera
+	// modify the value of uniform variables (glUniformMatrix4fv/glUniform3fv) after calling glUseProgram
 	glUseProgram(shaderID);
 	updateMVP();
 	uploadUniforms();

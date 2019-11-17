@@ -17,6 +17,8 @@ Shader::Shader(std::string vertexShaderFileName_, std::string fragmentShaderFile
 
 void Shader::runShaderCode()
 {
+	std::cout << "VS: " << vertexShaderFileName << "; FS: " << fragmentShaderFileName << std::endl;
+
 	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, vertexShaderFileName, programObject);  // create, compile and attach vertex shader
 	GLuint fragmentShaderObject = setUpShader(GL_FRAGMENT_SHADER, fragmentShaderFileName, programObject);  // create, compile and attach fragment shader
 

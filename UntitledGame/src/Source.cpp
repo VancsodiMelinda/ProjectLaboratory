@@ -24,6 +24,7 @@
 #include "Texture.h"
 #include "Object.h"
 #include "Light.h"
+#include "Shadow.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -31,17 +32,11 @@
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-//std::string shaderSourceCodeReader(std::string shaderFileName);
-//GLuint setUpShader(GLenum shaderType, std::string shaderFileName, GLuint programObject);
-//void shaderErrorHandling(GLuint shaderObject);
-//void linkingErrorHandling(GLuint programObject);
-//void cleanUpShader(GLuint programObject, GLuint shaderObject);
-//void loadObjFile(std::string objFileName, std::vector<float>& vVector, std::vector<int>& indVector);
 void processKeyInput(GLFWwindow* window);
-
+void renderQuad();
 
 // global camera variables
-Camera camera;  // create object with default constructor
+Camera camera;  // create camera object with default constructor
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -51,8 +46,6 @@ glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
 bool isPerspective;
 
-//const int WINDOW_WIDTH = 800;
-//const int WINDOW_HEIGHT = 600;
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
@@ -103,55 +96,7 @@ int main(void)
 	// check openGL version
 	printf("OpenGL Version: %d.%d\n", GLVersion.major, GLVersion.minor);
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// load objects
-	//ObjLoader objLoader;
-	// load Suzanne model
-	//std::string objFileName = "resources/Suzanne texture test custom unwrapped.obj";
-	//objectData test = objLoader.loadObjFileV2(objFileName);
-	//std::cout << "Loaded object file: " << objFileName << std::endl;
-
-	// test loading with advanced obj loader
-	
-	//ObjLoader objLoader;
-
-	/*
-	std::string objFileName_ = "resources/NewSuzanne.obj";
-	objectData notSplitted = objLoader.advancedObjLoader(objFileName_);
-	std::cout << "Loaded object file: " << objFileName_ << std::endl;
-	std::cout << "THIS v: " << notSplitted.vertices.size() << std::endl;
-	std::cout << "THIS vt: " << notSplitted.uvs.size() << std::endl;
-	std::cout << "THIS vn: " << notSplitted.normals.size() << std::endl;
-	std::cout << "THIS i: " << notSplitted.indices.size() << std::endl;
-	*/
-
-	// load cube model (lightsource object)
-	//std::string lightObjFileName = "resources/texturePracticeSplitted.obj";
-	//objectData lightSourceObject = objLoader.loadObjFileV2(lightObjFileName);
-	//std::cout << "Loaded light source object: " << lightObjFileName << std::endl;
-
-	/*
-	// create plane
-	objectData plane;
-	plane.vertices = { -1.0f, -1.0f, 1.0f,
-						1.0f, -1.0f, 1.0f,
-						1.0f, -1.0f, -1.0f,
-						-1.f, -1.0f, -1.0f };
-	plane.uvs = { 0.0f, 0.0f,
-				  1.0f, 0.0f,
-				  1.0f, 1.0f,
-				  0.0f, 1.0f };
-	
-	plane.normals = { 0.0f, 1.0f, 0.0f,
-					  0.0f, 1.0f, 0.0f,
-					  0.0f, 1.0f, 0.0f,
-					  0.0f, 1.0f, 0.0f };
-	
-	plane.indices = { 0, 1, 2,
-					  0, 2, 3 };
-
-	*/
+	/////////////////////////// SHADER ///////////////////////////
 
 	// shader for objects
 	Shader objShader("src/VertexShader.txt", "src/FragmentShader.txt");
@@ -161,238 +106,16 @@ int main(void)
 	Shader lightObjShader("src/LightObjVertexShader.txt", "src/LightObjFragmentShader.txt");
 	lightObjShader.runShaderCode();
 
-	// SHADER CODE
-	/*
-	GLuint programObject = glCreateProgram();  // empty program object
-	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, "src/VertexShader.txt", programObject);  // create, compile and attach vertex shader
-	GLuint fragmentShaderObject = setUpShader(GL_FRAGMENT_SHADER, "src/FragmentShader.txt", programObject);  // create, compile and attach fragment shader
-	
+	// shader for shadow
+	Shader shadowShader("src/ShadowVS.txt", "src/ShadowFS.txt");
+	shadowShader.runShaderCode();
 
-	// before linking you have to set up attribute locations, do NOT do this if layout(location = #) is in the shader code
-	//glBindAttribLocation(programObject, positionLocation, "in_vertexPosition");
-	//glBindAttribLocation(programObject, colorLocation, "in_vertexColor");
-	//glBindAttribLocation(programObject, textureLocation, "in_vertexTexture");
-	
-	glLinkProgram(programObject);
-	linkingErrorHandling(programObject);
-	cleanUpShader(programObject, vertexShaderObject);
-	cleanUpShader(programObject, fragmentShaderObject);
-	//glUseProgram(programObject);
-	*/
-	////////////////////////////////////////////
+	// shader for quad
+	Shader quadShader("src/DebugQuadVS.txt", "src/DebugQuadFS.txt");
+	quadShader.runShaderCode();
 
-	//int vSize = test.vertices.size();
-	//int vtSize = test.uvs.size();
-	//int vnSize = test.normals.size();
-	//int iSize = test.indices.size();
+	/////////////////////////// TEXTURE ///////////////////////////
 
-	//std::cout << "vSize: " << vSize << std::endl;
-	//std::cout << "vtSize: " << vtSize << std::endl;
-	//std::cout << "vnSize: " << vnSize << std::endl;
-	//std::cout << "iSize: " << iSize << std::endl;
-
-	/*
-	GLuint vao;
-	glGenVertexArrays(1, &vao);  // create VAO
-	glBindVertexArray(vao);  // bind 1st VAO
-
-	GLuint vbo, ibo;  // create VBOs
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ibo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (notSplitted.vertices.size() + notSplitted.uvs.size() + notSplitted.normals.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, notSplitted.vertices.size() * sizeof(GL_FLOAT), &notSplitted.vertices[0]);															// VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, notSplitted.vertices.size() * sizeof(GL_FLOAT), notSplitted.uvs.size() * sizeof(GL_FLOAT), &notSplitted.uvs[0]);								// TEXTURE COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, (notSplitted.vertices.size() + notSplitted.uvs.size()) * sizeof(GL_FLOAT), notSplitted.normals.size() * sizeof(GL_FLOAT), &notSplitted.normals[0]);	// NORMAL COORDINATES
-	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, notSplitted.indices.size() * sizeof(GLuint), &notSplitted.indices[0], GL_STATIC_DRAW);  // INDICES
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-	GLuint positionAttribIndex = glGetAttribLocation(objShader.programObject, "in_vertexPosition");		// layout (location = 0) in vec3 in_vertexPosition;
-	GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
-	GLuint normalAttribIndex = glGetAttribLocation(objShader.programObject, "in_normalVec");			// layout (location = 2) in vec3 in_normalVec;
-
-	std::cout << "THIS positionAttribIndex: " << positionAttribIndex << std::endl;
-	std::cout << "THIS textureAttribIndex: " << textureAttribIndex << std::endl;
-	std::cout << "THIS normalAttribIndex: " << normalAttribIndex << std::endl;
-
-	glEnableVertexAttribArray(positionAttribIndex);
-	glEnableVertexAttribArray(textureAttribIndex);
-	glEnableVertexAttribArray(normalAttribIndex);
-
-	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
-	GLintptr tOffset = notSplitted.vertices.size() * sizeof(GL_FLOAT);
-	GLintptr nOffset = (notSplitted.vertices.size() + notSplitted.uvs.size()) * sizeof(GL_FLOAT);
-	int stride3 = 3 * sizeof(GL_FLOAT);
-	int stride2 = 2 * sizeof(GL_FLOAT);
-
-	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)vOffset);
-	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)tOffset);
-	glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)nOffset);
-
-	glBindVertexArray(0);  // unbind 1st VAO
-	*/
-	
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	/*
-	GLuint lightVAO;
-	glGenVertexArrays(1, &lightVAO);
-	glBindVertexArray(lightVAO);  // bind 2nd VAO
-
-	GLuint lightVbo, lightIbo;  // create VBOs
-	glGenBuffers(1, &lightVbo);
-	glGenBuffers(1, &lightIbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), &lightSourceObject.vertices[0]);  // VERTEX COORDINATES
-	//glBufferSubData(GL_ARRAY_BUFFER, lightSourceObject.vertices.size() * sizeof(GL_FLOAT), lightSourceObject.uvs.size() * sizeof(GL_FLOAT), &lightSourceObject.uvs[0]);  // TEXTURE COORDINATES
-	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, lightSourceObject.indices.size() * sizeof(GLuint), &lightSourceObject.indices[0], GL_STATIC_DRAW);  // INDICES
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
-
-	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightIbo);
-
-	GLuint lightPosAttrIndex = glGetAttribLocation(lightObjShader.programObject, "in_vertexPosition");
-	//GLuint textureAttribIndex = glGetAttribLocation(objShader.programObject, "in_textureCoords");
-	std::cout << "THAT lightPosAttrIndex: " << lightPosAttrIndex << std::endl;
-
-	glEnableVertexAttribArray(lightPosAttrIndex);
-	//glEnableVertexAttribArray(textureAttribIndex);
-	
-	GLintptr light_vOffset = 0 * sizeof(GL_FLOAT);
-	//GLintptr tOffset2 = lightSourceObject.vertices.size() * sizeof(GL_FLOAT);
-
-	int stride3 = 3 * sizeof(GL_FLOAT);
-	int stride2 = 2 * sizeof(GL_FLOAT);
-
-	glVertexAttribPointer(lightPosAttrIndex, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)light_vOffset);
-	//glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)(lightSourceObject.vertices.size() * sizeof(GL_FLOAT)));
-
-	glBindVertexArray(0);  // unbind 2nd VAO
-	*/
-
-	// %%%%%%%%%%%%%%%%%%%%
-	/*
-	GLuint planeVAO;
-	glGenVertexArrays(1, &planeVAO);
-	glBindVertexArray(planeVAO);  // bind 3rd VAO
-
-	GLuint planeVbo, planeIbo;  // create VBOs
-	glGenBuffers(1, &planeVbo);
-	glGenBuffers(1, &planeIbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);  // bind VBO
-	glBufferData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size() + plane.normals.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, plane.vertices.size() * sizeof(GL_FLOAT), &plane.vertices[0]);																// VERTEX COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, plane.vertices.size() * sizeof(GL_FLOAT), plane.uvs.size() * sizeof(GL_FLOAT), &plane.uvs[0]);									// TEXTURE COORDINATES
-	glBufferSubData(GL_ARRAY_BUFFER, (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT), plane.normals.size() * sizeof(GL_FLOAT), &plane.normals[0]);	// NORMAL COORDINATES
-	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);  // bind IBO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, plane.indices.size() * sizeof(GLuint), &plane.indices[0], GL_STATIC_DRAW);  // INDICES
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
-
-	glBindBuffer(GL_ARRAY_BUFFER, planeVbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeIbo);
-
-	GLuint positionAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_vertexPosition");		// layout (location = 0) in vec3 in_vertexPosition;
-	GLuint textureAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
-	GLuint normalAttribIndex_ = glGetAttribLocation(objShader.programObject, "in_normalVec");			// layout (location = 2) in vec3 in_normalVec;
-
-	std::cout << "THIS positionAttribIndex_: " << positionAttribIndex_ << std::endl;
-	std::cout << "THIS textureAttribIndex_: " << textureAttribIndex_ << std::endl;
-	std::cout << "THIS normalAttribIndex_: " << normalAttribIndex_ << std::endl;
-
-	glEnableVertexAttribArray(positionAttribIndex_);
-	glEnableVertexAttribArray(textureAttribIndex_);
-	glEnableVertexAttribArray(normalAttribIndex_);
-
-	GLintptr plane_vOffset = 0 * sizeof(GL_FLOAT);
-	GLintptr plane_tOffset = plane.vertices.size() * sizeof(GL_FLOAT);
-	GLintptr plane_nOffset = (plane.vertices.size() + plane.uvs.size()) * sizeof(GL_FLOAT);
-
-	glVertexAttribPointer(positionAttribIndex_, 3, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)plane_vOffset);
-	glVertexAttribPointer(textureAttribIndex_, 2, GL_FLOAT, GL_FALSE, stride2, (GLvoid*)plane_tOffset);
-	glVertexAttribPointer(normalAttribIndex_, 2, GL_FLOAT, GL_FALSE, stride3, (GLvoid*)plane_nOffset);
-
-	glBindVertexArray(0);  // unbind 2nd VAO
-	*/
-
-	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	///// TEXTURE
-	//GLuint tex;
-	//glGenTextures(1, &tex);
-	/*
-	GLuint texture[2];
-	glGenTextures(2, texture);
-	std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << std::endl;
-
-	//glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // filtering
-
-	// load texture image: https://github.com/nothings/stb/blob/master/stb_image.h
-	int imageWidth, imageHeight, nrChannels;
-	std::string textureFileName = "resources/test grid.png";
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load(textureFileName.c_str(), &imageWidth, &imageHeight, &nrChannels, 0);
-	if (data)
-	{
-		std::cout << "Texture image has been loaded succesfully: " << textureFileName << std::endl;
-		std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Texture image loading has failed!" << std::endl;
-	}
-
-	stbi_image_free(data);  // free the image memory
-	//glUniform1i(glGetUniformLocation(programObject, "texSampler"), 0);  // ez vajon kell?
-
-	//%%%%%%%%%%%%%%%%%
-	glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // filtering
-
-	int imageWidth_, imageHeight_, nrChannels_;
-	std::string textureFileName_ = "resources/rubik texture.png";
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data_ = stbi_load(textureFileName_.c_str(), &imageWidth_, &imageHeight_, &nrChannels_, 0);
-	if (data_)
-	{
-		std::cout << "Texture image has been loaded succesfully: " << textureFileName_ << std::endl;
-		std::cout << "imageWidth: " << imageWidth_ << std::endl << "imageHeight: " << imageHeight_ << std::endl << "nrChannels: " << nrChannels_ << std::endl;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth_, imageHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Texture image loading has failed!" << std::endl;
-	}
-
-	stbi_image_free(data_);  // free the image memory
-	*/
-
-	
 	GLuint texture[5];
 
 	Texture tex1("resources/Color Grid Texture.png");
@@ -415,74 +138,169 @@ int main(void)
 	tex5.setUpTexture();
 	texture[4] = tex5.textureID;
 
-	//std::cout << "textureIDs: " << texture[0] << " and " << texture[1] << " and " << texture[2] << std::endl;
-	/*
-	// MODEL MATRIX
-	glm::mat4 modelMatrix = glm::mat4(1.0f);  // 4x4 identity matrix
-	//modelMatrix = glm::translate(modelMatrix, glm::vec3(100.0f, 0.0f, 0.0f));
-	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
-	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	int modelMatrixLoc = glGetUniformLocation(objShader.programObject, "modelMatrix");  // THIS
-	std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
-
-	// VIEW MATRIX - FPS-style camera
-	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // create viewMatrix with default parameters
-
-	// PROJECTION MATRIX
-	orthographicMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);  // ORTHOGRAPHIC PROJECTION
-	perspectiveMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // PERSPECTIVE PROJECTION
-	projectionMatrix = perspectiveMatrix;
-
-	// MVP
-	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;  // perspective projection
-	int MVPlocation = glGetUniformLocation(objShader.programObject, "MVP");
-	std::cout << "MVPlocation: " << MVPlocation << std::endl;
-
-	// light stuff
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);  // white light
-	glm::vec3 lightPos = glm::vec3(3.0f, 1.0f, -3.0f);  // position of light object
-	int lightColorLoc = glGetUniformLocation(lightObjShader.programObject, "lightColor");
-	//int lightPosLoc = glGetUniformLocation(objShader.programObject, "lightPos");
-	std::cout << "IN LAMP SHADER lightColorLoc: " << lightColorLoc << std::endl;
-	//std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
-	*/
-	/////////////////////////// use Light Class ///////////////////////////
-	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "x",
+	/////////////////////////// LIGHT ///////////////////////////
+	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x",
 		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
 	light.initialize();
 
-	/////////////////////////// use Object Class ///////////////////////////
+	/////////////////////////// OBJECT ///////////////////////////
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
-		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
+		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
 	obj1.initialize();
 
-	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
-		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
-	obj2.initialize();
+	
 
-	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
-		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
-	obj3.initialize();
+	//Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
+		//camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	//obj2.initialize();
 
-	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
-		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
-	obj4.initialize();
+	//Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
+		//camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	//obj3.initialize();
 
-	Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
-		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 1.0f, -3.0f));
-	obj5.initialize();
+	//Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
+		//camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	//obj4.initialize();
 
-	//glUseProgram(programObject); // modify the value of uniform variables (glUniformMatrix4fv) after calling glUseProgram
+	//Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
+		//camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	//obj5.initialize();
+
+	/////////////////////////// SHADOW ///////////////////////////
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
+	// screen quad VAO
+	unsigned int quadVAO, quadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	
+	//Shadow sh(obj5.vao, shadowShader.programObject, obj5.data);
+
+	// create 2D texture
+	const unsigned int SHADOW_WIDTH = 1024;
+	const unsigned int SHADOW_HEIGHT = 1024;
+
+	Shadow shTest1("resources/NewSuzanne.obj", shadowShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
+		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest1.initialize();
+
+	Shadow shTest2("resources/NewSuzanne.obj", shadowShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
+		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest2.initialize();
+
+	Shadow shTest3("resources/RubiksCube.obj", shadowShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "x",
+		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest3.initialize();
+
+	Shadow shTest4("resources/Ground.obj", shadowShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "x",
+		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest4.initialize();
+
+	Shadow shTest5("resources/Velociraptor.obj", shadowShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "x",
+		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest5.initialize();
+
+	
+
+	// create texture, serves as the depth attachment fot the fbo
+	GLuint shadowMap;
+	glGenTextures(1, &shadowMap);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);  // allocate memory
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// create framebuffer object
+	GLuint fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	std::cout << "fbo: " << fbo << std::endl;
+
+	// attach shadowMap to the framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);  // attach texture to the framebuffer
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	
+	// create render buffer object
+	//unsigned int rbo;
+	//glGenRenderbuffers(1, &rbo);
+	//glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SHADOW_WIDTH, 600);
+	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer is good." << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Framebuffer is NOT good." << std::endl;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//int shadowMapLoc = glGetUniformLocation(quadShader.programObject, "shadowMap");
+	//quadShader.useShader();
+	//glUniform1i(shadowMapLoc, 0);
+	//std::cout << "shadowMapLoc: " << shadowMapLoc << std::endl;
+
+	// create transformation matrixes to render from light point of view
+	/*
+	glBindVertexArray(obj1.vao);
+	GLuint positionAttribIndex = glGetAttribLocation(shadowShader.programObject, "in_vertexPosition");	// layout (location = 0) in vec3 in_vertexPosition;
+	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
+	glEnableVertexAttribArray(positionAttribIndex);
+	int stride3f = 3 * sizeof(GL_FLOAT);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, 0);
+	//glBindVertexArray(0);
+	*/
+	/*
+	float nearPlane = 0.1f;
+	float farPlane = 100.0f;
+	glm::mat4 lightProjMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, nearPlane, farPlane);
+	glm::mat4 lightViewMatrix = glm::lookAt(light.lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.7f, 0.7f, 0.7f));
+
+	glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix;
+
+	int lightSpaceMatrixLoc = glGetUniformLocation(shadowShader.programObject, "lightSpaceMatrix");
+	int modelMatrixLoc = glGetUniformLocation(shadowShader.programObject, "modelMatrix");
+	std::cout << "lightSpaceMatrixLoc: " << lightSpaceMatrixLoc << std::endl;
+	std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
+	*/
+
+	glEnable(GL_DEPTH_TEST);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
 		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glEnable(GL_DEPTH_TEST);
+		//glDepthFunc(GL_LESS);
 
 		processKeyInput(window);  // changes cameraPosition
 
@@ -491,74 +309,49 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		//viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
-		//projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+		// specify clear values for the buffers
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearDepth(1.0f);
+		glClearStencil(0.0f);
 
-		//obj.render(camera);
-
-		// draw Suzanne
-		/*
-		objShader.useShader();
-		// recalculate viewMatrix and projectionMatrix in every farem in case of input
-		//projectionMatrix = perspectiveMatrix;
-		modelMatrix = glm::mat4(1.0f);
-		//modelMatrix = glm::translate(modelMatrix, glm::vec3(10.0f, 0.0f, 0.0f));
-		viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
-		projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
-		MVP = projectionMatrix * viewMatrix * modelMatrix;
-		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
-		glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
-
-		glUniform3fv(lightColorLoc, 1,  glm::value_ptr(lightColor));
-		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-
-		glBindVertexArray(vao);
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
-		glDrawElements(GL_TRIANGLES, notSplitted.indices.size(), GL_UNSIGNED_INT, 0);
-		*/
+		// SHADOW CODE 1
 		
-		// draw plane
-		/*
-		objShader.useShader();
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 1.0f, 5.0f));
-		MVP = projectionMatrix * viewMatrix * modelMatrix;
-		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
-		glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // THIS
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);  // set viewport
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);  // bind application-created framebuffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
+		glEnable(GL_DEPTH_TEST);  // if enabled, do depth comparison and update the depth buffer
+		//glDrawBuffer(GL_NONE);
+		//glReadBuffer(GL_NONE);
+		shTest1.render();
+		shTest2.render();
+		shTest3.render();
+		shTest4.render();
+		//shTest5.render();
+		//obj1.render(camera);
 
-		glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-		glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-
-		glBindVertexArray(planeVAO);
+		// SHADOW CODE 2
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);  // bind window-system-provided framebuffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
+		glDisable(GL_DEPTH_TEST);
+		//glDrawBuffer(GL_BACK);
+		//glReadBuffer(GL_BACK);
+		quadShader.useShader();
+		glBindVertexArray(quadVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);  // bind texture
-		glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
-		*/
+		glBindTexture(GL_TEXTURE_2D, shadowMap);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glDrawArrays(GL_LINES, 0, 6);
+		//renderQuad();
 
-		// draw light source
-		/*
-		lightObjShader.useShader();
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, lightPos);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
-		MVP = projectionMatrix * viewMatrix * modelMatrix;
-		glUniformMatrix4fv(MVPlocation, 1, GL_FALSE, glm::value_ptr(MVP));  // recalculate MVP in every frame
-		glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-
-		glBindVertexArray(lightVAO);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, texture[1]);  // bind texture
-		glDrawElements(GL_TRIANGLES, lightSourceObject.indices.size(), GL_UNSIGNED_INT, 0);
-		*/
-
-		light.render(camera);
-
-		obj1.render(camera);
-		obj2.render(camera);
-		obj3.render(camera);
-		obj4.render(camera);
-		obj5.render(camera);
+		//light.render(camera);
+		//shTest.render();
+		//obj1.render(camera);
+		//obj2.render(camera);
+		//obj3.render(camera);
+		//obj4.render(camera);
+		//obj5.render(camera);
+		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -567,7 +360,7 @@ int main(void)
 		glfwPollEvents();
 	}
 
-	//glUseProgram(0);
+	glUseProgram(0);
 	glBindVertexArray(0);
 	//glDisableVertexAttribArray(positionAttribIndex);
 	//glDisableVertexAttribArray(textureAttribIndex);
@@ -575,11 +368,43 @@ int main(void)
 	objShader.cleanUpProgram();
 	lightObjShader.cleanUpProgram();
 
+	//glDeleteFramebuffers(1, &fbo);
+
 	glfwTerminate();  // terminate GLFW
 	return 0;
 }
 
-
+/*
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad()
+{
+	if (quadVAO == 0)
+	{
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArrays(GL_TRIANGLES, 0, 4);
+	glBindVertexArray(0);
+}
+*/
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -589,6 +414,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
 	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 		// change projection mode (perspective vs ortohraphic)
 		/*
 		if (isPerspective)
