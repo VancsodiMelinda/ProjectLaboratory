@@ -142,31 +142,31 @@ int main(void)
 	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x",
 		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
 	light.initialize();
-
+	
 	/////////////////////////// OBJECT ///////////////////////////
+	/*
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
 		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
 	obj1.initialize();
 
-	
+	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
+		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	obj2.initialize();
 
-	//Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
-		//camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	//obj2.initialize();
+	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
+		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	obj3.initialize();
 
-	//Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
-		//camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	//obj3.initialize();
+	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	obj4.initialize();
 
-	//Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
-		//camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	//obj4.initialize();
-
-	//Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
-		//camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	//obj5.initialize();
-
+	Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	obj5.initialize();
+	*/
 	/////////////////////////// SHADOW ///////////////////////////
+	
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
@@ -263,6 +263,7 @@ int main(void)
 	//quadShader.useShader();
 	//glUniform1i(shadowMapLoc, 0);
 	//std::cout << "shadowMapLoc: " << shadowMapLoc << std::endl;
+	
 
 	// create transformation matrixes to render from light point of view
 	/*
@@ -313,9 +314,8 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearDepth(1.0f);
 		glClearStencil(0.0f);
-
-		// SHADOW CODE 1
 		
+		// SHADOW CODE 1
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);  // set viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);  // bind application-created framebuffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
@@ -343,15 +343,19 @@ int main(void)
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		//glDrawArrays(GL_LINES, 0, 6);
 		//renderQuad();
-
-		//light.render(camera);
-		//shTest.render();
-		//obj1.render(camera);
-		//obj2.render(camera);
-		//obj3.render(camera);
-		//obj4.render(camera);
-		//obj5.render(camera);
 		
+		/*
+		// ORIGINAL RENDERING
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		light.render(camera);
+		obj1.render(camera);
+		obj2.render(camera);
+		obj3.render(camera);
+		obj4.render(camera);
+		obj5.render(camera);
+		*/
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

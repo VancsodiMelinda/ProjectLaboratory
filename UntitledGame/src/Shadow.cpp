@@ -131,7 +131,7 @@ void Shadow::createMVP()  // only once
 
 	// create projection matrix
 	float nearPlane = 0.1f;
-	float farPlane = 100.0f;
+	float farPlane = 20.0f;
 	glm::mat4 lightProjMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, nearPlane, farPlane);
 
 	// create MVP
