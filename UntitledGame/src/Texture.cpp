@@ -20,7 +20,7 @@ void Texture::setUpTexture()
 {
 	//GLuint textureID;
 	glGenTextures(1, &textureID);
-	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);  // bind texture
 	//std::cout << "in class textureID: " << textureID << std::endl;
 

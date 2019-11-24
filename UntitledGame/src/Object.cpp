@@ -8,7 +8,7 @@ Object::Object()
 */
 
 Object::Object(std::string objectFileName_, GLuint shaderID_, glm::vec3 translate_, glm::vec3 scale_, float rotateAngle_, std::string rotateAxis_,
-				Camera camera_, GLuint textureID_, int windowWidth, int windowHeight, glm::vec3 lightColor_, glm::vec3 lightPos_)  // parameterized constructor
+				Camera camera_, GLuint textureID_, int windowWidth, int windowHeight, glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, GLuint shadowMap_)  // parameterized constructor
 {
 	objectFileName = objectFileName_;
 	shaderID = shaderID_;
@@ -19,6 +19,8 @@ Object::Object(std::string objectFileName_, GLuint shaderID_, glm::vec3 translat
 	WINDOW_HEIGHT = windowHeight;
 	lightColor = lightColor_;
 	lightPos = lightPos_;
+	lightSpaceMatrix = lightSpaceMatrix_;
+	shadowMap = shadowMap_;
 }
 
 
@@ -49,6 +51,7 @@ void Object::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotat
 	
 }
 
+
 void Object::initialize()
 {
 	loadObjectData();
@@ -58,6 +61,17 @@ void Object::initialize()
 	createMVP();  // even if render method doesn't get called, the object still has an initial MVP matrix, maybe its not neccesary
 	getUniformLocations();
 }
+
+
+/*
+void Object::initialize()
+{
+	loadObjectData();
+	createVAOandVBOs();
+	fillVBOs();
+	createMVP();  // even if render method doesn't get called, the object still has an initial MVP matrix, maybe its not neccesary
+}
+*/
 
 void Object::loadObjectData()
 {
@@ -107,7 +121,7 @@ void Object::configVertexAttributes()
 	GLuint textureAttribIndex = glGetAttribLocation(shaderID, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
 	GLuint normalAttribIndex = glGetAttribLocation(shaderID, "in_normalVec");			// layout (location = 2) in vec3 in_normalVec;
 
-	// enable vertex attribute array
+	// enable vertex attribute array - uses currently bound VAO
 	glEnableVertexAttribArray(positionAttribIndex);
 	glEnableVertexAttribArray(textureAttribIndex);
 	glEnableVertexAttribArray(normalAttribIndex);
@@ -119,7 +133,7 @@ void Object::configVertexAttributes()
 	int stride3f = 3 * sizeof(GL_FLOAT);
 	int stride2f = 2 * sizeof(GL_FLOAT);
 
-	// setup the pointers
+	// setup the pointers - needs the currently bound VBO
 	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
 	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2f, (GLvoid*)tOffset);
 	glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)nOffset);
@@ -157,18 +171,30 @@ void Object::getUniformLocations()  // need to do this only once
 	
 	int cameraPosLoc = glGetUniformLocation(shaderID, "cameraPos");
 
+	int lightSpaceMatrixLoc = glGetUniformLocation(shaderID, "lightSpaceMatrix");
+
+	int texLoc = glGetUniformLocation(shaderID, "tex");
+	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
+
 	// full up uniforms struct
 	uniLocs.modelMatrixLoc = modelMatrixLoc;
 	uniLocs.MVPloc = MVPloc;
 	uniLocs.lightColorLoc = lightColorLoc;
 	uniLocs.lightPosLoc = lightPosLoc;
 	uniLocs.cameraPosLoc = cameraPosLoc;
+	uniLocs.lightSpaceMatrixLoc = lightSpaceMatrixLoc;
+	uniLocs.texLoc = texLoc;
+	uniLocs.shadowMapLoc = shadowMapLoc;
 
 	//std::cout << "6. In Object Class got uniform locations." << std::endl;
 	//std::cout << "MVPloc: " << MVPloc << std::endl;
 	//std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
 	//std::cout << "lightColorLoc: " << lightColorLoc << std::endl;
 	//std::cout << "lightPosLoc: " << lightPosLoc << std::endl;
+	std::cout << "___________________________________________" << std::endl;
+	std::cout << "texLoc: " << texLoc << std::endl;
+	std::cout << "shadowMapLoc: " << shadowMapLoc << std::endl;
+	std::cout << "___________________________________________" << std::endl;
 }
 
 void Object::updateMVP()  // every frame
@@ -188,6 +214,8 @@ void Object::uploadUniforms()  // in every frame
 	glUniform3fv(uniLocs.lightColorLoc, 1, glm::value_ptr(lightColor));
 	glUniform3fv(uniLocs.lightPosLoc, 1, glm::value_ptr(lightPos));
 	glUniform3fv(uniLocs.cameraPosLoc, 1, glm::value_ptr(camera.cameraPosition));
+	glUniform1i(uniLocs.texLoc, 0);
+	glUniform1i(uniLocs.shadowMapLoc, 1);
 }
 
 /*
@@ -199,7 +227,7 @@ void Object::updateUniforms()  // uniforms that get uploaded in every frame
 }
 */
 
-void Object::render(Camera camera_)
+void Object::render(Camera camera_)  // normal rendering
 {
 	camera = camera_;  // update camera
 	// modify the value of uniform variables (glUniformMatrix4fv/glUniform3fv) after calling glUseProgram
@@ -208,7 +236,19 @@ void Object::render(Camera camera_)
 	uploadUniforms();
 	//updateUniforms();
 	glBindVertexArray(vao);
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);  // bind texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);  // bind texture
+
 	glDrawElements(GL_TRIANGLES, data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void Object::render()  // render for shadow mapping
+{
+	glUseProgram(shaderID);
+	uploadUniforms();
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, data.indices.size(), GL_UNSIGNED_INT, 0);
+}

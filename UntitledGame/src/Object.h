@@ -34,11 +34,14 @@ struct uniforms {
 	int lightColorLoc;
 	int lightPosLoc;
 	int cameraPosLoc;
+	int lightSpaceMatrixLoc;
+	int texLoc;
+	int shadowMapLoc;
 };
 
 private:
 	//GLuint vao;
-	GLuint vbo, ibo;
+	//GLuint vbo, ibo;
 	//objectData data;
 
 	std::string objectFileName;	// done
@@ -48,6 +51,8 @@ private:
 	GLuint textureID;			// done
 	glm::vec3 lightColor;		// done
 	glm::vec3 lightPos;			// done
+	glm::mat4 lightSpaceMatrix;
+	GLuint shadowMap;
 
 	uniforms uniLocs;
 	glm::mat4 MVP;
@@ -58,11 +63,12 @@ private:
 public:
 	glm::mat4 modelMatrix;		// make it public for shadow mapping
 	GLuint vao;
+	GLuint vbo, ibo;
 	objectData data;
 
 	//Object();  // default constructor
 	Object(std::string objectFileName_, GLuint shaderID_, glm::vec3 translate_, glm::vec3 scale_, float rotateAngle_, std::string rotateAxis_,
-		Camera camera_, GLuint textureID_, int windowWidth, int windowHeight, glm::vec3 lightColor_, glm::vec3 lightPos_);  // parameterized constructor
+		Camera camera_, GLuint textureID_, int windowWidth, int windowHeight, glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, GLuint shadowMap_);  // parameterized constructor
 
 private:
 	void createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
@@ -79,6 +85,7 @@ private:
 
 public:
 	void initialize();
-	void render(Camera camera);
+	void render(Camera camera);		// normal rendering
+	void render();					// render for shadow
 };
 

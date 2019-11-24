@@ -1,25 +1,53 @@
 #pragma once
 
 #include <glad/glad.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
+#include "ObjLoader.h"
+
 class Shader
 {
+private:
+	union uniformType
+	{
+		glm::mat4 matrix4fv;
+		glm::vec3 vector3f;
+	};
+
 public:
 	// public attribute
 	GLuint programObject;
+	//std::list<std::string> vertexAttribList;
+	std::list<std::string> uniformNameList;
+	std::list<GLuint> uniformLocList;
+
+	//GLint numberOfUniforms;
+
+	GLuint vao;
+	objectData data;
 
 	// constructors
 	Shader();  // default constructor
 	Shader(std::string vertexShaderFileName_, std::string fragmentShaderFileName_);  // parameterized constructor
 
 	// public methods
-	void runShaderCode();
+	//void runShaderCode();
+	void initialize();
 	void cleanUpProgram();
 	void useShader();
+	void configVertexAttributes(GLuint vao, objectData data);
+	void getUniformLocations();
+	void uploadUniform(char uniformName[], glm::mat4 uniformValue);
+	void uploadUniform(char uniformName[], glm::vec3 uniformValue);
 
 private:
 	// private attributes

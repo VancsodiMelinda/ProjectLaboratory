@@ -23,21 +23,14 @@ class Shadow
 	};
 
 private:
-	//GLuint vao;
 	GLuint vbo, ibo;
-	//objectData data;
 
-	std::string objectFileName;	// done
-	GLuint shaderID;			// done
-	glm::mat4 lightSpaceMatrix;
-	//glm::mat4 modelMatrix;		// done
-	//Camera camera;				// done
-	//GLuint textureID;			// done
-	//glm::vec3 lightColor;		// done
-	glm::vec3 lightPos;			// done
+	std::string objectFileName;
+	GLuint shaderID;
+	glm::vec3 lightPos;
 
 	uniforms uniLocs;
-	glm::mat4 MVP;
+	
 
 	int WINDOW_WIDTH;
 	int WINDOW_HEIGHT;
@@ -46,10 +39,12 @@ public:
 	glm::mat4 modelMatrix;		// make it public for shadow mapping
 	GLuint vao;
 	objectData data;
+	glm::mat4 lightSpaceMatrix;
+	glm::mat4 MVP;
 
-	//Object();  // default constructor
 	Shadow(std::string objectFileName_, GLuint shaderID_, glm::vec3 translate_, glm::vec3 scale_, float rotateAngle_, std::string rotateAxis_,
 			int windowWidth, int windowHeight, glm::vec3 lightPos_);  // parameterized constructor
+	Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, glm::mat4 modelMatrix_, int windowWidth, int windowHeight, glm::vec3 lightPos_);
 
 private:
 	void createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);

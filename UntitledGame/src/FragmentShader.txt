@@ -3,25 +3,47 @@
 in vec2 out_textureCoords;
 in vec3 out_normalVec;
 in vec3 out_worldVertexPos;
+in vec4 out_lightVertexPos;
 
 out vec4 fragColor;
 
 uniform sampler2D tex;
+uniform sampler2D shadowMap;
+
 uniform vec3 lightColor;  // white light
 uniform vec3 lightPos;  // position in world space
 uniform vec3 cameraPos;
 
-void main()
+float ShadowCalculation(vec4 lightVertexPos)
 {
-	//fragColor = vec4(out_vertexColor, 1.0f);
-	//fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//fragColor = texture(tex, out_textureCoords) * vec4(out_vertexColor, 1.0);
+	vec3 projCoords = lightVertexPos.xyz / lightVertexPos.w;  // [-1, 1]
+	projCoords = (projCoords * 0.5) + 0.5;  // [0, 1]
+	float closestDepth = texture(shadowMap, projCoords.xy).r;
+	float currentDepth = projCoords.z;
+
+	float shadow;
+	if (currentDepth > closestDepth)
+	{
+		shadow = 1.0f;  // fragment is in shadow
+	}
+	else
+	{
+		shadow = 0.0f;
+	}
+
+	//float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+	return shadow;
+}
+
+void main()
+{	
+	vec3 color = texture(tex, out_textureCoords).rgb;  // color of current pixel read from texture
 
 	// AMBIENT LIGHTING
 	float ambientStrength = 0.1f;
-	vec3 ambient = ambientStrength * lightColor;
-	//fragColor = vec4(out_normalVec, 1.0f);
-	//fragColor = texture(tex, out_textureCoords) * vec4(ambient, 1.0f);
+	//vec3 ambient = ambientStrength * lightColor;
+	vec3 ambient = ambientStrength * color;
 
 	// DIFFUSE LIGHTING
 	vec3 n_normalVec = normalize(out_normalVec);
@@ -36,7 +58,12 @@ void main()
 	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), 64);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	vec3 light = (ambient + diffuse + specular);
+	// SHADOW ?
+	float shadow = ShadowCalculation(out_lightVertexPos);
+	vec3 light = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+	//vec3 light = ambient + (1.0 - shadow) * (diffuse + specular);
+	//vec3 light = (ambient + diffuse + specular) * color;
 
-	fragColor = texture(tex, out_textureCoords) * vec4(light, 1.0f);
+	//fragColor = texture(tex, out_textureCoords) * vec4(light, 1.0f);
+	fragColor = vec4(light, 1.0);
 }

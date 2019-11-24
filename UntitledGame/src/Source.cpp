@@ -25,6 +25,8 @@
 #include "Object.h"
 #include "Light.h"
 #include "Shadow.h"
+#include "Test.h"
+#include "Test2.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -44,7 +46,7 @@ float lastFrame = 0.0f;
 glm::mat4 projectionMatrix;
 glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
-bool isPerspective;
+bool isPpressed;
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -100,19 +102,23 @@ int main(void)
 
 	// shader for objects
 	Shader objShader("src/VertexShader.txt", "src/FragmentShader.txt");
-	objShader.runShaderCode();
+	//objShader.runShaderCode();
+	objShader.initialize();
 
 	// shader for lightsource object
 	Shader lightObjShader("src/LightObjVertexShader.txt", "src/LightObjFragmentShader.txt");
-	lightObjShader.runShaderCode();
+	//lightObjShader.runShaderCode();
+	lightObjShader.initialize();
 
 	// shader for shadow
 	Shader shadowShader("src/ShadowVS.txt", "src/ShadowFS.txt");
-	shadowShader.runShaderCode();
+	//shadowShader.runShaderCode();
+	shadowShader.initialize();
 
 	// shader for quad
 	Shader quadShader("src/DebugQuadVS.txt", "src/DebugQuadFS.txt");
-	quadShader.runShaderCode();
+	//quadShader.runShaderCode();
+	quadShader.initialize();
 
 	/////////////////////////// TEXTURE ///////////////////////////
 
@@ -139,32 +145,33 @@ int main(void)
 	texture[4] = tex5.textureID;
 
 	/////////////////////////// LIGHT ///////////////////////////
+	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x",
+	//	camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
+	//light.initialize();
+
+	//%%%%%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%%%%%%%%%//
+	/*
+	Test test("resources/NewSuzanne.obj", glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x");
+	test.initialize();
+	std::cout << "TEST: vao: " << test.vao << "; vbo: " << test.vbo << "; ibo: " << test.ibo << std::endl;
+
+	
+	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+
+	Test2 test2(objShader.programObject, test.vao, test.vbo, test.ibo, test.data, test.modelMatrix, viewMatrix, projectionMatrix);
+	test2.initialize();
+	*/
+
+	//%%%%%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%%%%%%%%%//
+
+	/////////////////////////// LIGHT ///////////////////////////
+
 	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x",
 		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
 	light.initialize();
 	
-	/////////////////////////// OBJECT ///////////////////////////
-	/*
-	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
-		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	obj1.initialize();
-
-	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
-		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	obj2.initialize();
-
-	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
-		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	obj3.initialize();
-
-	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
-		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	obj4.initialize();
-
-	Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
-		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
-	obj5.initialize();
-	*/
+	
 	/////////////////////////// SHADOW ///////////////////////////
 	
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
@@ -194,10 +201,16 @@ int main(void)
 	// create 2D texture
 	const unsigned int SHADOW_WIDTH = 1024;
 	const unsigned int SHADOW_HEIGHT = 1024;
-
+	
+	
 	Shadow shTest1("resources/NewSuzanne.obj", shadowShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
 		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
 	shTest1.initialize();
+	
+	/*
+	Shadow shTest1(shadowShader.programObject, obj1.vao, obj1.vbo, obj1.ibo, obj1.modelMatrix, SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	shTest1.initialize();
+	*/
 
 	Shadow shTest2("resources/NewSuzanne.obj", shadowShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
 		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
@@ -210,15 +223,16 @@ int main(void)
 	Shadow shTest4("resources/Ground.obj", shadowShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "x",
 		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
 	shTest4.initialize();
-
-	Shadow shTest5("resources/Velociraptor.obj", shadowShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "x",
-		SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
-	shTest5.initialize();
-
+	
+	//Shadow shTest5("resources/Velociraptor.obj", shadowShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "x",
+		//SHADOW_WIDTH, SHADOW_HEIGHT, light.lightPos);
+	//shTest5.initialize();
+	
 	
 
 	// create texture, serves as the depth attachment fot the fbo
 	GLuint shadowMap;
+	glActiveTexture(GL_TEXTURE1);
 	glGenTextures(1, &shadowMap);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);  // allocate memory
@@ -258,10 +272,11 @@ int main(void)
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//int shadowMapLoc = glGetUniformLocation(quadShader.programObject, "shadowMap");
+	
+	//int shadowMapLoc = glGetUniformLocation(objShader.programObject, "shadowMap");
 	//quadShader.useShader();
-	//glUniform1i(shadowMapLoc, 0);
+	//glUniform1i(shadowMapLoc, 1);
+	//std::cout << "_____________________" << std::endl;
 	//std::cout << "shadowMapLoc: " << shadowMapLoc << std::endl;
 	
 
@@ -291,6 +306,31 @@ int main(void)
 	std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
 	*/
 
+	
+
+	/////////////////////////// OBJECT ///////////////////////////
+
+	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
+		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest1.MVP, shadowMap);
+	obj1.initialize();
+
+	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
+		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest2.MVP, shadowMap);
+	obj2.initialize();
+
+	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
+		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest3.MVP, shadowMap);
+	obj3.initialize();
+
+	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest4.MVP, shadowMap);
+	obj4.initialize();
+
+	//Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
+		//camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos);
+	//obj5.initialize();
+
+
 	glEnable(GL_DEPTH_TEST);
 
 	/* Loop until the user closes the window */
@@ -311,9 +351,17 @@ int main(void)
 		lastFrame = currentFrame;
 
 		// specify clear values for the buffers
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClearDepth(1.0f);
-		glClearStencil(0.0f);
+		glClearStencil(0);
+
+		/*
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		test2.render();
+		*/
+
 		
 		// SHADOW CODE 1
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);  // set viewport
@@ -326,9 +374,11 @@ int main(void)
 		shTest2.render();
 		shTest3.render();
 		shTest4.render();
+
 		//shTest5.render();
 		//obj1.render(camera);
 
+		/*
 		// SHADOW CODE 2
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);  // bind window-system-provided framebuffer
@@ -343,10 +393,12 @@ int main(void)
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		//glDrawArrays(GL_LINES, 0, 6);
 		//renderQuad();
+		*/
+
 		
-		/*
 		// ORIGINAL RENDERING
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		light.render(camera);
@@ -354,8 +406,8 @@ int main(void)
 		obj2.render(camera);
 		obj3.render(camera);
 		obj4.render(camera);
-		obj5.render(camera);
-		*/
+		//obj5.render(camera);
+		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -418,21 +470,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
 	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		// change projection mode (perspective vs ortohraphic)
-		/*
-		if (isPerspective)
+		
+		if (isPpressed)
 		{
-			projectionMatrix = orthographicMatrix;
-			isPerspective = false;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			isPpressed = false;
 		}
-		else if (!isPerspective)
+		else if (!isPpressed)
 		{
-			projectionMatrix = perspectiveMatrix;
-			isPerspective = true;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			isPpressed = true;
 		}
-		*/
+		
 	}
 }
 

@@ -13,6 +13,19 @@ Shadow::Shadow(std::string objectFileName_, GLuint shaderID_, glm::vec3 translat
 }
 
 
+Shadow::Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, glm::mat4 modelMatrix_, int windowWidth, int windowHeight, glm::vec3 lightPos_)  // parameterized constructor
+{
+	shaderID = shaderID_;
+	vao = vao_;
+	vbo = vbo_;
+	ibo = ibo_;
+	modelMatrix = modelMatrix_;
+	WINDOW_WIDTH = windowWidth;
+	WINDOW_HEIGHT = windowHeight;
+	lightPos = lightPos_;
+}
+
+
 void Shadow::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
 {
 	modelMatrix = glm::mat4(1.0f);
@@ -40,6 +53,7 @@ void Shadow::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotat
 
 }
 
+
 void Shadow::initialize()
 {
 	loadObjectData();
@@ -50,13 +64,24 @@ void Shadow::initialize()
 	getUniformLocations();
 }
 
+
+/*
+void Shadow::initialize()
+{
+	configVertexAttributes();
+	createMVP();  // even if render method doesn't get called, the object still has an initial MVP matrix, maybe its not neccesary
+	getUniformLocations();
+}
+*/
+
 void Shadow::loadObjectData()
 {
 	ObjLoader objLoader;
 	data = objLoader.advancedObjLoader(objectFileName);
 
-	std::cout << "1. In Shadow Class .obj file has been loaded succesfully: " << objectFileName << std::endl;
+	//std::cout << "1. In Shadow Class .obj file has been loaded succesfully: " << objectFileName << std::endl;
 }
+
 
 void Shadow::createVAOandVBOs()
 {
@@ -66,10 +91,10 @@ void Shadow::createVAOandVBOs()
 	glGenBuffers(1, &vbo);  // create VBO
 	glGenBuffers(1, &ibo);  // create IBO
 
-	std::cout << "2. In Shadow Class VAO and VBO has been created." << std::endl;
-	std::cout << "VAO: " << vao << std::endl;
-	std::cout << "VBO: " << vbo << std::endl;
-	std::cout << "IBO: " << ibo << std::endl;
+	//std::cout << "2. In Shadow Class VAO and VBO has been created." << std::endl;
+	//std::cout << "VAO: " << vao << std::endl;
+	//std::cout << "VBO: " << vbo << std::endl;
+	//std::cout << "IBO: " << ibo << std::endl;
 }
 
 void Shadow::fillVBOs()
@@ -88,11 +113,15 @@ void Shadow::fillVBOs()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-	std::cout << "3. In Shadow Class VBOs have been filled with object data." << std::endl;
+	//std::cout << "3. In Shadow Class VBOs have been filled with object data." << std::endl;
 }
 
 void Shadow::configVertexAttributes()
 {
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
 	// get attribute indexes from the relevant shader
 	GLuint positionAttribIndex = glGetAttribLocation(shaderID, "in_vertexPosition");	// layout (location = 0) in vec3 in_vertexPosition;
 	//GLuint textureAttribIndex = glGetAttribLocation(shaderID, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
@@ -116,9 +145,11 @@ void Shadow::configVertexAttributes()
 	//glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)nOffset);
 
 	glBindVertexArray(0);  // unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
-	std::cout << "4. In Shadow Class vertex attributes have been configured." << std::endl;
-	std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
+	//std::cout << "4. In Shadow Class vertex attributes have been configured." << std::endl;
+	//std::cout << "positionAttribIndex: " << positionAttribIndex << std::endl;
 	//std::cout << "textureAttribIndex: " << textureAttribIndex << std::endl;
 	//std::cout << "normalAttribIndex: " << normalAttribIndex << std::endl;
 }
@@ -134,12 +165,13 @@ void Shadow::createMVP()  // only once
 	float farPlane = 20.0f;
 	glm::mat4 lightProjMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, nearPlane, farPlane);
 
+	lightSpaceMatrix = lightProjMatrix * lightViewMatrix;
+
 	// create MVP
 	MVP = lightProjMatrix * lightViewMatrix * modelMatrix;
 
-	std::cout << "5. In Shadow Class MVP has been created." << std::endl;
+	//std::cout << "5. In Shadow Class MVP has been created." << std::endl;
 }
-
 
 void Shadow::getUniformLocations()  // need to do this only once
 {
@@ -148,8 +180,8 @@ void Shadow::getUniformLocations()  // need to do this only once
 	// full up uniforms struct
 	uniLocs.MVPloc = MVPloc;
 
-	std::cout << "6. In Shadow Class got uniform locations." << std::endl;
-	std::cout << "MVPloc: " << MVPloc << std::endl;
+	//std::cout << "6. In Shadow Class got uniform locations." << std::endl;
+	//std::cout << "MVPloc: " << MVPloc << std::endl;
 }
 
 /*
