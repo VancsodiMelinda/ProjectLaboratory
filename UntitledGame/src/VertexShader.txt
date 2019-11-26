@@ -30,6 +30,6 @@ void main()
 	out_normalVec = normalMatrix * in_normalVec;
 	out_worldVertexPos = vec3(modelMatrix * vec4(in_vertexPosition, 1.0));
 
-	out_lightVertexPos = lightSpaceMatrix * vec4(in_vertexPosition, 1.0);
+	out_lightVertexPos = lightSpaceMatrix * vec4(out_worldVertexPos, 1.0);
 	//out_lightVertexPos = lightSpaceMatrix * modelMatrix * vec4(in_vertexPosition, 1.0));
 }

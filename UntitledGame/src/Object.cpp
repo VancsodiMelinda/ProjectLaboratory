@@ -194,6 +194,7 @@ void Object::getUniformLocations()  // need to do this only once
 	std::cout << "___________________________________________" << std::endl;
 	std::cout << "texLoc: " << texLoc << std::endl;
 	std::cout << "shadowMapLoc: " << shadowMapLoc << std::endl;
+	std::cout << "lightSpaceMatrixLoc: " << lightSpaceMatrixLoc << std::endl;
 	std::cout << "___________________________________________" << std::endl;
 }
 
@@ -211,9 +212,12 @@ void Object::uploadUniforms()  // in every frame
 	// upload uniform variables
 	glUniformMatrix4fv(uniLocs.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniformMatrix4fv(uniLocs.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	glUniformMatrix4fv(uniLocs.lightSpaceMatrixLoc, 1, GL_FALSE, value_ptr(lightSpaceMatrix));
+
 	glUniform3fv(uniLocs.lightColorLoc, 1, glm::value_ptr(lightColor));
 	glUniform3fv(uniLocs.lightPosLoc, 1, glm::value_ptr(lightPos));
 	glUniform3fv(uniLocs.cameraPosLoc, 1, glm::value_ptr(camera.cameraPosition));
+	//glUniform3fv(uniLocs.lightSpaceMatrixLoc, 1, value_ptr(lightSpaceMatrix));
 	glUniform1i(uniLocs.texLoc, 0);
 	glUniform1i(uniLocs.shadowMapLoc, 1);
 }

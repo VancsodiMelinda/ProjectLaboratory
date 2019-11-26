@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -311,19 +312,23 @@ int main(void)
 	/////////////////////////// OBJECT ///////////////////////////
 
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
-		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest1.MVP, shadowMap);
+		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest1.lightSpaceMatrix, shadowMap);
 	obj1.initialize();
 
+	//std::cout << "-----------------------" << std::endl;
+	//std::cout << glm::to_string(shTest1.lightSpaceMatrix) << std::endl;
+	//std::cout << "-----------------------" << std::endl;
+
 	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
-		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest2.MVP, shadowMap);
+		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest2.lightSpaceMatrix, shadowMap);
 	obj2.initialize();
 
 	Object obj3("resources/RubiksCube.obj", objShader.programObject, glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 0.0f, "y",
-		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest3.MVP, shadowMap);
+		camera, texture[1], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest3.lightSpaceMatrix, shadowMap);
 	obj3.initialize();
 
 	Object obj4("resources/Ground.obj", objShader.programObject, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y",
-		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest4.MVP, shadowMap);
+		camera, texture[3], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest4.lightSpaceMatrix, shadowMap);
 	obj4.initialize();
 
 	//Object obj5("resources/Velociraptor.obj", objShader.programObject, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y",
