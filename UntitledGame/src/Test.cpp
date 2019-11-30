@@ -11,7 +11,12 @@ Test::Test(std::string objectFileName_, glm::vec3 translate_, glm::vec3 scale_, 
 	rotateAxis = rotateAxis_;
 }
 
+Test::Test(std::string objectFileName_)
+{
+	objectFileName = objectFileName_;
+}
 
+/*
 void Test::initialize()
 {
 	loadObjectData();		// data
@@ -19,6 +24,15 @@ void Test::initialize()
 	createVAOandVBOs();		// vao, vbo, ibo
 	fillVBOs();				// vbo, ibo
 }
+*/
+
+void Test::initialize()
+{
+	loadObjectData();		// data
+	createVAOandVBOs();		// vao, vbo, ibo
+	fillVBOs();				// vbo, ibo
+}
+
 
 void Test::loadObjectData()
 {

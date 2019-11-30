@@ -29,12 +29,13 @@ private:
 
 public:
 	objectData data;		//good
-	glm::mat4 modelMatrix;	//good
+	glm::mat4 modelMatrix;	//good, not needed here
 	GLuint vao;				//good
 	GLuint vbo;				//good
 	GLuint ibo;				//good
 
 	Test(std::string objectFileName_, glm::vec3 translate_, glm::vec3 scale_, float rotateAngle_, std::string rotateAxis_);
+	Test(std::string objectFileName_);
 	void initialize();
 
 };

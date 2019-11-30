@@ -28,6 +28,8 @@
 #include "Shadow.h"
 #include "Test.h"
 #include "Test2.h"
+#include "Data.h"
+#include "Scene.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -37,6 +39,7 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processKeyInput(GLFWwindow* window);
 void renderQuad();
+glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
 
 // global camera variables
 Camera camera;  // create camera object with default constructor
@@ -151,17 +154,19 @@ int main(void)
 	//light.initialize();
 
 	//%%%%%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%%%%%%%%%//
+
 	/*
-	Test test("resources/NewSuzanne.obj", glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x");
+	//Test test("resources/NewSuzanne.obj", glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.6f, 0.6f, 0.6f), 0.6f, "x");
+	Test test("resources/NewSuzanne.obj");
 	test.initialize();
 	std::cout << "TEST: vao: " << test.vao << "; vbo: " << test.vbo << "; ibo: " << test.ibo << std::endl;
-
 	
-	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+	
+	//glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 
-	Test2 test2(objShader.programObject, test.vao, test.vbo, test.ibo, test.data, test.modelMatrix, viewMatrix, projectionMatrix);
-	test2.initialize();
+	//Test2 test2(objShader.programObject, test.vao, test.vbo, test.ibo, test.data, test.modelMatrix, viewMatrix, projectionMatrix);
+	//test2.initialize();
 	*/
 
 	//%%%%%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%%%%%%%%%//
@@ -307,17 +312,28 @@ int main(void)
 	std::cout << "modelMatrixLoc: " << modelMatrixLoc << std::endl;
 	*/
 
-	
+	////////////////////////////// NEW TEST /////////////////////////
+	Data suzanneData("resources/NewSuzanne.obj");
+	suzanneData.initialize();
+	glm::mat4 modelMatrix1 = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x");
+
+	Scene suzanne(objShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, modelMatrix1,
+		light.lightColor, light.lightPos, shTest1.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadowMap);
+	suzanne.initialize();
+	//
+	Data groundData("resources/Ground.obj");
+	groundData.initialize();
+	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
+
+	Scene ground(objShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix,
+		light.lightColor, light.lightPos, shTest4.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[3], shadowMap);
+	ground.initialize();
 
 	/////////////////////////// OBJECT ///////////////////////////
 
 	Object obj1("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f), 0.0f, "x",
 		camera, texture[0], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest1.MVP, shadowMap);
 	obj1.initialize();
-
-	//std::cout << "-----------------------" << std::endl;
-	//std::cout << glm::to_string(shTest1.lightSpaceMatrix) << std::endl;
-	//std::cout << "-----------------------" << std::endl;
 
 	Object obj2("resources/NewSuzanne.obj", objShader.programObject, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.4f, 0.4f, 0.4f), 180.0f, "y",
 		camera, texture[2], WINDOW_WIDTH, WINDOW_HEIGHT, light.lightColor, light.lightPos, shTest2.MVP, shadowMap);
@@ -407,10 +423,14 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		light.render(camera);
-		obj1.render(camera);
-		obj2.render(camera);
-		obj3.render(camera);
-		obj4.render(camera);
+		suzanne.render(camera);
+		ground.render(camera);
+		
+		//obj1.render(camera);
+		//obj2.render(camera);
+		//obj3.render(camera);
+		//obj4.render(camera);
+		
 		//obj5.render(camera);
 		
 
@@ -535,6 +555,34 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
+}
+
+glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
+{
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+	modelMatrix = glm::translate(modelMatrix, translate);
+
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	if ((rotateAxis == "x") || (rotateAxis == "X"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if ((rotateAxis == "y") || (rotateAxis == "Y"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	else if ((rotateAxis == "z") || (rotateAxis == "Z"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	else
+	{
+		std::cout << "The rotation angle is not correct!" << std::endl;
+	}
+
+	return modelMatrix;
 }
 
 /*
