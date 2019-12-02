@@ -25,11 +25,16 @@ float ShadowCalculation(vec4 lightVertexPos)
 	float shadow;
 	if (currentDepth > closestDepth)
 	{
-		shadow = 1.0f;  // fragment is in shadow
+		shadow = 0.7f;  // fragment is in shadow
 	}
 	else
 	{
-		shadow = 0.5f;
+		shadow = 0.0f;
+	}
+
+	if (projCoords.z > 1.0)
+	{
+		shadow = 0.0f;
 	}
 
 	//float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
@@ -40,6 +45,7 @@ float ShadowCalculation(vec4 lightVertexPos)
 void main()
 {	
 	vec3 color = texture(tex, out_textureCoords).rgb;  // color of current pixel read from texture
+	//vec3 color = vec3(0.5, 0.5, 0.5);
 
 	// AMBIENT LIGHTING
 	float ambientStrength = 0.1f;

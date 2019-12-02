@@ -18,10 +18,12 @@
 
 class Shadow
 {
+	/*
 	struct uniforms {
 		int MVPloc;
 	};
 
+	
 private:
 	GLuint vbo, ibo;
 
@@ -62,5 +64,44 @@ private:
 public:
 	void initialize();
 	void render();
+	*/
+	
+
+	
+private:
+	struct uniforms {
+		int MVPloc;
+	};
+	uniforms uniLocs;
+
+	GLuint shaderID;
+	GLuint vao;
+	GLuint vbo;
+	GLuint ibo;
+	objectData data;
+	glm::mat4 modelMatrix;
+	glm::vec3 lightPos;
+
+public:
+	int SHADOW_WIDTH;
+	int SHADOW_HEIGHT;
+	glm::mat4 MVP;
+	GLuint shadowMap;
+	GLuint fbo;
+	
+	Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
+		glm::vec3 lightPos_, int shadowWidth, int shadowHeight);
+	Shadow();
+	void initialize();
+	void render();
+
+private:
+	void createMVP();
+	void createTexture();
+	void createFBO();
+	void configVertexAttributes();
+	void getUniformLocations();
+
+	void uploadUniforms();
 };
 
