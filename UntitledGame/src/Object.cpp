@@ -176,7 +176,7 @@ void Object::getUniformLocations()  // need to do this only once
 	int texLoc = glGetUniformLocation(shaderID, "tex");
 	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
 
-	// full up uniforms struct
+	// fill up uniforms struct
 	uniLocs.modelMatrixLoc = modelMatrixLoc;
 	uniLocs.MVPloc = MVPloc;
 	uniLocs.lightColorLoc = lightColorLoc;

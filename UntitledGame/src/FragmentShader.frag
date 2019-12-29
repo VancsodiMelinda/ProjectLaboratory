@@ -14,13 +14,22 @@ uniform vec3 lightColor;  // white light
 uniform vec3 lightPos;  // position in world space
 uniform vec3 cameraPos;
 
+struct Material{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
+};
+
+uniform Material material;
+
 float ShadowCalculation(vec4 lightVertexPos)
 {
 	vec3 projCoords = lightVertexPos.xyz / lightVertexPos.w;  // [-1, 1]
 	projCoords = (projCoords * 0.5) + 0.5;  // [0, 1]
 	float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPos - out_worldVertexPos)), 0.005);
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
-	float currentDepth = projCoords.z - shadowBias;
+	float currentDepth = projCoords.z - shadowBias;  // cure shadow acne
 
 	float shadow;
 	if (currentDepth > closestDepth)
@@ -32,11 +41,12 @@ float ShadowCalculation(vec4 lightVertexPos)
 		shadow = 0.0f;
 	}
 
+	
 	if (projCoords.z > 1.0)
 	{
 		shadow = 0.0f;
 	}
-
+	
 	//float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
 	return shadow;
@@ -49,8 +59,8 @@ void main()
 
 	// AMBIENT LIGHTING
 	float ambientStrength = 0.1f;
-	//vec3 ambient = ambientStrength * lightColor;
-	vec3 ambient = ambientStrength * color;
+	vec3 ambient = ambientStrength * lightColor;
+	//vec3 ambient = ambientStrength * color;
 
 	// DIFFUSE LIGHTING
 	vec3 n_normalVec = normalize(out_normalVec);
@@ -62,14 +72,14 @@ void main()
 	float specularStrength = 0.5f;
 	vec3 n_viewVector = normalize(cameraPos - out_worldVertexPos);
 	vec3 reflectDir = reflect(-n_lightDirection, n_normalVec);
-	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), 64);
+	float shininess = 64;  // 64
+	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), shininess);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	// SHADOW ?
+	// SHADOW
 	float shadow = ShadowCalculation(out_lightVertexPos);
 	vec3 light = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
-	//vec3 light = ambient + (1.0 - shadow) * (diffuse + specular);
-	//vec3 light = (ambient + diffuse + specular) * color;
+	//vec3 light = (ambient + diffuse + specular) * color;  // without shadow
 
 	//fragColor = texture(tex, out_textureCoords) * vec4(light, 1.0f);
 	fragColor = vec4(light, 1.0);

@@ -4,7 +4,7 @@
 Camera::Camera()
 {
 	//cameraPosition = glm::vec3(0.0f, 0.0f, 4.0f);  // 1st PARAM
-	cameraPosition = glm::vec3(0.0f, 2.0f, 3.0f);  // 1st PARAM
+	cameraPosition = glm::vec3(0.0f, 2.0f, 2.0f);  // 1st PARAM
 	cameraFront = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
