@@ -110,17 +110,17 @@ int main(void)
 	objShader.initialize();
 
 	// shader for lightsource object
-	Shader lightObjShader("src/LightObjVertexShader.txt", "src/LightObjFragmentShader.txt");
+	Shader lightObjShader("src/LightObjVertexShader.vert", "src/LightObjFragmentShader.frag");
 	//lightObjShader.runShaderCode();
 	lightObjShader.initialize();
 
 	// shader for shadow
-	Shader shadowShader("src/ShadowVS.txt", "src/ShadowFS.txt");
+	Shader shadowShader("src/ShadowVS.vert", "src/ShadowFS.frag");
 	//shadowShader.runShaderCode();
 	shadowShader.initialize();
 
 	// shader for quad
-	Shader quadShader("src/DebugQuadVS.txt", "src/DebugQuadFS.txt");
+	Shader quadShader("src/DebugQuadVS.vert", "src/DebugQuadFS.frag");
 	//quadShader.runShaderCode();
 	quadShader.initialize();
 

@@ -23,6 +23,14 @@ struct Material{
 
 uniform Material material;
 
+struct Light{
+	float ambientStrength;
+	float diffuseStrength;
+	float specularStrength;
+};
+
+uniform Light light;
+
 float ShadowCalculation(vec4 lightVertexPos)
 {
 	vec3 projCoords = lightVertexPos.xyz / lightVertexPos.w;  // [-1, 1]
@@ -31,21 +39,24 @@ float ShadowCalculation(vec4 lightVertexPos)
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z - shadowBias;  // cure shadow acne
 
-	float shadow;
-	if (currentDepth > closestDepth)
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);  // width and height of texture
+
+	for (int x = -1; x <= 1; x++)
 	{
-		shadow = 0.7f;  // fragment is in shadow
-	}
-	else
-	{
-		shadow = 0.0f;
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
+			shadow += currentDepth > pcfDepth ? 1.0 : 0.0;
+		}
 	}
 
-	
-	if (projCoords.z > 1.0)
-	{
-		shadow = 0.0f;
-	}
+	shadow /= 9.0;
+
+	//if(projCoords.z > 1.0)
+	//{
+		//shadow = 0.0f;
+	//}
 	
 	//float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
