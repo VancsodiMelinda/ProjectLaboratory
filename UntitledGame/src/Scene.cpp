@@ -76,7 +76,8 @@ void Scene::getUniformLocations()
 	int lightPosLoc = glGetUniformLocation(shaderID, "lightPos");
 	int cameraPosLoc = glGetUniformLocation(shaderID, "cameraPos");
 
-	int texLoc = glGetUniformLocation(shaderID, "tex");
+	//int texLoc = glGetUniformLocation(shaderID, "tex");
+	int texLoc = glGetUniformLocation(shaderID, "material.diffuse");
 	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
 
 	int ambientLoc = glGetUniformLocation(shaderID, "material.ambient");		// new
@@ -159,8 +160,8 @@ void Scene::uploadUniforms()
 	glUniform3fv(uniLocs.specularLoc, 1, glm::value_ptr(s));	// new
 	glUniform1f(uniLocs.shininessLoc, shine);		// new
 
-	glUniform1f(uniLocs.ambientStrengthLoc, 0.2f);		// new
-	glUniform1f(uniLocs.diffuseStrengthLoc, 0.5f);		// new
+	glUniform1f(uniLocs.ambientStrengthLoc, 0.1f);		// new
+	glUniform1f(uniLocs.diffuseStrengthLoc, 0.9f);		// new
 	glUniform1f(uniLocs.specularStrengthLoc, 1.0f);		// new
 }
 
