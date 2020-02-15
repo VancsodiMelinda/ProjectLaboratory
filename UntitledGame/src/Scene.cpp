@@ -65,6 +65,7 @@ void Scene::configVertexAttributes()
 
 void Scene::getUniformLocations()
 {
+	// GET UNIFORM LOCATION
 	// vertex shader
 	int MVPloc = glGetUniformLocation(shaderID, "MVP");
 	int modelMatrixLoc = glGetUniformLocation(shaderID, "modelMatrix");
@@ -78,6 +79,16 @@ void Scene::getUniformLocations()
 	int texLoc = glGetUniformLocation(shaderID, "tex");
 	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
 
+	int ambientLoc = glGetUniformLocation(shaderID, "material.ambient");		// new
+	int diffuseLoc = glGetUniformLocation(shaderID, "material.diffuse");		// new
+	int specularLoc = glGetUniformLocation(shaderID, "material.specular");		// new
+	int shininessLoc = glGetUniformLocation(shaderID, "material.shininess");	// new
+
+	int ambientStrengthLoc = glGetUniformLocation(shaderID, "light.ambientStrength");	// new
+	int diffuseStrengthLoc = glGetUniformLocation(shaderID, "light.diffuseStrength");	// new
+	int specularStrengthLoc = glGetUniformLocation(shaderID, "light.specularStrength");	// new
+
+	// SAVE UNIFORM LOCATION INTO STRUCT
 	uniLocs.MVPloc = MVPloc;
 	uniLocs.modelMatrixLoc = modelMatrixLoc;
 	uniLocs.lightSpaceMatrixLoc = lightSpaceMatrixLoc;
@@ -86,6 +97,13 @@ void Scene::getUniformLocations()
 	uniLocs.cameraPosLoc = cameraPosLoc;
 	uniLocs.texLoc = texLoc;
 	uniLocs.shadowMapLoc = shadowMapLoc;
+	uniLocs.ambientLoc = ambientLoc;		// new
+	uniLocs.diffuseLoc = diffuseLoc;		// new
+	uniLocs.specularLoc = specularLoc;		// new
+	uniLocs.shininessLoc = shininessLoc;	// new
+	uniLocs.ambientStrengthLoc = ambientStrengthLoc;	// new
+	uniLocs.diffuseStrengthLoc = diffuseStrengthLoc;	// new
+	uniLocs.specularStrengthLoc = specularStrengthLoc;	// new
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -130,6 +148,20 @@ void Scene::uploadUniforms()
 
 	glUniform1i(uniLocs.texLoc, 0);
 	glUniform1i(uniLocs.shadowMapLoc, 1);
+
+	glm::vec3 a = glm::vec3(0.0215f, 0.1745f, 0.0215f);		// new
+	glm::vec3 d = glm::vec3(0.07568f, 0.61424f, 0.07568f);	// new
+	glm::vec3 s = glm::vec3(0.633f, 0.727811f, 0.633f);		// new
+	float shine = 0.6f * 128.0f;		// new
+
+	glUniform3fv(uniLocs.ambientLoc, 1, glm::value_ptr(a));		// new
+	glUniform3fv(uniLocs.diffuseLoc, 1, glm::value_ptr(d));		// new
+	glUniform3fv(uniLocs.specularLoc, 1, glm::value_ptr(s));	// new
+	glUniform1f(uniLocs.shininessLoc, shine);		// new
+
+	glUniform1f(uniLocs.ambientStrengthLoc, 0.2f);		// new
+	glUniform1f(uniLocs.diffuseStrengthLoc, 0.5f);		// new
+	glUniform1f(uniLocs.specularStrengthLoc, 1.0f);		// new
 }
 
 

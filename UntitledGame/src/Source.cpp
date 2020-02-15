@@ -284,12 +284,12 @@ int main(void)
 		//glReadBuffer(GL_NONE);
 
 
-		glCullFace(GL_FRONT);
+		glCullFace(GL_FRONT);  // this
 		//suzanneShadow.render();
 		groundShadow.render();
 		//cubeShadow.render();
 		raptorShadow.render();
-		glCullFace(GL_BACK);
+		glCullFace(GL_BACK);  // this
 
 		//shTest5.render();
 		//obj1.render(camera);

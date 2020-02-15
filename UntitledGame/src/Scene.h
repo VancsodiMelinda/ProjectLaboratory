@@ -24,6 +24,15 @@ private:
 		int cameraPosLoc;
 		int texLoc;
 		int shadowMapLoc;
+
+		int ambientLoc;
+		int diffuseLoc;
+		int specularLoc;
+		int shininessLoc;
+
+		int ambientStrengthLoc;
+		int diffuseStrengthLoc;
+		int specularStrengthLoc;
 	};
 	uniforms uniLocs;
 
