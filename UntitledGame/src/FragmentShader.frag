@@ -17,8 +17,9 @@ uniform vec3 cameraPos;
 struct Material{
 	//vec3 ambient;
 	//vec3 diffuse;
-	sampler2D diffuse;
-	vec3 specular;
+	sampler2D diffuseMap;
+	sampler2D specularMap;
+	//vec3 specular;
 	float shininess;
 };
 
@@ -70,26 +71,27 @@ void main()
 
 	// AMBIENT LIGHTING
 	//vec3 ambient = light.ambientStrength * material.ambient;
-	vec3 ambient = light.ambientStrength * texture(material.diffuse, out_textureCoords).rgb;	// new
+	vec3 ambient = light.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;	// new
 
 	// DIFFUSE LIGHTING
 	vec3 n_normalVec = normalize(out_normalVec);
 	vec3 n_lightDirection = normalize(lightPos - out_worldVertexPos);
 	float diffuseImpact = max(dot(n_normalVec, n_lightDirection), 0.0);  // cos of angle
 	//vec3 diffuse = diffuseImpact * light.diffuseStrength * material.diffuse;
-	vec3 diffuse = diffuseImpact * light.diffuseStrength * texture(material.diffuse, out_textureCoords).rgb;  // new
+	vec3 diffuse = diffuseImpact * light.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;  // new
 
 	// SPECULAR LIGHTING
 	float specularStrength = 0.5f;
 	vec3 n_viewVector = normalize(cameraPos - out_worldVertexPos);
 	vec3 reflectDir = reflect(-n_lightDirection, n_normalVec);
 	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), material.shininess);
-	vec3 specular = spec * light.specularStrength * material.specular;
+	//vec3 specular = spec * light.specularStrength * material.specular;
+	vec3 specular = spec * light.specularStrength * texture(material.specularMap, out_textureCoords).rgb;	// new
 	
 
 	// SHADOW
 	float shadow = ShadowCalculation(out_lightVertexPos);
-	vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor * color;  // with shadow
+	vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
 
 	fragColor = vec4(finalColor, 1.0);

@@ -2,7 +2,8 @@
 
 
 Scene::Scene(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectData data_, glm::mat4 modelMatrix_,
-	glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, Camera camera_, int windowWidth, int windowHeight, GLuint textureID_, GLuint shadowMap_)
+	glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, Camera camera_, int windowWidth, int windowHeight,
+	GLuint textureID_, GLuint shadowMap_, GLuint diffuseMap_)
 {
 	shaderID = shaderID_;
 	vao = vao_;
@@ -18,6 +19,7 @@ Scene::Scene(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectData
 	WINDOW_HEIGHT = windowHeight;
 	textureID = textureID_;
 	shadowMap = shadowMap_;
+	diffuseMap = diffuseMap_;
 }
 
 
@@ -77,8 +79,9 @@ void Scene::getUniformLocations()
 	int cameraPosLoc = glGetUniformLocation(shaderID, "cameraPos");
 
 	//int texLoc = glGetUniformLocation(shaderID, "tex");
-	int texLoc = glGetUniformLocation(shaderID, "material.diffuse");
+	int texLoc = glGetUniformLocation(shaderID, "material.diffuseMap");
 	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
+	int specularMapLoc = glGetUniformLocation(shaderID, "material.specularMap");
 
 	int ambientLoc = glGetUniformLocation(shaderID, "material.ambient");		// new
 	int diffuseLoc = glGetUniformLocation(shaderID, "material.diffuse");		// new
@@ -97,6 +100,7 @@ void Scene::getUniformLocations()
 	uniLocs.lightPosLoc = lightPosLoc;
 	uniLocs.cameraPosLoc = cameraPosLoc;
 	uniLocs.texLoc = texLoc;
+	uniLocs.specularMapLoc = specularMapLoc;	// new
 	uniLocs.shadowMapLoc = shadowMapLoc;
 	uniLocs.ambientLoc = ambientLoc;		// new
 	uniLocs.diffuseLoc = diffuseLoc;		// new
@@ -122,6 +126,8 @@ void Scene::render(Camera camera_)
 	glBindTexture(GL_TEXTURE_2D, textureID);  // bind texture
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);  // bind texture
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
 
 	glDrawElements(GL_TRIANGLES, data.indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -149,6 +155,7 @@ void Scene::uploadUniforms()
 
 	glUniform1i(uniLocs.texLoc, 0);
 	glUniform1i(uniLocs.shadowMapLoc, 1);
+	glUniform1i(uniLocs.specularMapLoc, 2);
 
 	glm::vec3 a = glm::vec3(0.0215f, 0.1745f, 0.0215f);		// new
 	glm::vec3 d = glm::vec3(0.07568f, 0.61424f, 0.07568f);	// new

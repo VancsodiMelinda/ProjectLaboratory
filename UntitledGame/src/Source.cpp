@@ -126,7 +126,7 @@ int main(void)
 
 	/////////////////////////// TEXTURE ///////////////////////////
 
-	GLuint texture[6];
+	GLuint texture[7];
 
 	Texture tex1("resources/Color Grid Texture.png");
 	tex1.setUpTexture();
@@ -152,11 +152,15 @@ int main(void)
 	tex6.setUpTexture();
 	texture[5] = tex6.textureID;
 
+	Texture tex7("resources/specularMap.png");
+	tex7.setUpTexture();
+	texture[6] = tex7.textureID;
+
 	/////////////////////////// LIGHT ///////////////////////////
 
 	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(2.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
 		//camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
-	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(2.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
+	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
 		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
 	light.initialize();
 	
@@ -190,14 +194,14 @@ int main(void)
 	const unsigned int SHADOW_HEIGHT = 1024;
 
 	// LOAD OBJECT DATA
-	Data suzanneData("resources/NewSuzanne.obj");
-	suzanneData.initialize();
+	//Data suzanneData("resources/NewSuzanne.obj");
+	//suzanneData.initialize();
 
 	Data groundData("resources/Ground.obj");
 	groundData.initialize();
 
-	Data cubeData("resources/RubiksCube.obj");
-	cubeData.initialize();
+	//Data cubeData("resources/RubiksCube.obj");
+	//cubeData.initialize();
 
 	Data raptorData("resources/Velociraptor.obj");
 	raptorData.initialize();
@@ -211,33 +215,33 @@ int main(void)
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
 	
-	Shadow suzanneShadow(shadowShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	suzanneShadow.initialize();
+	//Shadow suzanneShadow(shadowShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	//suzanneShadow.initialize();
 
 	Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	groundShadow.initialize();
 
-	Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	cubeShadow.initialize();
+	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	//cubeShadow.initialize();
 
 	Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	raptorShadow.initialize();
 
 	// CREATE OBJECTS
-	Scene suzanne(objShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix,
-		light.lightColor, light.lightPos, suzanneShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[5], shadow.shadowMap);
-	suzanne.initialize();
+	//Scene suzanne(objShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix,
+		//light.lightColor, light.lightPos, suzanneShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[5], shadow.shadowMap);
+	//suzanne.initialize();
 
 	Scene ground(objShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix,
-		light.lightColor, light.lightPos, groundShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[3], shadow.shadowMap);
+		light.lightColor, light.lightPos, groundShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[3], shadow.shadowMap, texture[6]);
 	ground.initialize();
 
-	Scene cube(objShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix,
-		light.lightColor, light.lightPos, cubeShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[1], shadow.shadowMap);
-	cube.initialize();
+	//Scene cube(objShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix,
+		//light.lightColor, light.lightPos, cubeShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[1], shadow.shadowMap);
+	//cube.initialize();
 
 	Scene raptor(objShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix,
-		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap);
+		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
 	raptor.initialize();
 	
 
@@ -261,8 +265,8 @@ int main(void)
 		lastFrame = currentFrame;
 
 		// specify clear values for the buffers
-		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClearDepth(1.0f);
 		glClearStencil(0);
 
@@ -317,7 +321,7 @@ int main(void)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		//light.render(camera);
+		light.render(camera);
 		//suzanne.render(camera);
 		ground.render(camera);
 		//cube.render(camera);

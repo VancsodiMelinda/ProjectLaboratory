@@ -22,8 +22,10 @@ private:
 		int lightColorLoc;
 		int lightPosLoc;
 		int cameraPosLoc;
+
 		int texLoc;
 		int shadowMapLoc;
+		int specularMapLoc;
 
 		int ambientLoc;
 		int diffuseLoc;
@@ -50,6 +52,7 @@ private:
 	int WINDOW_HEIGHT;
 	GLuint textureID;
 	GLuint shadowMap;
+	GLuint diffuseMap;
 
 	glm::mat4 MVP;  // calculated
 
@@ -61,7 +64,7 @@ private:
 
 public:
 	Scene(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectData data_, glm::mat4 modelMatrix_,
-		glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, Camera camera_, int windowWidth, int windowHeight, GLuint textureID_, GLuint shadowMap_);
+		glm::vec3 lightColor_, glm::vec3 lightPos_, glm::mat4 lightSpaceMatrix_, Camera camera_, int windowWidth, int windowHeight, GLuint textureID_, GLuint shadowMap_, GLuint diffuseMap_);
 	void initialize();
 	void render(Camera camera_);
 
