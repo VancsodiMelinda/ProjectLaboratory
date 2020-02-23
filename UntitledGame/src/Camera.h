@@ -17,7 +17,6 @@ public:
 	glm::vec3 worldUp;
 	// viewMatrix attributes that gets calculated
 	glm::vec3 cameraTarget;
-	//glm::vec3 cameraDirection;
 	glm::vec3 cameraRight;
 	glm::vec3 cameraUp;
 	// projectionMatrix attributes
@@ -25,8 +24,18 @@ public:
 	float pitch;
 	float fov;
 
+	// new
+	/*
+	glm::vec3 cameraPosition;	// eye
+	glm::vec3 cameraTarget;		// center
+	glm::vec3 cameraUp;			// up
+	glm::vec3 cameraRight;
+	glm::vec3 cameraFront;
+	*/
+
 	Camera();  // default constructor
 	Camera(glm::vec3 cameraPosition_, glm::vec3 cameraFront_, glm::vec3 cameraUp_, float yaw_, float pitch_, float fov_);  // parameterized constructor
+	Camera(glm::vec3 eye, glm::vec3 center);  // new
 
 	glm::mat4 CreateViewMatrix();
 

@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+
 // default constructor
 Camera::Camera()
 {
@@ -18,6 +19,24 @@ Camera::Camera()
 	fov = 45.0f;
 }
 
+/*
+Camera::Camera(glm::vec3 cameraPosition_, glm::vec3 cameraTarget_)  // new
+{
+	cameraPosition = cameraPosition_;		// PARAM 1
+	cameraTarget = cameraTarget_;			// PARAM 2
+
+	cameraFront = glm::normalize(cameraTarget - cameraPosition);  // unit vector that points from camera to center (target)
+	glm::vec3 tempUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	cameraRight = glm::normalize(glm::cross(tempUp, cameraFront));  // right unit vector of camera
+	cameraUp = glm::cross(cameraFront, cameraRight);	// PARAM 3
+
+	yaw = 0.0f;
+	pitch = 0.0f;
+	fov = 45.0f;
+}
+*/
+
+/*
 // parameterized constructor
 Camera::Camera(glm::vec3 cameraPosition_, glm::vec3 cameraFront_, glm::vec3 worldUp_, float yaw_, float pitch_, float fov_)
 {
@@ -34,6 +53,8 @@ Camera::Camera(glm::vec3 cameraPosition_, glm::vec3 cameraFront_, glm::vec3 worl
 	pitch = pitch_;
 	fov = fov_;
 }
+*/
+
 
 glm::mat4 Camera::CreateViewMatrix()
 {
@@ -42,6 +63,15 @@ glm::mat4 Camera::CreateViewMatrix()
 	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // light point of view
 	return viewMatrix;
 }
+
+/*
+glm::mat4 Camera::CreateViewMatrix()
+{
+	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
+	return viewMatrix;
+}
+*/
+
 
 void Camera::ProcessKeyInput(std::string button, float deltaTime)
 {
@@ -73,6 +103,35 @@ void Camera::ProcessKeyInput(std::string button, float deltaTime)
 		//std::cout << "D" << std::endl;
 	}
 }
+
+
+/*
+void Camera::ProcessKeyInput(std::string button, float deltaTime)
+{
+	float cameraSpeed = 2.5f * deltaTime;
+	if (button == "W")
+	{
+		cameraPosition += glm::vec3(0.0f, 0.0f, 1.0f) * cameraSpeed;
+		cameraTarget += glm::vec3(0.0f, 0.0f, 1.0f) * cameraSpeed;
+	}
+	else if (button == "S")
+	{
+		cameraPosition -= glm::vec3(0.0f, 0.0f, 1.0f) * cameraSpeed;
+		cameraTarget -= glm::vec3(0.0f, 0.0f, 1.0f) * cameraSpeed;
+	}
+	else if (button == "A")
+	{
+		cameraPosition += cameraRight * cameraSpeed;
+		cameraTarget += cameraRight * cameraSpeed;
+	}
+	else if (button == "D")
+	{
+		cameraPosition -= cameraRight * cameraSpeed;
+		cameraTarget -= cameraRight * cameraSpeed;
+	}
+}
+*/
+
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset)  // pitch and yaw
 {

@@ -74,23 +74,38 @@ void Scene::getUniformLocations()
 	int lightSpaceMatrixLoc = glGetUniformLocation(shaderID, "lightSpaceMatrix");
 
 	// fragment shader
-	int lightColorLoc = glGetUniformLocation(shaderID, "lightColor");
-	int lightPosLoc = glGetUniformLocation(shaderID, "lightPos");
+	int lightColorLoc = glGetUniformLocation(shaderID, "lightColor");	// this
+	int lightPosLoc = glGetUniformLocation(shaderID, "lightPos");	// this
+
 	int cameraPosLoc = glGetUniformLocation(shaderID, "cameraPos");
 
 	//int texLoc = glGetUniformLocation(shaderID, "tex");
-	int texLoc = glGetUniformLocation(shaderID, "material.diffuseMap");
 	int shadowMapLoc = glGetUniformLocation(shaderID, "shadowMap");
-	int specularMapLoc = glGetUniformLocation(shaderID, "material.specularMap");
 
-	int ambientLoc = glGetUniformLocation(shaderID, "material.ambient");		// new
-	int diffuseLoc = glGetUniformLocation(shaderID, "material.diffuse");		// new
-	int specularLoc = glGetUniformLocation(shaderID, "material.specular");		// new
-	int shininessLoc = glGetUniformLocation(shaderID, "material.shininess");	// new
+	//int ambientLoc = glGetUniformLocation(shaderID, "material.ambient");		// new
+	//int diffuseLoc = glGetUniformLocation(shaderID, "material.diffuse");		// new
+	//int specularLoc = glGetUniformLocation(shaderID, "material.specular");		// new
+
+	// MATERIAL
+	int diffuseMapLoc = glGetUniformLocation(shaderID, "material.diffuseMap");
+	int specularMapLoc = glGetUniformLocation(shaderID, "material.specularMap");
+	int shininessLoc = glGetUniformLocation(shaderID, "material.shininess");
+	uniLocs.diffuseMapLoc = diffuseMapLoc;
+	uniLocs.specularMapLoc = specularMapLoc;
+	uniLocs.shininessLoc = shininessLoc;
 
 	int ambientStrengthLoc = glGetUniformLocation(shaderID, "light.ambientStrength");	// new
 	int diffuseStrengthLoc = glGetUniformLocation(shaderID, "light.diffuseStrength");	// new
 	int specularStrengthLoc = glGetUniformLocation(shaderID, "light.specularStrength");	// new
+
+	// POINT LIGHT
+	uniLocs.pointLight.positionLoc = glGetUniformLocation(shaderID, "pointLight.position");
+	uniLocs.pointLight.ambientStrengthLoc = glGetUniformLocation(shaderID, "pointLight.ambientStrength");
+	uniLocs.pointLight.diffuseStrengthLoc = glGetUniformLocation(shaderID, "pointLight.diffuseStrength");
+	uniLocs.pointLight.specularStrengthLoc = glGetUniformLocation(shaderID, "pointLight.specularStrength");
+	uniLocs.pointLight.constantLoc = glGetUniformLocation(shaderID, "pointLight.constant");
+	uniLocs.pointLight.linearLoc = glGetUniformLocation(shaderID, "pointLight.linear");
+	uniLocs.pointLight.quadraticLoc = glGetUniformLocation(shaderID, "pointLight.quadratic");
 
 	// SAVE UNIFORM LOCATION INTO STRUCT
 	uniLocs.MVPloc = MVPloc;
@@ -99,13 +114,10 @@ void Scene::getUniformLocations()
 	uniLocs.lightColorLoc = lightColorLoc;
 	uniLocs.lightPosLoc = lightPosLoc;
 	uniLocs.cameraPosLoc = cameraPosLoc;
-	uniLocs.texLoc = texLoc;
-	uniLocs.specularMapLoc = specularMapLoc;	// new
 	uniLocs.shadowMapLoc = shadowMapLoc;
-	uniLocs.ambientLoc = ambientLoc;		// new
-	uniLocs.diffuseLoc = diffuseLoc;		// new
-	uniLocs.specularLoc = specularLoc;		// new
-	uniLocs.shininessLoc = shininessLoc;	// new
+	//uniLocs.ambientLoc = ambientLoc;		// new
+	//uniLocs.diffuseLoc = diffuseLoc;		// new
+	//uniLocs.specularLoc = specularLoc;		// new
 	uniLocs.ambientStrengthLoc = ambientStrengthLoc;	// new
 	uniLocs.diffuseStrengthLoc = diffuseStrengthLoc;	// new
 	uniLocs.specularStrengthLoc = specularStrengthLoc;	// new
@@ -153,23 +165,33 @@ void Scene::uploadUniforms()
 	glUniform3fv(uniLocs.lightPosLoc, 1, glm::value_ptr(lightPos));
 	glUniform3fv(uniLocs.cameraPosLoc, 1, glm::value_ptr(camera.cameraPosition));
 
-	glUniform1i(uniLocs.texLoc, 0);
+	glUniform1i(uniLocs.diffuseMapLoc, 0);
 	glUniform1i(uniLocs.shadowMapLoc, 1);
 	glUniform1i(uniLocs.specularMapLoc, 2);
 
-	glm::vec3 a = glm::vec3(0.0215f, 0.1745f, 0.0215f);		// new
-	glm::vec3 d = glm::vec3(0.07568f, 0.61424f, 0.07568f);	// new
-	glm::vec3 s = glm::vec3(0.633f, 0.727811f, 0.633f);		// new
+	//glm::vec3 a = glm::vec3(0.0215f, 0.1745f, 0.0215f);		// new
+	//glm::vec3 d = glm::vec3(0.07568f, 0.61424f, 0.07568f);	// new
+	//glm::vec3 s = glm::vec3(0.633f, 0.727811f, 0.633f);		// new
 	float shine = 0.6f * 128.0f;		// new
 
-	glUniform3fv(uniLocs.ambientLoc, 1, glm::value_ptr(a));		// new
-	glUniform3fv(uniLocs.diffuseLoc, 1, glm::value_ptr(d));		// new
-	glUniform3fv(uniLocs.specularLoc, 1, glm::value_ptr(s));	// new
+	//glUniform3fv(uniLocs.ambientLoc, 1, glm::value_ptr(a));		// new
+	//glUniform3fv(uniLocs.diffuseLoc, 1, glm::value_ptr(d));		// new
+	//glUniform3fv(uniLocs.specularLoc, 1, glm::value_ptr(s));	// new
 	glUniform1f(uniLocs.shininessLoc, shine);		// new
 
 	glUniform1f(uniLocs.ambientStrengthLoc, 0.1f);		// new
 	glUniform1f(uniLocs.diffuseStrengthLoc, 0.9f);		// new
 	glUniform1f(uniLocs.specularStrengthLoc, 1.0f);		// new
+
+	// POINT LIGHT
+	glUniform3fv(uniLocs.pointLight.positionLoc, 1, glm::value_ptr(glm::vec3(2.0f, 2.0f, 2.0f)));
+	glUniform1f(uniLocs.pointLight.ambientStrengthLoc, 0.3f);
+	glUniform1f(uniLocs.pointLight.diffuseStrengthLoc, 0.7f);
+	glUniform1f(uniLocs.pointLight.specularStrengthLoc, 0.5f);
+	glUniform1f(uniLocs.pointLight.constantLoc, 1.0f);
+	glUniform1f(uniLocs.pointLight.linearLoc, 0.09f);
+	glUniform1f(uniLocs.pointLight.quadraticLoc, 0.032f);
+
 }
 
 

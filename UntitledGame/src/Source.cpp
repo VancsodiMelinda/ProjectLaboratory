@@ -30,6 +30,7 @@
 #include "Test2.h"
 #include "Data.h"
 #include "Scene.h"
+#include "PointLight.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -43,6 +44,7 @@ glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAn
 
 // global camera variables
 Camera camera;  // create camera object with default constructor
+//Camera camera(glm::vec3(0.0f, 2.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -200,8 +202,8 @@ int main(void)
 	Data groundData("resources/Ground.obj");
 	groundData.initialize();
 
-	//Data cubeData("resources/RubiksCube.obj");
-	//cubeData.initialize();
+	Data cubeData("resources/RubiksCube.obj");
+	cubeData.initialize();
 
 	Data raptorData("resources/Velociraptor.obj");
 	raptorData.initialize();
@@ -211,6 +213,14 @@ int main(void)
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
 	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
 	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 90.0f, "y");
+
+	////////////////////// NEW SPOTLIGHT NEW /////////////////////////
+	glm::vec3 pointlightPos = glm::vec3(1.0f);
+	glm::mat4 pointlightModelMatrix = createModelMatrix(pointlightPos, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
+
+	PointLight test(pointlightPos, glm::vec3(1.0f, 0.0f, 0.0f), 0.1f, 0.7f, 0.5f, raptorData,
+		lightObjShader.programObject, pointlightModelMatrix, camera);
+	test.initialize();
 
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
@@ -240,6 +250,7 @@ int main(void)
 		//light.lightColor, light.lightPos, cubeShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[1], shadow.shadowMap);
 	//cube.initialize();
 
+	// THIS
 	Scene raptor(objShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix,
 		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
 	raptor.initialize();
@@ -326,6 +337,8 @@ int main(void)
 		ground.render(camera);
 		//cube.render(camera);
 		raptor.render(camera);
+
+		//test.render(camera);
 		
 
 		/* Swap front and back buffers */
