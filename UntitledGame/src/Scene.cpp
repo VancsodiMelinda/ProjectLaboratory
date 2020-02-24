@@ -98,6 +98,12 @@ void Scene::getUniformLocations()
 	int diffuseStrengthLoc = glGetUniformLocation(shaderID, "light.diffuseStrength");	// new
 	int specularStrengthLoc = glGetUniformLocation(shaderID, "light.specularStrength");	// new
 
+	// DIRECTIONAL LIGHT
+	uniLocs.dirLight.directionLoc = glGetUniformLocation(shaderID, "dirLight.direction");
+	uniLocs.dirLight.ambientStrengthLoc = glGetUniformLocation(shaderID, "dirLight.ambientStrength");
+	uniLocs.dirLight.diffuseStrengthLoc = glGetUniformLocation(shaderID, "dirLight.diffuseStrength");
+	uniLocs.dirLight.specularStrengthLoc = glGetUniformLocation(shaderID, "dirLight.specularStrength");
+
 	// POINT LIGHT
 	uniLocs.pointLight.positionLoc = glGetUniformLocation(shaderID, "pointLight.position");
 	uniLocs.pointLight.ambientStrengthLoc = glGetUniformLocation(shaderID, "pointLight.ambientStrength");
@@ -182,6 +188,12 @@ void Scene::uploadUniforms()
 	glUniform1f(uniLocs.ambientStrengthLoc, 0.1f);		// new
 	glUniform1f(uniLocs.diffuseStrengthLoc, 0.9f);		// new
 	glUniform1f(uniLocs.specularStrengthLoc, 1.0f);		// new
+
+	// DIRECTIONAL LIGHT
+	glUniform3fv(uniLocs.dirLight.directionLoc, 1, glm::value_ptr(glm::vec3(-2.0f, -1.0f, -0.3f)));
+	glUniform1f(uniLocs.dirLight.ambientStrengthLoc, 0.1f);
+	glUniform1f(uniLocs.dirLight.diffuseStrengthLoc, 0.9f);
+	glUniform1f(uniLocs.dirLight.specularStrengthLoc, 1.0f);
 
 	// POINT LIGHT
 	glUniform3fv(uniLocs.pointLight.positionLoc, 1, glm::value_ptr(glm::vec3(2.0f, 2.0f, 2.0f)));

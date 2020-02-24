@@ -14,6 +14,14 @@
 class Scene
 {
 private:
+	struct DirLight {
+		int directionLoc;
+
+		int ambientStrengthLoc;
+		int diffuseStrengthLoc;
+		int specularStrengthLoc;
+	};
+
 	struct PointLight {
 		int positionLoc;
 
@@ -48,6 +56,7 @@ private:
 		int diffuseStrengthLoc;
 		int specularStrengthLoc;
 
+		DirLight dirLight;
 		PointLight pointLight;
 	};
 	uniforms uniLocs;

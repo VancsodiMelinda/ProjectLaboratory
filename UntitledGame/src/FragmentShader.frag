@@ -54,8 +54,9 @@ uniform PointLight pointLight;
 
 
 // function definitons
-float ShadowCalculation(vec4 lightVertexPos);
-//vec3 CalcTest(Light l, vec3 normal, vec3 viewdir);
+//float ShadowCalculation(vec4 lightVertexPos);
+float ShadowCalculation();
+vec3 CalcDirLight();
 
 void main()
 {	
@@ -82,17 +83,21 @@ void main()
 	//vec3 specular = spec * light.specularStrength * material.specular;
 	vec3 specular = spec * light.specularStrength * texture(material.specularMap, out_textureCoords).rgb;	// new
 	
-	float distance = length(pointLight.position - out_worldVertexPos);
-	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
 	
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
+
+	// POINT LIGHT
+	//float distance = length(pointLight.position - out_worldVertexPos);
+	//float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
+	
+	//ambient *= attenuation;
+	//diffuse *= attenuation;
+	//specular *= attenuation;
 
 	// SHADOW
-	float shadow = ShadowCalculation(out_lightVertexPos);
-	vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
+	float shadow = ShadowCalculation();
+	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
+	vec3 finalColor = CalcDirLight();
 
 	fragColor = vec4(finalColor, 1.0);
 }
@@ -100,9 +105,11 @@ void main()
 
 
 
-float ShadowCalculation(vec4 lightVertexPos)
+//float ShadowCalculation(vec4 lightVertexPos)
+float ShadowCalculation()
 {
-	vec3 projCoords = lightVertexPos.xyz / lightVertexPos.w;  // [-1, 1]
+	//vec3 projCoords = lightVertexPos.xyz / lightVertexPos.w;  // [-1, 1]
+	vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;  // [-1, 1]
 	projCoords = (projCoords * 0.5) + 0.5;  // [0, 1]
 	float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPos - out_worldVertexPos)), 0.005);
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
@@ -130,5 +137,26 @@ float ShadowCalculation(vec4 lightVertexPos)
 	//float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
 	return shadow;
+}
+
+
+vec3 CalcDirLight()
+{
+	// AMBIENT
+	vec3 ambient = dirLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;	// new
+
+	// DIFFUSE
+	vec3 lightDirection = normalize(-dirLight.direction);	// unit
+	vec3 normalVector = normalize(out_normalVec);					// unit
+	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);  // cos of angle
+	vec3 diffuse = diffuseImpact * dirLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;  // new
+
+	// SPECULAR
+	vec3 viewVector = normalize(cameraPos - out_worldVertexPos);
+	vec3 reflectDir = reflect(-lightDirection, normalVector);
+	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
+	vec3 specular = spec * dirLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;	// new
+	
+	return (ambient + diffuse + specular);
 }
 
