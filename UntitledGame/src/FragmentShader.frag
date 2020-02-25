@@ -86,18 +86,18 @@ void main()
 	
 
 	// POINT LIGHT
-	//float distance = length(pointLight.position - out_worldVertexPos);
-	//float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
+	float distance = length(pointLight.position - out_worldVertexPos);
+	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
 	
-	//ambient *= attenuation;
-	//diffuse *= attenuation;
-	//specular *= attenuation;
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
 
 	// SHADOW
 	float shadow = ShadowCalculation();
-	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
+	vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
-	vec3 finalColor = CalcDirLight();
+	//vec3 finalColor = CalcDirLight();
 
 	fragColor = vec4(finalColor, 1.0);
 }
