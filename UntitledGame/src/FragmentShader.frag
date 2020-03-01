@@ -57,6 +57,7 @@ uniform PointLight pointLight;
 //float ShadowCalculation(vec4 lightVertexPos);
 float ShadowCalculation();
 vec3 CalcDirLight();
+vec3 CalcPointLight();
 
 void main()
 {	
@@ -86,18 +87,18 @@ void main()
 	
 
 	// POINT LIGHT
-	float distance = length(pointLight.position - out_worldVertexPos);
-	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
-	
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
+	//float distance = length(pointLight.position - out_worldVertexPos);
+	//float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
+	//ambient *= attenuation;
+	//diffuse *= attenuation;
+	//specular *= attenuation;
 
 	// SHADOW
 	float shadow = ShadowCalculation();
-	vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
+	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
 	//vec3 finalColor = CalcDirLight();
+	vec3 finalColor = CalcPointLight();
 
 	fragColor = vec4(finalColor, 1.0);
 }
@@ -160,3 +161,30 @@ vec3 CalcDirLight()
 	return (ambient + diffuse + specular);
 }
 
+
+vec3 CalcPointLight()
+{
+	// AMBIENT
+	vec3 ambient = pointLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+	//DIFFUSE
+	vec3 lightDirection = normalize(pointLight.position - out_worldVertexPos);	// unit
+	vec3 normalVector = normalize(out_normalVec);					// unit
+	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);  // cos of angle
+	vec3 diffuse = diffuseImpact * pointLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+	// SPECULAR
+	vec3 viewVector = normalize(cameraPos - out_worldVertexPos);
+	vec3 reflectDir = reflect(-lightDirection, normalVector);
+	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
+	vec3 specular = spec * pointLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;
+
+	float dist = length(pointLight.position - out_worldVertexPos);
+	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * dist * dist);
+	
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
+
+	return (ambient + diffuse + specular);
+}

@@ -1,6 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -37,6 +41,7 @@
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+static void cursor_position_callback_2(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processKeyInput(GLFWwindow* window);
 void renderQuad();
@@ -52,7 +57,7 @@ float lastFrame = 0.0f;
 glm::mat4 projectionMatrix;
 glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
-bool isPpressed;
+bool isPpressed = false;
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -103,6 +108,20 @@ int main(void)
 
 	// check openGL version
 	printf("OpenGL Version: %d.%d\n", GLVersion.major, GLVersion.minor);
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	const char* glsl_version = "#version 130";
+	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	/////////////////////////// SHADER ///////////////////////////
 
@@ -255,18 +274,25 @@ int main(void)
 		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
 	raptor.initialize();
 	
-
+	bool show_demo_window = true;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	glEnable(GL_DEPTH_TEST);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+
+
 		/* Render here */
 		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//glEnable(GL_DEPTH_TEST);
 		//glDepthFunc(GL_LESS);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		processKeyInput(window);  // changes cameraPosition
 
@@ -340,6 +366,17 @@ int main(void)
 
 		//test.render(camera);
 		
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
+
+		// Rendering
+		ImGui::Render();
+		//int display_w, display_h;
+		//glfwGetFramebufferSize(window, &display_w, &display_h);
+		//glViewport(0, 0, display_w, display_h);
+		//glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -357,6 +394,11 @@ int main(void)
 	lightObjShader.cleanUpProgram();
 
 	//glDeleteFramebuffers(1, &fbo);
+
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();  // terminate GLFW
 	return 0;
@@ -406,19 +448,38 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 		// change projection mode (perspective vs ortohraphic)
 		
+		
 		if (isPpressed)
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // eats cursor
+			glfwSetCursorPosCallback(window, cursor_position_callback);
 			isPpressed = false;
 		}
-		else if (!isPpressed)
+		else if (!isPpressed)  // first press
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  // frees cursor
+			glfwSetCursorPosCallback(window, cursor_position_callback_2);
 			isPpressed = true;
 		}
 		
 	}
 }
+
+/*
+void changeMouseInputMode(GLFWwindow* window)
+{
+	if (isPpressed)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		isPpressed = false;
+	}
+	else if (!isPpressed)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		isPpressed = true;
+	}
+}
+*/
 
 void processKeyInput(GLFWwindow* window)  // gets called every frame
 {
@@ -458,6 +519,9 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 
 	camera.ProcessMouseMovement(xOffset, yOffset);
 }
+
+static void cursor_position_callback_2(GLFWwindow* window, double xpos, double ypos) {}
+
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
