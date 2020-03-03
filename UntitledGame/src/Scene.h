@@ -7,6 +7,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext.hpp>
 
+#include "imgui/imgui.h"
+
 #include "Data.h"
 #include "Texture.h"
 #include "Camera.h"
@@ -24,6 +26,7 @@ private:
 
 	struct PointLight {
 		int positionLoc;
+		int colorLoc;
 
 		int ambientStrengthLoc;
 		int diffuseStrengthLoc;

@@ -106,6 +106,7 @@ void Scene::getUniformLocations()
 
 	// POINT LIGHT
 	uniLocs.pointLight.positionLoc = glGetUniformLocation(shaderID, "pointLight.position");
+	uniLocs.pointLight.colorLoc = glGetUniformLocation(shaderID, "pointLight.color");
 	uniLocs.pointLight.ambientStrengthLoc = glGetUniformLocation(shaderID, "pointLight.ambientStrength");
 	uniLocs.pointLight.diffuseStrengthLoc = glGetUniformLocation(shaderID, "pointLight.diffuseStrength");
 	uniLocs.pointLight.specularStrengthLoc = glGetUniformLocation(shaderID, "pointLight.specularStrength");
@@ -195,15 +196,39 @@ void Scene::uploadUniforms()
 	glUniform1f(uniLocs.dirLight.diffuseStrengthLoc, 0.9f);
 	glUniform1f(uniLocs.dirLight.specularStrengthLoc, 1.0f);
 
+	ImGui::Begin("Point light");
+
+	//ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//ImGui::ColorEdit3("light color", (float*)&clear_color);
+
+	static float pl_ambientStrength = 0.1;
+	static float pl_diffuseStrength = 0.7;
+	static float pl_specularStrength = 0.5;
+
+	ImGui::SliderFloat("ambientStrength", &pl_ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("diffuseStrength", &pl_diffuseStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("specularStrength", &pl_specularStrength, 0.0f, 1.0f);
+
+	static float pl_constant = 1.0f;
+	static float pl_linear = 0.1f;
+	static float pl_quadratic = 0.032f;
+
+	ImGui::SliderFloat("constant", &pl_constant, 0.0f, 1.0f);
+	ImGui::SliderFloat("linear", &pl_linear, 0.0f, 1.0f);
+	ImGui::SliderFloat("quadratic", &pl_quadratic, 0.0f, 1.0f);
+
+	ImGui::End();
+
 	// POINT LIGHT
 	glUniform3fv(uniLocs.pointLight.positionLoc, 1, glm::value_ptr(glm::vec3(2.0f, 2.0f, 2.0f)));
-	glUniform1f(uniLocs.pointLight.ambientStrengthLoc, 0.3f);
-	glUniform1f(uniLocs.pointLight.diffuseStrengthLoc, 0.7f);
-	glUniform1f(uniLocs.pointLight.specularStrengthLoc, 0.5f);
-	glUniform1f(uniLocs.pointLight.constantLoc, 1.0f);
-	glUniform1f(uniLocs.pointLight.linearLoc, 0.09f);
-	glUniform1f(uniLocs.pointLight.quadraticLoc, 0.032f);
-
+	glUniform3fv(uniLocs.pointLight.colorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform1f(uniLocs.pointLight.ambientStrengthLoc, pl_ambientStrength);  // 0.3f
+	glUniform1f(uniLocs.pointLight.diffuseStrengthLoc, pl_diffuseStrength);  // 0.7f
+	glUniform1f(uniLocs.pointLight.specularStrengthLoc, pl_specularStrength);  // 0.5f
+	glUniform1f(uniLocs.pointLight.constantLoc, pl_constant);  // 1.0f
+	glUniform1f(uniLocs.pointLight.linearLoc, pl_linear);  // 0.09f
+	glUniform1f(uniLocs.pointLight.quadraticLoc, pl_quadratic);  // 0.032f
+	
 }
 
 

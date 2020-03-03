@@ -41,6 +41,7 @@ uniform DirLight dirLight;
 
 struct PointLight{
 	vec3 position;
+	vec3 color;
 
 	float ambientStrength;
 	float diffuseStrength;
@@ -94,11 +95,12 @@ void main()
 	//specular *= attenuation;
 
 	// SHADOW
-	float shadow = ShadowCalculation();
+	//float shadow = ShadowCalculation();
 	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
-	//vec3 finalColor = CalcDirLight();
-	vec3 finalColor = CalcPointLight();
+
+	//vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
+	vec3 finalColor = CalcPointLight();	// POINT LIGHT
 
 	fragColor = vec4(finalColor, 1.0);
 }
@@ -158,7 +160,10 @@ vec3 CalcDirLight()
 	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
 	vec3 specular = spec * dirLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;	// new
 	
-	return (ambient + diffuse + specular);
+	float shadow = ShadowCalculation();
+
+	//return (ambient + diffuse + specular);
+	return (ambient + (1.0 - shadow) * (diffuse + specular));
 }
 
 
@@ -186,5 +191,8 @@ vec3 CalcPointLight()
 	diffuse *= attenuation;
 	specular *= attenuation;
 
-	return (ambient + diffuse + specular);
+	float shadow = ShadowCalculation();
+
+	//return (ambient + diffuse + specular);
+	return (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
 }

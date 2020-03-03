@@ -231,15 +231,28 @@ int main(void)
 	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -35.0f, "x");
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
 	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
+
 	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 90.0f, "y");
 
 	////////////////////// NEW SPOTLIGHT NEW /////////////////////////
+	/*
 	glm::vec3 pointlightPos = glm::vec3(1.0f);
 	glm::mat4 pointlightModelMatrix = createModelMatrix(pointlightPos, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
 
-	PointLight test(pointlightPos, glm::vec3(1.0f, 0.0f, 0.0f), 0.1f, 0.7f, 0.5f, raptorData,
-		lightObjShader.programObject, pointlightModelMatrix, camera);
+	PointLightStruct pointLight_params;
+	{
+		pointLight_params.position = glm::vec3(1.0f);
+		pointLight_params.ambientStrength = 0.1f;
+		pointLight_params.diffuseStrength = 0.7f;
+		pointLight_params.specularStrength = 0.9f;
+		pointLight_params.constant = 1.0f;
+		pointLight_params.linear = 0.5f;
+		pointLight_params.quadratic = 0.2f;
+	}
+
+	PointLight test(pointLight_params, raptorData, lightObjShader.programObject, pointlightModelMatrix, camera);
 	test.initialize();
+	*/
 
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
@@ -275,6 +288,7 @@ int main(void)
 	raptor.initialize();
 	
 	bool show_demo_window = true;
+	bool show_another_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	glEnable(GL_DEPTH_TEST);
 
@@ -358,17 +372,39 @@ int main(void)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		light.render(camera);
+		//light.render(camera);
 		//suzanne.render(camera);
 		ground.render(camera);
 		//cube.render(camera);
 		raptor.render(camera);
 
 		//test.render(camera);
-		
+		/*
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+
+			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+			ImGui::Checkbox("Another Window", &show_another_window);
+
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
+		*/
 		// Rendering
 		ImGui::Render();
 		//int display_w, display_h;

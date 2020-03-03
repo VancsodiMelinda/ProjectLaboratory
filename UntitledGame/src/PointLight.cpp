@@ -1,17 +1,11 @@
 #include "PointLight.h"
 
-
-PointLight::PointLight(glm::vec3 position_, glm::vec3 color_,
-	float ambientStrength_, float diffuseStrength_, float specularStrength_,
-	Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_)
+/*
+PointLight::PointLight(PointLightStruct params_, Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_)
 	: object(object_),
 	camera(camera_)
 {
-	position = position_;
-	color = color_;
-	ambientStrength = ambientStrength_;
-	diffuseStrength = diffuseStrength_;
-	specularStrength = specularStrength_;
+	params = params_;
 
 	shaderID = shaderID_;  // light shader
 	modelMatrix = modelMatrix_;
@@ -87,26 +81,24 @@ void PointLight::uploadLightUniforms()
 
 void PointLight::getObjectUniformLocations(GLuint objectShader)
 {
-	int positionLoc = glGetUniformLocation(objectShader, "lightPos");
-	int colorLoc = glGetUniformLocation(objectShader, "lightColor");
-	int ambientStrengthLoc = glGetUniformLocation(objectShader, "light.ambientStrength");
-	int diffuseStrengthLoc = glGetUniformLocation(objectShader, "light.diffuseStrength");
-	int specularStrengthLoc = glGetUniformLocation(objectShader, "light.specularStrength");
-
-	objectUniforms.positionLoc = positionLoc;
-	objectUniforms.colorLoc = colorLoc;
-	objectUniforms.ambientStrengthLoc = ambientStrengthLoc;
-	objectUniforms.diffuseStrengthLoc = diffuseStrengthLoc;
-	objectUniforms.specularStrengthLoc = specularStrengthLoc;
+	objectUniforms.positionLoc = glGetUniformLocation(objectShader, "pointLight.position");
+	//objectUniforms.colorLoc = colorLoc;
+	objectUniforms.ambientStrengthLoc = glGetUniformLocation(objectShader, "pointLight.ambientStrength");
+	objectUniforms.diffuseStrengthLoc = glGetUniformLocation(objectShader, "pointLight.diffuseStrength");
+	objectUniforms.specularStrengthLoc = glGetUniformLocation(objectShader, "pointLight.specularStrength");
+	objectUniforms.constantLoc = glGetUniformLocation(objectShader, "pointLight.constant");
+	objectUniforms.linearLoc = glGetUniformLocation(objectShader, "pointLight.linear");
+	objectUniforms.quadraticLoc = glGetUniformLocation(objectShader, "pointLight.quadratic");
 }
 
 void PointLight::uploadObjectUniforms()
 {
-	glUniform3fv(objectUniforms.positionLoc, 1, glm::value_ptr(position));
-	glUniform3fv(objectUniforms.colorLoc, 1, glm::value_ptr(color));
+	glUniform3fv(objectUniforms.positionLoc, 1, glm::value_ptr(params.position));
+	//glUniform3fv(objectUniforms.colorLoc, 1, glm::value_ptr(color));
 
-	glUniform1f(objectUniforms.ambientStrengthLoc, ambientStrength);
-	glUniform1f(objectUniforms.diffuseStrengthLoc, diffuseStrength);
-	glUniform1f(objectUniforms.specularStrengthLoc, specularStrength);
+	glUniform1f(objectUniforms.ambientStrengthLoc, params.ambientStrength);
+	glUniform1f(objectUniforms.diffuseStrengthLoc, params.diffuseStrength);
+	glUniform1f(objectUniforms.specularStrengthLoc, params.specularStrength);
 }
 
+*/

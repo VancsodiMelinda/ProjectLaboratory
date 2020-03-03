@@ -11,21 +11,32 @@
 #include "Data.h"
 #include "Camera.h"
 
-class PointLight
+struct PointLightStruct
 {
-public:
 	glm::vec3 position;
 	glm::vec3 color;
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
+	float constant;
+	float linear;
+	float quadratic;
+};
+
+class PointLight
+{
+public:
+	PointLightStruct params;
 
 	struct ObjectUniforms {
-		int colorLoc;
+		//int colorLoc;
 		int positionLoc;
 		int ambientStrengthLoc;
 		int diffuseStrengthLoc;
 		int specularStrengthLoc;
+		int constantLoc;
+		int linearLoc;
+		int quadraticLoc;
 	};
 	ObjectUniforms objectUniforms;  // for standard shader
 
@@ -47,9 +58,7 @@ public:
 	int WINDOW_HEIGHT = 720;
 
 public:
-	PointLight(glm::vec3 position_, glm::vec3 color_,
-		float ambientStrength_, float diffuseStrength_, float specularStrength_,
-		Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_);
+	PointLight(PointLightStruct params_ ,Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_);
 
 	void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
 	void uploadObjectUniforms();							// for Scene
