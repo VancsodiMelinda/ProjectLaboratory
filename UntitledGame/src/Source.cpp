@@ -13,10 +13,8 @@
 
 #include <stdio.h>
 #include <iostream>
-
 #include <string>
 #include <fstream>
-
 #include <list>
 #include <sstream>
 #include <vector>
@@ -34,7 +32,9 @@
 #include "Test2.h"
 #include "Data.h"
 #include "Scene.h"
+
 #include "PointLight.h"
+#include "Scene2.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -236,8 +236,6 @@ int main(void)
 
 	////////////////////// NEW SPOTLIGHT NEW /////////////////////////
 	/*
-	glm::vec3 pointlightPos = glm::vec3(1.0f);
-	glm::mat4 pointlightModelMatrix = createModelMatrix(pointlightPos, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
 
 	PointLightStruct pointLight_params;
 	{
@@ -253,6 +251,26 @@ int main(void)
 	PointLight test(pointLight_params, raptorData, lightObjShader.programObject, pointlightModelMatrix, camera);
 	test.initialize();
 	*/
+
+	PointLightParams pointLightParams;
+	{
+		pointLightParams.position = glm::vec3(1.0f);
+		pointLightParams.color = glm::vec3(0.0f, 1.0f, 1.0f);
+
+		pointLightParams.ambientStrength = 0.3f;
+		pointLightParams.diffuseStrength = 0.6f;
+		pointLightParams.specularStrength = 0.9f;
+
+		pointLightParams.constant = 1.0f;
+		pointLightParams.linear = 0.5f;
+		pointLightParams.quadratic = 0.3f;
+	}
+
+	glm::vec3 pointlightPos = glm::vec3(1.0f);
+	glm::mat4 pointlightModelMatrix = createModelMatrix(pointlightPos, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
+
+	PointLight wut(pointLightParams, raptorData, lightObjShader.programObject, pointlightModelMatrix, camera);
+	wut.initialize();
 
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
@@ -286,6 +304,11 @@ int main(void)
 	Scene raptor(objShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix,
 		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
 	raptor.initialize();
+
+	////////////////////////////// BRAND NEW
+	glm::mat4 rmm = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 10.0f, "y");
+	Scene2 wut2(raptorData, rmm, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
+	wut2.initialize();
 	
 	bool show_demo_window = true;
 	bool show_another_window = true;
@@ -377,6 +400,9 @@ int main(void)
 		ground.render(camera);
 		//cube.render(camera);
 		raptor.render(camera);
+
+		wut.render(camera);
+		wut2.render(camera);
 
 		//test.render(camera);
 		/*

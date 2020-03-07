@@ -10,14 +10,17 @@
 #include "ObjLoader.h"
 #include "Data.h"
 #include "Camera.h"
+#include "Globals.h"
 
-struct PointLightStruct
+struct PointLightParams
 {
 	glm::vec3 position;
 	glm::vec3 color;
+
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
+
 	float constant;
 	float linear;
 	float quadratic;
@@ -26,14 +29,17 @@ struct PointLightStruct
 class PointLight
 {
 public:
-	PointLightStruct params;
+	PointLightParams params;	// PARAMS STRUCT
 
+private:
 	struct ObjectUniforms {
-		//int colorLoc;
 		int positionLoc;
+		int colorLoc;
+
 		int ambientStrengthLoc;
 		int diffuseStrengthLoc;
 		int specularStrengthLoc;
+
 		int constantLoc;
 		int linearLoc;
 		int quadraticLoc;
@@ -44,7 +50,6 @@ public:
 		int MVPloc;
 		int colorLoc;
 	};
-
 	LightUniforms lightUniforms;  // for light shader
 
 	// variables for visualizing the light source
@@ -58,7 +63,7 @@ public:
 	int WINDOW_HEIGHT = 720;
 
 public:
-	PointLight(PointLightStruct params_ ,Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_);
+	PointLight(PointLightParams params_ ,Data& object_, GLuint shaderID_, glm::mat4 modelMatrix_, Camera& camera_);
 
 	void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
 	void uploadObjectUniforms();							// for Scene
@@ -74,5 +79,8 @@ public:
 private:
 	void updateMVP();					// for light viz.
 	void uploadLightUniforms();			// fot light viz.
+
+public:
+	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
 };
 
