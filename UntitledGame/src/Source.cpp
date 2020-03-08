@@ -255,7 +255,7 @@ int main(void)
 	PointLightParams pointLightParams;
 	{
 		pointLightParams.position = glm::vec3(1.0f);
-		pointLightParams.color = glm::vec3(0.0f, 1.0f, 1.0f);
+		pointLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		pointLightParams.ambientStrength = 0.3f;
 		pointLightParams.diffuseStrength = 0.6f;
@@ -264,12 +264,16 @@ int main(void)
 		pointLightParams.constant = 1.0f;
 		pointLightParams.linear = 0.5f;
 		pointLightParams.quadratic = 0.3f;
+
+		pointLightParams.scale = glm::vec3(0.2f);
+		pointLightParams.angle = 30.0f;
+		pointLightParams.axes = "y";
 	}
 
 	glm::vec3 pointlightPos = glm::vec3(1.0f);
-	glm::mat4 pointlightModelMatrix = createModelMatrix(pointlightPos, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
+	glm::mat4 pointlightModelMatrix = createModelMatrix(pointLightParams.position, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
 
-	PointLight wut(pointLightParams, raptorData, lightObjShader.programObject, pointlightModelMatrix, camera);
+	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
 	wut.initialize();
 
 	// CREATE SHADOWS
@@ -404,6 +408,8 @@ int main(void)
 		wut.render(camera);
 		wut2.render(camera);
 
+		wut.changeParams();
+
 		//test.render(camera);
 		/*
 		if (show_demo_window)
@@ -431,6 +437,7 @@ int main(void)
 			ImGui::End();
 		}
 		*/
+
 		// Rendering
 		ImGui::Render();
 		//int display_w, display_h;

@@ -43,6 +43,10 @@ void PointLight::initialize()
 
 void PointLight::configVertexAttributes()
 {
+	glBindVertexArray(object.vao);  // bind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);  // bind VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object.ibo);  // bind IBO
+
 	// get attribute indexes from the relevant shader
 	GLuint positionAttribIndex = glGetAttribLocation(shaderID, "in_vertexPosition");	// layout (location = 0) in vec3 in_vertexPosition;
 
@@ -57,6 +61,8 @@ void PointLight::configVertexAttributes()
 	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
 
 	glBindVertexArray(0);  // unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 }
 
 void PointLight::getLightUniformLocations()
@@ -85,6 +91,9 @@ void PointLight::updateMVP()
 	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);  // update in every frame (zoom)
+	modelMatrix = glm::mat4(1.0f);
+	//modelMatrix = glm::translate(modelMatrix, params.position);
+	modelMatrix = createModelMatrix(params.position, params.scale, params.angle, params.axes);
 
 	MVP = projectionMatrix * viewMatrix * modelMatrix;
 }
@@ -93,6 +102,34 @@ void PointLight::uploadLightUniforms()
 {
 	glUniformMatrix4fv(lightUniforms.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(lightUniforms.colorLoc, 1, glm::value_ptr(params.color));
+}
+
+glm::mat4 PointLight::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
+{
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+	modelMatrix = glm::translate(modelMatrix, translate);
+
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	if ((rotateAxis == "x") || (rotateAxis == "X"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if ((rotateAxis == "y") || (rotateAxis == "Y"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	else if ((rotateAxis == "z") || (rotateAxis == "Z"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	else
+	{
+		std::cout << "The rotation angle is not correct!" << std::endl;
+	}
+
+	return modelMatrix;
 }
 
 
@@ -126,3 +163,20 @@ void PointLight::uploadObjectUniforms()
 	glUniform1f(objectUniforms.quadraticLoc, params.quadratic);
 }
 
+void PointLight::changeParams()
+{
+	ImGui::Begin("Point light params");
+	ImGui::Text("Press 'P' to let go of mouse.");
+
+	ImGui::SliderFloat("ambientStrength", &params.ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("diffuseStrength", &params.diffuseStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("specularStrength", &params.specularStrength, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("constant", &params.constant, 0.0f, 1.0f);
+	ImGui::SliderFloat("linear", &params.linear, 0.0f, 1.0f);
+	ImGui::SliderFloat("quadratic", &params.quadratic, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
+
+	ImGui::End();
+}

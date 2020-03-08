@@ -7,6 +7,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext.hpp>
 
+#include "imgui/imgui.h"
+
 #include "ObjLoader.h"
 #include "Data.h"
 #include "Camera.h"
@@ -24,12 +26,16 @@ struct PointLightParams
 	float constant;
 	float linear;
 	float quadratic;
+
+	glm::vec3 scale;
+	float angle;
+	std::string axes;
 };
 
 class PointLight
 {
 public:
-	PointLightParams params;	// PARAMS STRUCT
+	PointLightParams params = {};	// PARAMS STRUCT
 
 private:
 	struct ObjectUniforms {
@@ -79,8 +85,10 @@ public:
 private:
 	void updateMVP();					// for light viz.
 	void uploadLightUniforms();			// fot light viz.
+	glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
 
 public:
 	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
+	void changeParams();
 };
 

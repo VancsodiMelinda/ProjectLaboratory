@@ -39,7 +39,7 @@ void Data::fillVBOs()
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);  // bind IBO
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(GLuint), &data.indices[0], GL_STATIC_DRAW);  // INDICES
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
 	glBindVertexArray(0);  // unbind VAO
 }

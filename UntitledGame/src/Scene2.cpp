@@ -1,7 +1,7 @@
 #include "Scene2.h"
 
 Scene2::Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
-	GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, PointLight pointLight_) :
+	GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, PointLight& pointLight_) :
 	object(object_),
 	camera(camera_),
 	pointLight(pointLight_)
