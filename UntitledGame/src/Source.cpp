@@ -231,46 +231,29 @@ int main(void)
 	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -35.0f, "x");
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
 	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
-
 	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 90.0f, "y");
 
 	////////////////////// NEW SPOTLIGHT NEW /////////////////////////
-	/*
-
-	PointLightStruct pointLight_params;
-	{
-		pointLight_params.position = glm::vec3(1.0f);
-		pointLight_params.ambientStrength = 0.1f;
-		pointLight_params.diffuseStrength = 0.7f;
-		pointLight_params.specularStrength = 0.9f;
-		pointLight_params.constant = 1.0f;
-		pointLight_params.linear = 0.5f;
-		pointLight_params.quadratic = 0.2f;
-	}
-
-	PointLight test(pointLight_params, raptorData, lightObjShader.programObject, pointlightModelMatrix, camera);
-	test.initialize();
-	*/
 
 	PointLightParams pointLightParams;
 	{
-		pointLightParams.position = glm::vec3(1.0f);
+		pointLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
 		pointLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		pointLightParams.ambientStrength = 0.3f;
 		pointLightParams.diffuseStrength = 0.6f;
 		pointLightParams.specularStrength = 0.9f;
 
-		pointLightParams.constant = 1.0f;
+		pointLightParams.constant = 0.5f;
 		pointLightParams.linear = 0.5f;
-		pointLightParams.quadratic = 0.3f;
+		pointLightParams.quadratic = 0.1f;
 
 		pointLightParams.scale = glm::vec3(0.2f);
 		pointLightParams.angle = 30.0f;
 		pointLightParams.axes = "y";
 	}
 
-	glm::vec3 pointlightPos = glm::vec3(1.0f);
+	//glm::vec3 pointlightPos = glm::vec3(1.0f);
 	glm::mat4 pointlightModelMatrix = createModelMatrix(pointLightParams.position, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
 
 	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
@@ -285,13 +268,14 @@ int main(void)
 	Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	groundShadow.initialize();
 
-	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	//cubeShadow.initialize();
+	Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	cubeShadow.initialize();
 
 	Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	raptorShadow.initialize();
 
 	// CREATE OBJECTS
+	/*
 	//Scene suzanne(objShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix,
 		//light.lightColor, light.lightPos, suzanneShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[5], shadow.shadowMap);
 	//suzanne.initialize();
@@ -308,11 +292,19 @@ int main(void)
 	Scene raptor(objShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix,
 		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
 	raptor.initialize();
-
-	////////////////////////////// BRAND NEW
-	glm::mat4 rmm = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 10.0f, "y");
-	Scene2 wut2(raptorData, rmm, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
+	*/
+	////////////////////////////// BRAND NEW //////////////////////////////
+	glm::mat4 model1 = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 10.0f, "y");
+	Scene2 wut2(raptorData, model1, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
 	wut2.initialize();
+
+	glm::mat4 model2 = createModelMatrix(glm::vec3(-3.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 40.0f, "z");
+	Scene2 wut3(cubeData, model2, objShader.programObject, camera, texture[1], texture[6], shadow.shadowMap, wut);
+	wut3.initialize();
+
+	glm::mat4 model3 = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
+	Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
+	wut4.initialize();
 	
 	bool show_demo_window = true;
 	bool show_another_window = true;
@@ -368,9 +360,9 @@ int main(void)
 
 		glCullFace(GL_FRONT);  // this
 		//suzanneShadow.render();
-		groundShadow.render();
+		//groundShadow.render();
 		//cubeShadow.render();
-		raptorShadow.render();
+		//raptorShadow.render();
 		glCullFace(GL_BACK);  // this
 
 		//shTest5.render();
@@ -401,50 +393,20 @@ int main(void)
 		glEnable(GL_DEPTH_TEST);
 		//light.render(camera);
 		//suzanne.render(camera);
-		ground.render(camera);
+		//ground.render(camera);
 		//cube.render(camera);
-		raptor.render(camera);
+		//raptor.render(camera);
 
-		wut.render(camera);
-		wut2.render(camera);
-
+		wut.render(camera);		// point light object
+		wut2.render(camera);	// raptor
+		wut3.render(camera);	// cube
+		wut4.render(camera);	// floor
+		
 		wut.changeParams();
+		
 
-		//test.render(camera);
-		/*
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-
-		{
-			static float f = 0.0f;
-			static int counter = 0;
-
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show_another_window);
-
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
-		*/
-
-		// Rendering
+		// Rendering ImGui
 		ImGui::Render();
-		//int display_w, display_h;
-		//glfwGetFramebufferSize(window, &display_w, &display_h);
-		//glViewport(0, 0, display_w, display_h);
-		//glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-		//glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		/* Swap front and back buffers */
