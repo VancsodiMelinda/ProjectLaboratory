@@ -7,6 +7,7 @@
 
 #include "Data.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 #include "Camera.h"
 #include "Globals.h"
 
@@ -36,6 +37,7 @@ private:
 
 	// member vars for lighting
 	PointLight& pointLight;
+	//DirectionalLight& dirLight;
 
 	// member vars for shadow
 	//glm::mat4 lightSpaceMatrix;

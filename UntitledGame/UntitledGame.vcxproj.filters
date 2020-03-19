@@ -84,6 +84,12 @@
     <ClCompile Include="src\Globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -166,6 +172,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DirectionalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LightBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

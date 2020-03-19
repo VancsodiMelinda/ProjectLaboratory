@@ -11,10 +11,14 @@ class Texture
 public:
 	std::string textureFileName;
 	GLuint textureID;
+	//int numberOfTextures;
 
 	Texture();  // default constructor
 	Texture(std::string textureFileName_);  // parameterized constructor
+	Texture(int numberOfTextures_);		// new
 	void setUpTexture();
+
+	//void init(GLuint (&textureIDs)[10]);			// new
 
 private:
 	//int imageWidth;
@@ -23,6 +27,6 @@ private:
 
 	//void setUpTexture();
 	void loadTexture();
-
+	//void createTextures();	// new
 };
 

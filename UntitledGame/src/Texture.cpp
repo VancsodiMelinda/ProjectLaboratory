@@ -1,13 +1,11 @@
 #include "Texture.h"
 
 // default constructor
-
 Texture::Texture()
 {
 	textureFileName = "resources/DefaultTexture.png";
 	glGenTextures(1, &textureID);
 }
-
 
 // parameterized constructor
 Texture::Texture(std::string textureFileName_)
@@ -20,7 +18,7 @@ void Texture::setUpTexture()
 {
 	//GLuint textureID;
 	glGenTextures(1, &textureID);
-	glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);  // bind texture
 	//std::cout << "in class textureID: " << textureID << std::endl;
 
@@ -64,3 +62,31 @@ void Texture::loadTexture()
 	stbi_image_free(data);  // free the image memory
 	glBindTexture(GL_TEXTURE_2D, 0);  // unbind texture?
 }
+
+
+////////////////////////////// NEW ////////////////////////////////
+/*
+Texture::Texture(int numberOfTextures_)
+{
+	numberOfTextures = numberOfTextures_;
+}
+
+
+void Texture::init(GLuint (&textureIDs)[10])
+{
+
+}
+
+
+void Texture::createTextures()
+{
+	std::string t1 = "resources/Color Grid Texture.png";
+	std::string t2 = "resources/rubik texture.png";
+	std::string t3 = "resources/test grid.png";
+	std::string t4 = "resources/Wood texture.jpg";
+	std::string t5 = "resources/Velociraptor texture.png";
+	std::string t6 = "resources/Colorful texture.jpg";
+	std::string t7 = "resources/specularMap.png";
+}
+
+*/

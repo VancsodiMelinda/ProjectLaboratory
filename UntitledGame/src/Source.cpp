@@ -35,6 +35,7 @@
 
 #include "PointLight.h"
 #include "Scene2.h"
+#include "DirectionalLight.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -233,7 +234,7 @@ int main(void)
 	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
 	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 90.0f, "y");
 
-	////////////////////// NEW SPOTLIGHT NEW /////////////////////////
+	////////////////////// NEW POINTLIGHT NEW /////////////////////////
 
 	PointLightParams pointLightParams;
 	{
@@ -254,10 +255,28 @@ int main(void)
 	}
 
 	//glm::vec3 pointlightPos = glm::vec3(1.0f);
-	glm::mat4 pointlightModelMatrix = createModelMatrix(pointLightParams.position, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
+	//glm::mat4 pointlightModelMatrix = createModelMatrix(pointLightParams.position, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
 
-	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
+	//PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
+	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, camera);
 	wut.initialize();
+
+	DirLightParams dirLightParams;
+	{
+		dirLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
+		dirLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		dirLightParams.ambientStrength = 0.3f;
+		dirLightParams.diffuseStrength = 0.6f;
+		dirLightParams.specularStrength = 0.9f;
+
+		dirLightParams.scale = glm::vec3(0.4f);
+		dirLightParams.angle = 10.0f;
+		dirLightParams.axes = "x";
+	}
+
+	//DirectionalLight gg(dirLightParams, cubeData, lightObjShader.programObject, camera);
+	//gg.initialize();
 
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object

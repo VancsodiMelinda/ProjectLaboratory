@@ -1,12 +1,11 @@
-#include "PointLight.h"
+#include "DirectionalLight.h"
 
 
-PointLight::PointLight(PointLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_)
-	: object{ object_ },
-	camera{ camera_ },
-	params{ params_ }
+DirectionalLight::DirectionalLight(DirLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_)
+	: object(object_),
+	camera(camera_)
 {
-	//params = params_;
+	params = params_;
 
 	shaderID = shaderID_;		// light shader
 	modelMatrix = glm::mat4(0.0f);
@@ -16,12 +15,8 @@ PointLight::PointLight(PointLightParams params_, Data& object_, GLuint shaderID_
 	lightUniforms = { 0 };		// uniform variable locations for light shader
 }
 
-glm::mat4 PointLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
+glm::mat4 DirectionalLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
 {
-	//lookAt(eye, center, up)
-	// eye = position of lightsource
-	// center = the point where the lightsource "looks", should be the scene center
-	// up = "camera up"
 	glm::mat4 lightViewMatrix = glm::lookAt(params.position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	float nearPlane = 0.1f;
@@ -36,13 +31,14 @@ glm::mat4 PointLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
 }
 
 
-void PointLight::initialize()
+void DirectionalLight::initialize()
 {
 	configVertexAttributes();		// only once
 	getLightUniformLocations();		// only once
 }
 
-void PointLight::configVertexAttributes()
+
+void DirectionalLight::configVertexAttributes()
 {
 	glBindVertexArray(object.vao);  // bind VAO
 	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);  // bind VBO
@@ -66,7 +62,7 @@ void PointLight::configVertexAttributes()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 }
 
-void PointLight::getLightUniformLocations()
+void DirectionalLight::getLightUniformLocations()
 {
 	int MVPloc = glGetUniformLocation(shaderID, "MVP");
 	int colorLoc = glGetUniformLocation(shaderID, "lightColor");
@@ -77,7 +73,7 @@ void PointLight::getLightUniformLocations()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void PointLight::render(Camera& camera_)  // render light source object
+void DirectionalLight::render(Camera& camera_)  // render light source object
 {
 	camera = camera_;
 	glUseProgram(shaderID);
@@ -87,7 +83,7 @@ void PointLight::render(Camera& camera_)  // render light source object
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void PointLight::updateMVP()
+void DirectionalLight::updateMVP()
 {
 	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
@@ -99,13 +95,14 @@ void PointLight::updateMVP()
 	MVP = projectionMatrix * viewMatrix * modelMatrix;
 }
 
-void PointLight::uploadLightUniforms()
+void DirectionalLight::uploadLightUniforms()
 {
 	glUniformMatrix4fv(lightUniforms.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(lightUniforms.colorLoc, 1, glm::value_ptr(params.color));
 }
 
-glm::mat4 PointLight::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
+
+glm::mat4 DirectionalLight::createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis)
 {
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
@@ -133,24 +130,19 @@ glm::mat4 PointLight::createModelMatrix(glm::vec3 translate, glm::vec3 scale, fl
 	return modelMatrix;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PointLight::getObjectUniformLocations(GLuint objectShader)
+void DirectionalLight::getObjectUniformLocations(GLuint objectShader)
 {
-	objectUniforms.positionLoc = glGetUniformLocation(objectShader, "pointLight.position");
-	objectUniforms.colorLoc = glGetUniformLocation(objectShader, "pointLight.color");
+	objectUniforms.positionLoc = glGetUniformLocation(objectShader, "dirLight.position");
+	objectUniforms.colorLoc = glGetUniformLocation(objectShader, "dirLight.color");
 
-	objectUniforms.ambientStrengthLoc = glGetUniformLocation(objectShader, "pointLight.ambientStrength");
-	objectUniforms.diffuseStrengthLoc = glGetUniformLocation(objectShader, "pointLight.diffuseStrength");
-	objectUniforms.specularStrengthLoc = glGetUniformLocation(objectShader, "pointLight.specularStrength");
-
-	objectUniforms.constantLoc = glGetUniformLocation(objectShader, "pointLight.constant");
-	objectUniforms.linearLoc = glGetUniformLocation(objectShader, "pointLight.linear");
-	objectUniforms.quadraticLoc = glGetUniformLocation(objectShader, "pointLight.quadratic");
+	objectUniforms.ambientStrengthLoc = glGetUniformLocation(objectShader, "dirLight.ambientStrength");
+	objectUniforms.diffuseStrengthLoc = glGetUniformLocation(objectShader, "dirLight.diffuseStrength");
+	objectUniforms.specularStrengthLoc = glGetUniformLocation(objectShader, "dirLight.specularStrength");
 }
 
-void PointLight::uploadObjectUniforms()
+void DirectionalLight::uploadObjectUniforms()
 {
 	glUniform3fv(objectUniforms.positionLoc, 1, glm::value_ptr(params.position));
 	glUniform3fv(objectUniforms.colorLoc, 1, glm::value_ptr(params.color));
@@ -158,13 +150,9 @@ void PointLight::uploadObjectUniforms()
 	glUniform1f(objectUniforms.ambientStrengthLoc, params.ambientStrength);
 	glUniform1f(objectUniforms.diffuseStrengthLoc, params.diffuseStrength);
 	glUniform1f(objectUniforms.specularStrengthLoc, params.specularStrength);
-
-	glUniform1f(objectUniforms.constantLoc, params.constant);
-	glUniform1f(objectUniforms.linearLoc, params.linear);
-	glUniform1f(objectUniforms.quadraticLoc, params.quadratic);
 }
 
-void PointLight::changeParams()
+void DirectionalLight::changeParams()
 {
 	ImGui::Begin("Point light params");
 	ImGui::Text("Press 'P' to let go of mouse.");
@@ -172,10 +160,6 @@ void PointLight::changeParams()
 	ImGui::SliderFloat("ambientStrength", &params.ambientStrength, 0.0f, 1.0f);
 	ImGui::SliderFloat("diffuseStrength", &params.diffuseStrength, 0.0f, 1.0f);
 	ImGui::SliderFloat("specularStrength", &params.specularStrength, 0.0f, 1.0f);
-
-	ImGui::SliderFloat("constant", &params.constant, 0.0f, 1.0f);
-	ImGui::SliderFloat("linear", &params.linear, 0.0f, 1.0f);
-	ImGui::SliderFloat("quadratic", &params.quadratic, 0.0f, 1.0f);
 
 	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
 
