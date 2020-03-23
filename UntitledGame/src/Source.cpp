@@ -405,7 +405,7 @@ int main(void)
 		//renderQuad();
 		*/
 
-		
+		// this is a comment
 		// ORIGINAL RENDERING
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
