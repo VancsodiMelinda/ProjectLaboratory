@@ -232,7 +232,7 @@ int main(void)
 	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -35.0f, "x");
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
 	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
-	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 90.0f, "y");
+	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y");
 
 	////////////////////// NEW POINTLIGHT NEW /////////////////////////
 
@@ -271,26 +271,30 @@ int main(void)
 		dirLightParams.specularStrength = 0.9f;
 
 		dirLightParams.scale = glm::vec3(0.4f);
-		dirLightParams.angle = 10.0f;
+		dirLightParams.angle = 40.0f;
 		dirLightParams.axes = "x";
 	}
 
-	//DirectionalLight gg(dirLightParams, cubeData, lightObjShader.programObject, camera);
-	//gg.initialize();
+	DirectionalLight gg(dirLightParams, cubeData, lightObjShader.programObject, camera);
+	gg.initialize();
 
 	// CREATE SHADOWS
 	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
-	
+	shadow.initRenderShadowMap(quadShader.programObject);
+
 	//Shadow suzanneShadow(shadowShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	//suzanneShadow.initialize();
 
-	Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	//Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos);
 	groundShadow.initialize();
 
-	Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos);
 	cubeShadow.initialize();
 
-	Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
+	Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, dirLightParams.position);
 	raptorShadow.initialize();
 
 	// CREATE OBJECTS
@@ -313,16 +317,15 @@ int main(void)
 	raptor.initialize();
 	*/
 	////////////////////////////// BRAND NEW //////////////////////////////
-	glm::mat4 model1 = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 10.0f, "y");
-	Scene2 wut2(raptorData, model1, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
+	//Scene2 wut2(raptorData, model1, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
+	Scene2 wut2(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, gg);
 	wut2.initialize();
 
-	glm::mat4 model2 = createModelMatrix(glm::vec3(-3.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 40.0f, "z");
-	Scene2 wut3(cubeData, model2, objShader.programObject, camera, texture[1], texture[6], shadow.shadowMap, wut);
-	wut3.initialize();
+	//Scene2 wut3(cubeData, model2, objShader.programObject, camera, texture[1], texture[6], shadow.shadowMap, wut);
+	//wut3.initialize();
 
-	glm::mat4 model3 = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
-	Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
+	//Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
+	Scene2 wut4(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, gg);
 	wut4.initialize();
 	
 	bool show_demo_window = true;
@@ -333,8 +336,6 @@ int main(void)
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-
-
 		/* Render here */
 		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -381,7 +382,7 @@ int main(void)
 		//suzanneShadow.render();
 		//groundShadow.render();
 		//cubeShadow.render();
-		//raptorShadow.render();
+		raptorShadow.render();
 		glCullFace(GL_BACK);  // this
 
 		//shTest5.render();
@@ -416,13 +417,16 @@ int main(void)
 		//cube.render(camera);
 		//raptor.render(camera);
 
-		wut.render(camera);		// point light object
+		//wut.render(camera);		// point light object
+		gg.render(camera);
 		wut2.render(camera);	// raptor
-		wut3.render(camera);	// cube
+		//wut3.render(camera);	// cube
 		wut4.render(camera);	// floor
+
+		shadow.renderShadowMap();
 		
-		wut.changeParams();
-		
+		//wut.changeParams();
+		gg.changeParams();
 
 		// Rendering ImGui
 		ImGui::Render();

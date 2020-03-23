@@ -15,6 +15,7 @@
 
 class LightBase
 {
+public:  // derived classes can see member vars
 	struct LightUniforms {
 		int MVPloc;
 		int colorLoc;
@@ -28,24 +29,22 @@ class LightBase
 	glm::mat4 MVP;
 	Camera& camera;
 
+public:		LightBase(Data& object_, GLuint shaderID_, Camera& camera_);
 
-	void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
-	void uploadObjectUniforms();							// for Scene
+public:		virtual glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
 
-	void initialize();	// gets light object data by reference, needs light shader
+public:		void initialize();	// gets light object data by reference, needs light shader
+private:	void configVertexAttributes();		// for light viz.
+			void getLightUniformLocations();	// for light viz., uses light shader
 
-	void configVertexAttributes();		// for light viz.
-	void getLightUniformLocations();	// for light viz., uses light shader
+public:		void render(Camera& camera_);
+private:	virtual void updateMVP();					// for light viz.
+			virtual void uploadLightUniforms();			// fot light viz.
+public:		glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
 
-
-	void render(Camera& camera_);
-
-	void updateMVP();					// for light viz.
-	void uploadLightUniforms();			// fot light viz.
-	glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
-
-	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
-	void changeParams();
+public:		virtual void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
+			virtual void uploadObjectUniforms();							// for Scene
+			virtual void changeParams();
 
 };
 

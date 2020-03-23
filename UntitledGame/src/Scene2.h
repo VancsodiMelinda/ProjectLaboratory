@@ -10,6 +10,7 @@
 #include "DirectionalLight.h"
 #include "Camera.h"
 #include "Globals.h"
+#include "LightBase.h"
 
 class Scene2
 {
@@ -36,7 +37,8 @@ private:
 	GLuint shaderID;					// standard shader
 
 	// member vars for lighting
-	PointLight& pointLight;
+	//PointLight& pointLight;
+	LightBase& pointLight;
 	//DirectionalLight& dirLight;
 
 	// member vars for shadow
@@ -51,8 +53,10 @@ private:
 	Camera& camera;
 
 public:
+	//Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
+		//GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, PointLight& pointLight_);
 	Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
-		GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, PointLight& pointLight_);
+		GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, LightBase& pointLight_);
 
 	void initialize();
 private:

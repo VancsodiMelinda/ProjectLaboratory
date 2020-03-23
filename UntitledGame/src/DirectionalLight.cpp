@@ -1,6 +1,7 @@
 #include "DirectionalLight.h"
 
 
+/*
 DirectionalLight::DirectionalLight(DirLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_)
 	: object(object_),
 	camera(camera_)
@@ -155,6 +156,100 @@ void DirectionalLight::uploadObjectUniforms()
 void DirectionalLight::changeParams()
 {
 	ImGui::Begin("Point light params");
+	ImGui::Text("Press 'P' to let go of mouse.");
+
+	ImGui::SliderFloat("ambientStrength", &params.ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("diffuseStrength", &params.diffuseStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("specularStrength", &params.specularStrength, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
+
+	ImGui::End();
+}
+
+*/
+
+
+DirectionalLight::DirectionalLight(DirLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_) : LightBase(object_, shaderID_, camera_)
+{
+	std::cout << "DirectionalLight ctor" << std::endl;
+
+	params = params_;
+}
+
+glm::mat4 DirectionalLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
+{
+	//std::cout << "DirectionalLight::calculateLightSpaceMatrix()" << std::endl;
+
+	//lookAt(eye, center, up)
+	// eye = position of lightsource
+	// center = the point where the lightsource "looks", should be the scene center
+	// up = "camera up"
+	glm::mat4 lightViewMatrix = glm::lookAt(params.position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	float nearPlane = 0.1f;
+	float farPlane = 20.0f;
+
+	glm::mat4 lightProjMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, nearPlane, farPlane);
+
+	// create MVP
+	glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix * actModelMatrix;
+
+	return lightSpaceMatrix;
+}
+
+void DirectionalLight::updateMVP()
+{
+	//std::cout << "DirectionalLight::updateMVP()" << std::endl;
+
+	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);  // update in every frame (zoom)
+	modelMatrix = glm::mat4(1.0f);
+	//modelMatrix = glm::translate(modelMatrix, params.position);
+	modelMatrix = createModelMatrix(params.position, params.scale, params.angle, params.axes);
+
+	MVP = projectionMatrix * viewMatrix * modelMatrix;
+}
+
+void DirectionalLight::uploadLightUniforms()
+{
+	//std::cout << "DirectionalLight::uploadLightUniforms()" << std::endl;
+
+	glUniformMatrix4fv(lightUniforms.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniform3fv(lightUniforms.colorLoc, 1, glm::value_ptr(params.color));
+}
+
+void DirectionalLight::getObjectUniformLocations(GLuint objectShader)
+{
+	//std::cout << "DirectionalLight::getObjectUniformLocations()" << std::endl;
+
+	objectUniforms.positionLoc = glGetUniformLocation(objectShader, "dirLight.direction");
+	objectUniforms.colorLoc = glGetUniformLocation(objectShader, "dirLight.color");
+
+	objectUniforms.ambientStrengthLoc = glGetUniformLocation(objectShader, "dirLight.ambientStrength");
+	objectUniforms.diffuseStrengthLoc = glGetUniformLocation(objectShader, "dirLight.diffuseStrength");
+	objectUniforms.specularStrengthLoc = glGetUniformLocation(objectShader, "dirLight.specularStrength");
+}
+
+void DirectionalLight::uploadObjectUniforms()
+{
+	//std::cout << "DirectionalLight::uploadObjectUniforms()" << std::endl;
+	glm::vec3 direction = glm::vec3(0.0f) - params.position;
+
+	glUniform3fv(objectUniforms.positionLoc, 1, glm::value_ptr(direction));
+	glUniform3fv(objectUniforms.colorLoc, 1, glm::value_ptr(params.color));
+
+	glUniform1f(objectUniforms.ambientStrengthLoc, params.ambientStrength);
+	glUniform1f(objectUniforms.diffuseStrengthLoc, params.diffuseStrength);
+	glUniform1f(objectUniforms.specularStrengthLoc, params.specularStrength);
+}
+
+void DirectionalLight::changeParams()
+{
+	//std::cout << "DirectionalLight::changeParams()" << std::endl;
+
+	ImGui::Begin("Directional light params");
 	ImGui::Text("Press 'P' to let go of mouse.");
 
 	ImGui::SliderFloat("ambientStrength", &params.ambientStrength, 0.0f, 1.0f);

@@ -13,6 +13,7 @@
 #include "Data.h"
 #include "Camera.h"
 #include "Globals.h"
+#include "LightBase.h"
 
 struct PointLightParams
 {

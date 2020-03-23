@@ -10,6 +10,7 @@
 #include "Data.h"
 #include "Camera.h"
 #include "Globals.h"
+#include "LightBase.h"
 
 struct DirLightParams
 {
@@ -25,7 +26,7 @@ struct DirLightParams
 	std::string axes;
 };
 
-class DirectionalLight
+class DirectionalLight : public LightBase
 {
 private:
 	DirLightParams params = {};
@@ -40,22 +41,35 @@ private:
 	};
 	ObjectUniforms objectUniforms;  // for standard shader
 
-	struct LightUniforms {
-		int MVPloc;
-		int colorLoc;
-	};
-	LightUniforms lightUniforms;  // for light shader
+	//struct LightUniforms {
+		//int MVPloc;
+		//int colorLoc;
+	//};
+	//LightUniforms lightUniforms;  // for light shader
 
 	// variables for visualizing the light source
-	Data& object;
-	GLuint shaderID;
-	glm::mat4 modelMatrix;
-	glm::mat4 MVP;
-	Camera& camera;
+	//Data& object;
+	//GLuint shaderID;
+	//glm::mat4 modelMatrix;
+	//glm::mat4 MVP;
+	//Camera& camera;
 
 public:
 	DirectionalLight(DirLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_);
 
+	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix) override;
+
+	void updateMVP() override;
+
+	void uploadLightUniforms() override;
+
+	void getObjectUniformLocations(GLuint objectShader) override;
+
+	void uploadObjectUniforms() override;
+
+	void changeParams() override;
+
+	/*
 	void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
 	void uploadObjectUniforms();							// for Scene
 
@@ -75,5 +89,6 @@ private:
 public:
 	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
 	void changeParams();
+	*/
 };
 

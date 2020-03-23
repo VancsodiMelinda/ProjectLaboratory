@@ -32,6 +32,7 @@ uniform Light light;
 
 struct DirLight{
 	vec3 direction;
+	vec3 color;
 	
 	float ambientStrength;
 	float diffuseStrength;
@@ -99,8 +100,8 @@ void main()
 	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
 	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
 
-	//vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
-	vec3 finalColor = CalcPointLight();	// POINT LIGHT
+	vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
+	//vec3 finalColor = CalcPointLight();	// POINT LIGHT
 
 	fragColor = vec4(finalColor, 1.0);
 }
@@ -163,7 +164,7 @@ vec3 CalcDirLight()
 	float shadow = ShadowCalculation();
 
 	//return (ambient + diffuse + specular);
-	return (ambient + (1.0 - shadow) * (diffuse + specular));
+	return (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;
 }
 
 

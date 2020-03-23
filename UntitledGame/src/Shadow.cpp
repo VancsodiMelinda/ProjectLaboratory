@@ -1,8 +1,10 @@
 #include "Shadow.h"
 
 
+//Shadow::Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectData data_, glm::mat4 modelMatrix_,
+	//glm::vec3 lightPos_, int shadowWidth, int shadowHeight)
 Shadow::Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectData data_, glm::mat4 modelMatrix_,
-	glm::vec3 lightPos_, int shadowWidth, int shadowHeight)
+	glm::vec3 lightPos_)
 {
 	shaderID = shaderID_;
 	vao = vao_;
@@ -11,14 +13,14 @@ Shadow::Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo_, GLuint ibo_, objectDa
 	data = data_;
 	modelMatrix = modelMatrix_;
 	lightPos = lightPos_;
-	SHADOW_WIDTH = shadowWidth;
-	SHADOW_HEIGHT = shadowHeight;
+	//SHADOW_WIDTH = shadowWidth;
+	//SHADOW_HEIGHT = shadowHeight;
 }
 
 Shadow::Shadow()
 {
-	SHADOW_WIDTH = 1024;
-	SHADOW_HEIGHT = 1024;
+	//SHADOW_WIDTH = 1024;
+	//SHADOW_HEIGHT = 1024;
 	createTexture();	// shadowMap
 	createFBO();		// fbo
 }
@@ -55,7 +57,7 @@ void Shadow::createTexture()
 	glActiveTexture(GL_TEXTURE1);
 	glGenTextures(1, &shadowMap);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);  // allocate memory
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);  // allocate memory
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -137,10 +139,126 @@ void Shadow::render()
 	glDrawElements(GL_TRIANGLES, data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+
+void Shadow::initRenderShadowMap(GLuint quadShaderID)
+{
+	shadowQuad.quadShaderID = quadShaderID;
+
+	objectData shadowData;
+	shadowData.vertices = { -1.0f,  1.0f, 0.0f,
+						    -1.0f, -1.0f, 0.0f,
+							 1.0f, -1.0f, 0.0f,
+							 1.0f,  1.0f, 0.0f };
+
+	shadowData.uvs = { 0.0f, 1.0f,
+					   0.0f, 0.0f,
+					   1.0f, 0.0f,
+					   1.0f, 1.0f };
+
+	shadowData.indices = { 0, 1, 2,
+						   0, 2, 3 };
+
+	shadowQuad.indicesSize = shadowData.indices.size();
+
+	// create VAO, VBO and IBO
+	GLuint shadowVAO;
+	glGenVertexArrays(1, &shadowVAO);
+	glBindVertexArray(shadowVAO);
+
+	shadowQuad.shadowVAO = shadowVAO;
+
+	GLuint shadowVBO;
+	glGenBuffers(1, &shadowVBO);
+
+	GLuint shadowIBO;
+	glGenBuffers(1, &shadowIBO);
+
+	// fill VBOs
+	glBindBuffer(GL_ARRAY_BUFFER, shadowVBO);  // bind VBO
+	glBufferData(GL_ARRAY_BUFFER, (shadowData.vertices.size() + shadowData.uvs.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);							// reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, shadowData.vertices.size() * sizeof(GL_FLOAT), &shadowData.vertices[0]);										// VERTEX COORDINATES
+	glBufferSubData(GL_ARRAY_BUFFER, shadowData.vertices.size() * sizeof(GL_FLOAT), shadowData.uvs.size() * sizeof(GL_FLOAT), &shadowData.uvs[0]);		// TEXTURE COORDINATES
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shadowIBO);  // bind IBO
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shadowData.indices.size() * sizeof(GLuint), &shadowData.indices[0], GL_STATIC_DRAW);								// INDICES
+
+	glBindVertexArray(0);  // unbind VAO
+
+	// configure vertex attributes
+	glBindVertexArray(shadowVAO);  // bind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, shadowVBO);  // bind VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shadowIBO);  // bind IBO
+
+	GLuint positionAttribIndex = glGetAttribLocation(quadShaderID, "in_vertexPosition");	// layout (location = 0) in vec3 in_vertexPosition;
+	GLuint textureAttribIndex = glGetAttribLocation(quadShaderID, "in_textureCoords");		// layout (location = 1) in vec2 in_textureCoords;
+
+	glEnableVertexAttribArray(positionAttribIndex);
+	glEnableVertexAttribArray(textureAttribIndex);
+
+	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
+	GLintptr tOffset = shadowData.vertices.size() * sizeof(GL_FLOAT);
+	int stride3f = 3 * sizeof(GL_FLOAT);
+	int stride2f = 2 * sizeof(GL_FLOAT);
+
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
+	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2f, (GLvoid*)tOffset);
+
+	glBindVertexArray(0);  // unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
+
+	// get uniform locations
+	shadowQuad.shadowMapLoc = glGetUniformLocation(quadShaderID, "shadowMap");
+	shadowQuad.shadowMPVLoc = glGetUniformLocation(quadShaderID, "MVP");
+}
+
+void Shadow::renderShadowMap()
+{
+	glUseProgram(shadowQuad.quadShaderID);
+
+	// update MVP
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 2.0f, 4.0f);				// 1st PARAM
+	glm::vec3 cameraFront = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::vec3 cameraTarget = glm::vec3(cameraPosition + cameraFront);	// 2nd PARAM
+	glm::vec3 cameraRight = glm::vec3(glm::normalize(glm::cross(worldUp, cameraFront)));  // UNIT VECTOR
+	glm::vec3 cameraUp = glm::cross(cameraFront, cameraRight);			// UNIT VECTOR  3rd PARAM
+	glm::mat4 shadowViewMatrix = glm::lookAt(glm::vec3(0.0f, 2.0f, 4.0f), cameraTarget, cameraUp);
+
+	//glm::mat4 shadowViewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	//glm::mat4 shadowProjectionMatrix = glm::perspective(glm::radians(45.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
+	glm::mat4 shadowProjectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
+	glm::mat4 shadowModelMatrix = glm::mat4(1.0f);
+	shadowModelMatrix = glm::translate(shadowModelMatrix, glm::vec3(1.5f, 1.0f, 0.0f));
+	shadowModelMatrix = glm::scale(shadowModelMatrix, glm::vec3(0.5f));
+	glm::mat4 shadowMVP = shadowProjectionMatrix * shadowViewMatrix * shadowModelMatrix;
+
+	// upload uniforms
+	glUniform1i(shadowQuad.shadowMapLoc, 0);
+	glUniformMatrix4fv(shadowQuad.shadowMPVLoc, 1, GL_FALSE, glm::value_ptr(shadowMVP));
+
+	// bind VAO and sampler
+	glBindVertexArray(shadowQuad.shadowVAO);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+
+	// render
+	glDrawElements(GL_TRIANGLES, shadowQuad.indicesSize, GL_UNSIGNED_INT, 0);
+}
+
 void Shadow::uploadUniforms()  // in every frame
 {
 	// upload uniform variables
 	glUniformMatrix4fv(uniLocs.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+}
+
+void Shadow::updateMVP()
+{
+	// glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix * actModelMatrix;
+	//MVP = light.calculateLightSpaceMatrix(modelMatrix);
 }
 
 

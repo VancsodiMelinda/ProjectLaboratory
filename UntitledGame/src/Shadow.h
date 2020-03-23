@@ -15,6 +15,8 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "Globals.h"
+#include "Data.h"
 
 class Shadow
 {
@@ -82,6 +84,15 @@ private:
 	glm::mat4 modelMatrix;
 	glm::vec3 lightPos;
 
+	struct ShadowQuad {
+		GLuint quadShaderID;
+		int shadowMapLoc;
+		GLuint shadowVAO;
+		int indicesSize;
+		int shadowMPVLoc;
+	};
+	ShadowQuad shadowQuad = { 0 };
+
 public:
 	int SHADOW_WIDTH;
 	int SHADOW_HEIGHT;
@@ -89,11 +100,16 @@ public:
 	GLuint shadowMap;
 	GLuint fbo;
 	
-	Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
-		glm::vec3 lightPos_, int shadowWidth, int shadowHeight);
 	Shadow();
+	//Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
+		//glm::vec3 lightPos_, int shadowWidth, int shadowHeight);
+	Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
+		glm::vec3 lightPos_);
 	void initialize();
 	void render();
+
+	void initRenderShadowMap(GLuint quadShaderID);
+	void renderShadowMap();
 
 private:
 	void createMVP();
@@ -103,5 +119,6 @@ private:
 	void getUniformLocations();
 
 	void uploadUniforms();
+	void updateMVP();
 };
 
