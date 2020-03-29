@@ -263,7 +263,7 @@ int main(void)
 
 	DirLightParams dirLightParams;
 	{
-		dirLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
+		dirLightParams.position = glm::vec3(1.0f, 1.0f, -1.0f);
 		dirLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		dirLightParams.ambientStrength = 0.3f;
@@ -279,23 +279,38 @@ int main(void)
 	gg.initialize();
 
 	// CREATE SHADOWS
-	Shadow shadow;  // create shadowMap texture and fbo frame buffer object
+
+	Data defaultData;
+	LightBase defaultLight(defaultData, camera);
+
+	Shadow shadow(defaultData, defaultLight);  // create shadowMap and fbo
 	shadow.initRenderShadowMap(quadShader.programObject);
+
+	//Shadow shadow;  // create shadowMap texture and fbo frame buffer object
+	//shadow.initRenderShadowMap(quadShader.programObject);
 
 	//Shadow suzanneShadow(shadowShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	//suzanneShadow.initialize();
 
 	//Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos);
-	groundShadow.initialize();
+	//Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos);
+	//groundShadow.initialize();
 
 	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos);
-	cubeShadow.initialize();
+	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos);
+	//cubeShadow.initialize();
 
 	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, dirLightParams.position);
+	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, dirLightParams.position);
+	//Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLightParams.position);
+	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, gg);
 	raptorShadow.initialize();
+
+	//Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLightParams.position);
+	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, gg);
+	groundShadow.initialize();
+
+	//raptorShadow.init();
 
 	// CREATE OBJECTS
 	/*
@@ -383,6 +398,7 @@ int main(void)
 		//groundShadow.render();
 		//cubeShadow.render();
 		raptorShadow.render();
+		groundShadow.render();
 		glCullFace(GL_BACK);  // this
 
 		//shTest5.render();

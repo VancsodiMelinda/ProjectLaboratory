@@ -17,19 +17,20 @@ class LightBase
 {
 public:  // derived classes can see member vars
 	struct LightUniforms {
-		int MVPloc;
-		int colorLoc;
+		int MVPloc		= 0;
+		int colorLoc	= 0;
 	};
 	LightUniforms lightUniforms;  // for light shader
 
 	// variables for visualizing the light source
 	Data& object;
-	GLuint shaderID;
-	glm::mat4 modelMatrix;
-	glm::mat4 MVP;
+	GLuint shaderID				= 0;
+	glm::mat4 modelMatrix		= glm::mat4(0.0f);
+	glm::mat4 MVP				= glm::mat4(0.0f);
 	Camera& camera;
 
 public:		LightBase(Data& object_, GLuint shaderID_, Camera& camera_);
+			LightBase(Data& object_, Camera& camera_);
 
 public:		virtual glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
 
@@ -45,6 +46,5 @@ public:		glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float
 public:		virtual void getObjectUniformLocations(GLuint objectShader);	// for Scene, needs standard shader
 			virtual void uploadObjectUniforms();							// for Scene
 			virtual void changeParams();
-
 };
 

@@ -203,6 +203,16 @@
     <ClInclude Include="src\Test.h" />
     <ClInclude Include="src\Test2.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\DebugQuadFS.frag" />
+    <None Include="src\DebugQuadVS.vert" />
+    <None Include="src\FragmentShader.frag" />
+    <None Include="src\LightObjFragmentShader.frag" />
+    <None Include="src\LightObjVertexShader.vert" />
+    <None Include="src\ShadowFS.frag" />
+    <None Include="src\ShadowVS.vert" />
+    <None Include="src\VertexShader.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

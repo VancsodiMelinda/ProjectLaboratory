@@ -177,6 +177,8 @@ DirectionalLight::DirectionalLight(DirLightParams params_, Data& object_, GLuint
 	params = params_;
 }
 
+
+
 glm::mat4 DirectionalLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
 {
 	//std::cout << "DirectionalLight::calculateLightSpaceMatrix()" << std::endl;
@@ -198,18 +200,19 @@ glm::mat4 DirectionalLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
 	return lightSpaceMatrix;
 }
 
+
 void DirectionalLight::updateMVP()
 {
 	//std::cout << "DirectionalLight::updateMVP()" << std::endl;
 
-	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	glm::mat4 viewMatrix = LightBase::camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
 	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);  // update in every frame (zoom)
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(LightBase::camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);  // update in every frame (zoom)
 	modelMatrix = glm::mat4(1.0f);
 	//modelMatrix = glm::translate(modelMatrix, params.position);
 	modelMatrix = createModelMatrix(params.position, params.scale, params.angle, params.axes);
 
-	MVP = projectionMatrix * viewMatrix * modelMatrix;
+	LightBase::MVP = projectionMatrix * viewMatrix * modelMatrix;
 }
 
 void DirectionalLight::uploadLightUniforms()
@@ -257,6 +260,8 @@ void DirectionalLight::changeParams()
 	ImGui::SliderFloat("specularStrength", &params.specularStrength, 0.0f, 1.0f);
 
 	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
+	ImGui::SliderFloat("y position", &params.position.y, -5.0f, 5.0f);
+	ImGui::SliderFloat("z position", &params.position.z, -5.0f, 5.0f);
 
 	ImGui::End();
 }

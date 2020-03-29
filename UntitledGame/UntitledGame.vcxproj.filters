@@ -181,4 +181,14 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\FragmentShader.frag" />
+    <None Include="src\VertexShader.vert" />
+    <None Include="src\ShadowFS.frag" />
+    <None Include="src\ShadowVS.vert" />
+    <None Include="src\LightObjVertexShader.vert" />
+    <None Include="src\LightObjFragmentShader.frag" />
+    <None Include="src\DebugQuadVS.vert" />
+    <None Include="src\DebugQuadFS.frag" />
+  </ItemGroup>
 </Project>

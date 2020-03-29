@@ -201,9 +201,9 @@ void Scene::uploadUniforms()
 	//ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//ImGui::ColorEdit3("light color", (float*)&clear_color);
 
-	static float pl_ambientStrength = 0.1;
-	static float pl_diffuseStrength = 0.7;
-	static float pl_specularStrength = 0.5;
+	static float pl_ambientStrength = 0.1f;
+	static float pl_diffuseStrength = 0.7f;
+	static float pl_specularStrength = 0.5f;
 	
 	//ImGui::SliderFloat("ambientStrength", &pl_ambientStrength, 0.0f, 1.0f);
 	//ImGui::SliderFloat("diffuseStrength", &pl_diffuseStrength, 0.0f, 1.0f);

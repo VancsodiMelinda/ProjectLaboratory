@@ -22,10 +22,11 @@ private:
 
 public:
 	objectData data;
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
+	GLuint vao = 0;
+	GLuint vbo = 0;
+	GLuint ibo = 0;
 
+	Data();
 	Data(std::string objectFileName_);  // constructor
 	void initialize();
 

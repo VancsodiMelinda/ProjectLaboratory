@@ -1,5 +1,7 @@
 #include "Data.h"
 
+Data::Data() = default;
+
 Data::Data(std::string objectFileName_)
 {
 	objectFileName = objectFileName_;

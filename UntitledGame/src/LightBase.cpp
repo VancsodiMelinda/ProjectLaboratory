@@ -14,6 +14,14 @@ LightBase::LightBase(Data& object_, GLuint shaderID_, Camera& camera_):
 	lightUniforms = { 0 };
 }
 
+LightBase::LightBase(Data& object_, Camera& camera_) :
+	object(object_),
+	camera(camera_)
+{
+	std::cout << "LightBase default ctor" << std::endl;
+}
+
+
 glm::mat4 LightBase::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)  // virtual
 {
 	return glm::mat4();

@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "Globals.h"
 #include "Data.h"
+#include "LightBase.h"
 
 class Shadow
 {
@@ -72,53 +73,65 @@ public:
 	
 private:
 	struct uniforms {
-		int MVPloc;
+		int MVPloc = 0;
 	};
 	uniforms uniLocs;
 
-	GLuint shaderID;
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
-	objectData data;
-	glm::mat4 modelMatrix;
-	glm::vec3 lightPos;
+	GLuint shaderID = 0;
+	//GLuint vao;
+	//GLuint vbo;
+	//GLuint ibo;
+	//objectData data;
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	//glm::vec3 lightPos = glm::vec3(1.0f);
+	LightBase& light;
 
 	struct ShadowQuad {
-		GLuint quadShaderID;
-		int shadowMapLoc;
-		GLuint shadowVAO;
-		int indicesSize;
-		int shadowMPVLoc;
+		GLuint quadShaderID	= 0;
+		int shadowMapLoc	= 0;
+		GLuint shadowVAO	= 0;
+		int indicesSize		= 0;
+		int shadowMPVLoc	= 0;
 	};
-	ShadowQuad shadowQuad = { 0 };
+	ShadowQuad shadowQuad;
+
+	Data& object;
 
 public:
-	int SHADOW_WIDTH;
-	int SHADOW_HEIGHT;
-	glm::mat4 MVP;
-	GLuint shadowMap;
-	GLuint fbo;
+	glm::mat4 MVP = glm::mat4(1.0f);
+	GLuint shadowMap = 0;
+	GLuint fbo = 0;
 	
-	Shadow();
+	// constructor(s)
+	Shadow(Data& object_, LightBase& light_);
 	//Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
 		//glm::vec3 lightPos_, int shadowWidth, int shadowHeight);
-	Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
-		glm::vec3 lightPos_);
-	void initialize();
-	void render();
+	//Shadow(GLuint shaderID_, GLuint vao_, GLuint vbo, GLuint ibo, objectData data_, glm::mat4 modelMatrix_,
+		//glm::vec3 lightPos_);
+	//Shadow(GLuint shaderID_, Data& object_, glm::mat4 modelMatrix_, glm::vec3 lightPos_);
+	Shadow(GLuint shaderID_, Data& object_, glm::mat4 modelMatrix_, LightBase& light_);
 
-	void initRenderShadowMap(GLuint quadShaderID);
-	void renderShadowMap();
+// create texture and fbo for shadow map, run only once
+private:	void createTexture();
+			void createFBO();
+
+// initialize shadow for each object
+public:		void initialize();
+private:	void createMVP();
+			void configVertexAttributes();
+			void getUniformLocations();
+
+// render object into shadow map for each object
+public:		void render();
+private:	void uploadUniforms();
+
+// render shadow map to a quad on screen
+public:		void initRenderShadowMap(GLuint quadShaderID);
+			void renderShadowMap();
+
+	//void init();
 
 private:
-	void createMVP();
-	void createTexture();
-	void createFBO();
-	void configVertexAttributes();
-	void getUniformLocations();
-
-	void uploadUniforms();
 	void updateMVP();
 };
 

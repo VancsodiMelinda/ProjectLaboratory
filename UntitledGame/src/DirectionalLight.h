@@ -14,30 +14,31 @@
 
 struct DirLightParams
 {
-	glm::vec3 position;
-	glm::vec3 color;
+	glm::vec3 position		= glm::vec3(0.0f);
+	glm::vec3 color			= glm::vec3(0.0f);
 
-	float ambientStrength;
-	float diffuseStrength;
-	float specularStrength;
+	float ambientStrength	= 0.0f;
+	float diffuseStrength	= 0.0f;
+	float specularStrength	= 0.0f;
 
-	glm::vec3 scale;
-	float angle;
-	std::string axes;
+	glm::vec3 scale			= glm::vec3(0.0f);
+	float angle				= 0.0f;
+	std::string axes		= "x";
 };
 
 class DirectionalLight : public LightBase
 {
+public:
+	DirLightParams params;
+
 private:
-	DirLightParams params = {};
-
 	struct ObjectUniforms {
-		int positionLoc;
-		int colorLoc;
+		int positionLoc				= 0;
+		int colorLoc				= 0;
 
-		int ambientStrengthLoc;
-		int diffuseStrengthLoc;
-		int specularStrengthLoc;
+		int ambientStrengthLoc		= 0;
+		int diffuseStrengthLoc		= 0;
+		int specularStrengthLoc		= 0;
 	};
 	ObjectUniforms objectUniforms;  // for standard shader
 
