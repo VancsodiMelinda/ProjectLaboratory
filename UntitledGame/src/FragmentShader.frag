@@ -9,6 +9,7 @@ out vec4 fragColor;
 
 //uniform sampler2D tex;
 uniform sampler2D shadowMap;
+//uniform sampler2D projectiveMap;
 
 uniform vec3 lightColor;  // white light
 uniform vec3 lightPos;  // position in world space
@@ -60,6 +61,7 @@ uniform PointLight pointLight;
 float ShadowCalculation();
 vec3 CalcDirLight();
 vec3 CalcPointLight();
+vec3 ProjectiveTextureMapping(vec3 currentColor);
 
 void main()
 {	
@@ -102,11 +104,38 @@ void main()
 
 	vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
 	//vec3 finalColor = CalcPointLight();	// POINT LIGHT
+	//vec3 otherColor = ProjectiveTextureMapping();
+	vec3 otherColor = ProjectiveTextureMapping(finalColor);
 
-	fragColor = vec4(finalColor, 1.0);
+	//fragColor = vec4(finalColor, 1.0);
+	fragColor = vec4(otherColor, 1.0);
 }
 
+vec3 ProjectiveTextureMapping(vec3 currentColor)
+{
+	vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;  // [-1, 1]
+	projCoords = (projCoords * 0.5) + 0.5;  // [0, 1]
 
+	vec3 pixelColor = vec3(0.0, 0.0, 0.0);
+	float multiplier = 0.0;
+
+	if ((0.0 <= projCoords.x) && (projCoords.x <= 1.0) && (0.0 <= projCoords.y) && (projCoords.y <= 1.0))
+	{
+		//pixelColor = vec3(1.0, 0.0, 0.0);
+		pixelColor = texture(material.diffuseMap, projCoords.xy).rgb;
+		multiplier = 0.5;
+	}
+
+	//vec3 pixelColor = texture(material.diffuseMap, projCoords.xy).rgb;
+
+	//float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPos - out_worldVertexPos)), 0.005);
+	//float closestDepth = texture(shadowMap, projCoords.xy).r;
+	//float currentDepth = projCoords.z - shadowBias;
+	//float pcfDepth = texture(shadowMap, projCoords.xy).r;
+	//float shadow = currentDepth > pcfDepth ? 1.0 : 0.0;
+
+	return ((multiplier * pixelColor) + ((1.0 - multiplier) * currentColor));
+}
 
 
 //float ShadowCalculation(vec4 lightVertexPos)
