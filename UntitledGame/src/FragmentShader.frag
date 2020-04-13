@@ -9,7 +9,7 @@ out vec4 fragColor;
 
 //uniform sampler2D tex;
 uniform sampler2D shadowMap;
-//uniform sampler2D projectiveMap;
+uniform sampler2D projectiveMap;
 
 uniform vec3 lightColor;  // white light
 uniform vec3 lightPos;  // position in world space
@@ -122,7 +122,7 @@ vec3 ProjectiveTextureMapping(vec3 currentColor)
 	if ((0.0 <= projCoords.x) && (projCoords.x <= 1.0) && (0.0 <= projCoords.y) && (projCoords.y <= 1.0))
 	{
 		//pixelColor = vec3(1.0, 0.0, 0.0);
-		pixelColor = texture(material.diffuseMap, projCoords.xy).rgb;
+		pixelColor = texture(projectiveMap, projCoords.xy).rgb;
 		multiplier = 0.5;
 	}
 

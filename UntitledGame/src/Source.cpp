@@ -333,14 +333,14 @@ int main(void)
 	*/
 	////////////////////////////// BRAND NEW //////////////////////////////
 	//Scene2 wut2(raptorData, model1, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
-	Scene2 wut2(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, gg);
+	Scene2 wut2(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, gg, texture[5]);
 	wut2.initialize();
 
 	//Scene2 wut3(cubeData, model2, objShader.programObject, camera, texture[1], texture[6], shadow.shadowMap, wut);
 	//wut3.initialize();
 
 	//Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
-	Scene2 wut4(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, gg);
+	Scene2 wut4(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, gg, texture[5]);
 	wut4.initialize();
 	
 	bool show_demo_window = true;

@@ -27,6 +27,7 @@ private:
 		int shininessLoc;
 
 		int shadowMapLoc;
+		int projectiveMapLoc;
 	};
 	Uniforms uniforms;
 
@@ -48,6 +49,7 @@ private:
 	GLuint diffuseMap;
 	GLuint specularMap;
 	GLuint shadowMap;
+	GLuint projectiveMap;
 
 	// camera
 	Camera& camera;
@@ -56,7 +58,7 @@ public:
 	//Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
 		//GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, PointLight& pointLight_);
 	Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
-		GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, LightBase& pointLight_);
+		GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, LightBase& pointLight_, GLuint projectiveMap_);
 
 	void initialize();
 private:
