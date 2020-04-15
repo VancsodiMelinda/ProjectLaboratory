@@ -128,22 +128,18 @@ int main(void)
 
 	// shader for objects
 	Shader objShader("src/VertexShader.vert", "src/FragmentShader.frag");
-	//objShader.runShaderCode();
 	objShader.initialize();
 
 	// shader for lightsource object
 	Shader lightObjShader("src/LightObjVertexShader.vert", "src/LightObjFragmentShader.frag");
-	//lightObjShader.runShaderCode();
 	lightObjShader.initialize();
 
 	// shader for shadow
 	Shader shadowShader("src/ShadowVS.vert", "src/ShadowFS.frag");
-	//shadowShader.runShaderCode();
 	shadowShader.initialize();
 
 	// shader for quad
 	Shader quadShader("src/DebugQuadVS.vert", "src/DebugQuadFS.frag");
-	//quadShader.runShaderCode();
 	quadShader.initialize();
 
 	/////////////////////////// TEXTURE ///////////////////////////
@@ -182,9 +178,9 @@ int main(void)
 
 	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(2.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
 		//camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
-	Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
-		camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
-	light.initialize();
+	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
+		//camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
+	//light.initialize();
 	
 	
 	/////////////////////////// SHOW SHADOW ///////////////////////////
@@ -393,13 +389,13 @@ int main(void)
 		//glReadBuffer(GL_NONE);
 
 
-		glCullFace(GL_FRONT);  // this
+		//glCullFace(GL_FRONT);  // this
 		//suzanneShadow.render();
 		//groundShadow.render();
 		//cubeShadow.render();
 		raptorShadow.render();
 		groundShadow.render();
-		glCullFace(GL_BACK);  // this
+		//glCullFace(GL_BACK);  // this
 
 		//shTest5.render();
 		//obj1.render(camera);
