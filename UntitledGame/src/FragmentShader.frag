@@ -120,26 +120,23 @@ vec3 ProjectiveTextureMapping(vec3 currentColor, vec3 lightVector)
 	float multiplier = 0.0;
 
 	//float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightVector)), 0.005);
-	float shadowBias = max(0.05 * (1.0 - dot(normalize(out_normalVec), lightVector)), 0.0);
+	float bias = max(0.05 * (1.0 - dot(normalize(out_normalVec), lightVector)), 0.005);
 	float closestDepth = texture(shadowMap, projCoords.xy).r;	// depth in shadow map
-	float currentDepth = projCoords.z;// - shadowBias;			// depth in scene
-	float bias = 0.0;
-
-	// new bias calculation
-	if (abs(closestDepth - currentDepth) < 0.001)
-	{
-		bias = abs(closestDepth - currentDepth)*10;
-	}
+	float currentDepth = projCoords.z;			// depth in scene
 
 	bool condition1 = (0.0 <= projCoords.x) && (projCoords.x <= 1.0) && (0.0 <= projCoords.y) && (projCoords.y <= 1.0);	// if vertex is in the frustum
-	bool condition2 = dot(normalize(out_normalVec), lightVector) > 0.0;													// if vertex is "facing" the lightsource
-	bool condition3 = (currentDepth - bias) < closestDepth;																// vertex is not in shadow
-	bool condition4 = (currentDepth - shadowBias) < closestDepth;
+	bool condition2 = dot(normalize(out_normalVec), lightVector) >= 0.0;	// if vertex is "facing" the lightsource
+	bool condition3 = (currentDepth - bias) < closestDepth;	// not in shadow
 
+	float diffuseImpact = max(dot(normalize(out_normalVec), lightVector), 0.0);
+
+	//if (condition1 && condition2 && condition3)
 	if (condition1 && condition3)
 	{
+		//pixelColor = diffuseImpact * vec3(1.0, 0.0, 0.0);
+		pixelColor = diffuseImpact * texture(projectiveMap, projCoords.xy).rgb;	// without condition2
 		//pixelColor = vec3(1.0, 0.0, 0.0);
-		pixelColor = texture(projectiveMap, projCoords.xy).rgb;
+		//pixelColor = texture(projectiveMap, projCoords.xy).rgb;	// with condition2
 		multiplier = 0.5;
 	}
 
@@ -209,6 +206,7 @@ vec3 CalcDirLight()
 	//return (ambient + diffuse + specular);
 	//return (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;
 	return otherColor;
+	//return currentColor;
 }
 
 

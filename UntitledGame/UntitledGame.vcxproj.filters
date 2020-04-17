@@ -90,6 +90,9 @@
     <ClCompile Include="src\LightBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -100,6 +103,8 @@
     <Text Include="src\ShadowFS.txt" />
     <Text Include="src\DebugQuadVS.txt" />
     <Text Include="src\DebugQuadFS.txt" />
+    <Text Include="src\shaders\Skybox.frag" />
+    <Text Include="src\shaders\Skybox.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Transformation.h">
@@ -178,6 +183,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LightBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -36,6 +36,7 @@
 #include "PointLight.h"
 #include "Scene2.h"
 #include "DirectionalLight.h"
+#include "Skybox.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -338,6 +339,13 @@ int main(void)
 	//Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
 	Scene2 wut4(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, gg, texture[5]);
 	wut4.initialize();
+
+
+	// SKYBOX
+	//Data skyboxData("resources/skybox.obj");
+	//skyboxData.initialize();
+	//Skybox skybox(skyboxData);
+
 	
 	bool show_demo_window = true;
 	bool show_another_window = true;
@@ -367,67 +375,25 @@ int main(void)
 
 		// specify clear values for the buffers
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClearDepth(1.0f);
 		glClearStencil(0);
-
-		/*
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		test2.render();
-		*/
-
 		
-		// SHADOW CODE 1
+		// RENDER SHADOW
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);  // set viewport
-		//glBindFramebuffer(GL_FRAMEBUFFER, fbo);  // bind application-created framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadow.fbo);  // bind application-created framebuffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
 		glEnable(GL_DEPTH_TEST);  // if enabled, do depth comparison and update the depth buffer
-		//glDrawBuffer(GL_NONE);
-		//glReadBuffer(GL_NONE);
-
 
 		//glCullFace(GL_FRONT);  // this
-		//suzanneShadow.render();
-		//groundShadow.render();
-		//cubeShadow.render();
 		raptorShadow.render();
 		groundShadow.render();
 		//glCullFace(GL_BACK);  // this
 
-		//shTest5.render();
-		//obj1.render(camera);
-
-		/*
-		// SHADOW CODE 2
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);  // bind window-system-provided framebuffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
-		glDisable(GL_DEPTH_TEST);
-		//glDrawBuffer(GL_BACK);
-		//glReadBuffer(GL_BACK);
-		quadShader.useShader();
-		glBindVertexArray(quadVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, shadow.shadowMap);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//glDrawArrays(GL_LINES, 0, 6);
-		//renderQuad();
-		*/
-
-		// this is a comment
-		// ORIGINAL RENDERING
+		// RENDER SCENE
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		//light.render(camera);
-		//suzanne.render(camera);
-		//ground.render(camera);
-		//cube.render(camera);
-		//raptor.render(camera);
 
 		//wut.render(camera);		// point light object
 		gg.render(camera);
@@ -439,6 +405,10 @@ int main(void)
 		
 		//wut.changeParams();
 		gg.changeParams();
+		
+
+		// render skybox
+		//skybox.render(camera);
 
 		// Rendering ImGui
 		ImGui::Render();
