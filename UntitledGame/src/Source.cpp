@@ -46,7 +46,6 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 static void cursor_position_callback_2(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processKeyInput(GLFWwindow* window);
-void renderQuad();
 glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
 
 // global camera variables
@@ -128,26 +127,28 @@ int main(void)
 	/////////////////////////// SHADER ///////////////////////////
 
 	// shader for objects
-	Shader objShader("src/VertexShader.vert", "src/FragmentShader.frag");
+	Shader objShader("src/shaders/Object.vert", "src/shaders/Object.frag");
 	objShader.initialize();
 
 	// shader for lightsource object
-	Shader lightObjShader("src/LightObjVertexShader.vert", "src/LightObjFragmentShader.frag");
+	Shader lightObjShader("src/shaders/Light.vert", "src/shaders/Light.frag");
 	lightObjShader.initialize();
 
 	// shader for shadow
-	Shader shadowShader("src/ShadowVS.vert", "src/ShadowFS.frag");
+	Shader shadowShader("src/shaders/Shadow.vert", "src/shaders/Shadow.frag");
 	shadowShader.initialize();
 
-	// shader for quad
-	Shader quadShader("src/DebugQuadVS.vert", "src/DebugQuadFS.frag");
+	// shader for shadowmap quad
+	Shader quadShader("src/shaders/DebugQuad.vert", "src/shaders/DebugQuad.frag");
 	quadShader.initialize();
+
+	// skybox shader is created in the Skybox class
 
 	/////////////////////////// TEXTURE ///////////////////////////
 
-	GLuint texture[7];
+	GLuint texture[8];
 
-	Texture tex1("resources/Color Grid Texture.png");
+	Texture tex1("resources/diffuse maps/color grid.png");
 	tex1.setUpTexture();
 	texture[0] = tex1.textureID;
 
@@ -155,7 +156,7 @@ int main(void)
 	tex2.setUpTexture();
 	texture[1] = tex2.textureID;
 
-	Texture tex3("resources/test grid.png");
+	Texture tex3("resources/diffuse maps/uv grid.png");
 	tex3.setUpTexture();
 	texture[2] = tex3.textureID;
 
@@ -175,46 +176,17 @@ int main(void)
 	tex7.setUpTexture();
 	texture[6] = tex7.textureID;
 
-	/////////////////////////// LIGHT ///////////////////////////
-
-	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(2.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
-		//camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
-	//Light light("resources/RubiksCube.obj", lightObjShader.programObject, glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.2f, 0.2f), 0.6f, "x",
-		//camera, WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(1.0f, 1.0f, 1.0f));
-	//light.initialize();
-	
-	
-	/////////////////////////// SHOW SHADOW ///////////////////////////
-	
-	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-		// positions   // texCoords
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
-	};
-	// screen quad VAO
-	unsigned int quadVAO, quadVBO;
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	Texture tex8("resources/specular maps/white.png");
+	tex8.setUpTexture();
+	texture[7] = tex8.textureID;
 	
 	////////////////////////////// NEW TEST /////////////////////////
 	const unsigned int SHADOW_WIDTH = 1024;
 	const unsigned int SHADOW_HEIGHT = 1024;
 
-	// LOAD OBJECT DATA
-	//Data suzanneData("resources/NewSuzanne.obj");
-	//suzanneData.initialize();
+	/////////////////////////// LOAD OBJECTS ///////////////////////////
+	Data suzanneData("resources/NewSuzanne.obj");
+	suzanneData.initialize();
 
 	Data groundData("resources/Ground.obj");
 	groundData.initialize();
@@ -225,14 +197,18 @@ int main(void)
 	Data raptorData("resources/Velociraptor.obj");
 	raptorData.initialize();
 
-	// CREATE MODEL MATRIXES
+	Data sphereData("resources/objects/sphere.obj");
+	sphereData.initialize();
+
+	// CREATE MODEL MATRIXES - translate, scale, rotate
 	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -35.0f, "x");
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
-	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
+	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
 	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y");
 
-	////////////////////// NEW POINTLIGHT NEW /////////////////////////
-
+	/////////////////////////// LIGHTS ///////////////////////////
+	// TODO: pointlight
+	/*
 	PointLightParams pointLightParams;
 	{
 		pointLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
@@ -257,7 +233,8 @@ int main(void)
 	//PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
 	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, camera);
 	wut.initialize();
-
+	*/
+	// DONE: directional light
 	DirLightParams dirLightParams;
 	{
 		dirLightParams.position = glm::vec3(1.0f, 1.0f, -1.0f);
@@ -267,15 +244,15 @@ int main(void)
 		dirLightParams.diffuseStrength = 0.6f;
 		dirLightParams.specularStrength = 0.9f;
 
-		dirLightParams.scale = glm::vec3(0.4f);
-		dirLightParams.angle = 40.0f;
+		dirLightParams.scale = glm::vec3(0.2f);
+		dirLightParams.angle = 0.0f;
 		dirLightParams.axes = "x";
 	}
 
-	DirectionalLight gg(dirLightParams, cubeData, lightObjShader.programObject, camera);
-	gg.initialize();
+	DirectionalLight dirLight(dirLightParams, sphereData, lightObjShader.programObject, camera);
+	dirLight.initialize();
 
-	// CREATE SHADOWS
+	/////////////////////////// SHADOW ///////////////////////////
 
 	Data defaultData;
 	LightBase defaultLight(defaultData, camera);
@@ -300,53 +277,32 @@ int main(void)
 	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
 	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, dirLightParams.position);
 	//Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLightParams.position);
-	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, gg);
+	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLight);
 	raptorShadow.initialize();
 
 	//Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLightParams.position);
-	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, gg);
+	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLight);
 	groundShadow.initialize();
+
+	Shadow cubeShadow(shadowShader.programObject, cubeData, cubeModelMatrix, dirLight);
+	cubeShadow.initialize();
 
 	//raptorShadow.init();
 
-	// CREATE OBJECTS
-	/*
-	//Scene suzanne(objShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix,
-		//light.lightColor, light.lightPos, suzanneShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[5], shadow.shadowMap);
-	//suzanne.initialize();
+	/////////////////////////// SCENE ///////////////////////////
+	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6], shadow.shadowMap, dirLight, texture[5]);
+	raptorObject.initialize();
 
-	Scene ground(objShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix,
-		light.lightColor, light.lightPos, groundShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[3], shadow.shadowMap, texture[6]);
-	ground.initialize();
+	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, dirLight, texture[5]);
+	groundObject.initialize();
 
-	//Scene cube(objShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix,
-		//light.lightColor, light.lightPos, cubeShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[1], shadow.shadowMap);
-	//cube.initialize();
-
-	// THIS
-	Scene raptor(objShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix,
-		light.lightColor, light.lightPos, raptorShadow.MVP, camera, WINDOW_WIDTH, WINDOW_HEIGHT, texture[0], shadow.shadowMap, texture[6]);
-	raptor.initialize();
-	*/
-	////////////////////////////// BRAND NEW //////////////////////////////
-	//Scene2 wut2(raptorData, model1, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, wut);
-	Scene2 wut2(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[0], texture[6], shadow.shadowMap, gg, texture[5]);
-	wut2.initialize();
-
-	//Scene2 wut3(cubeData, model2, objShader.programObject, camera, texture[1], texture[6], shadow.shadowMap, wut);
-	//wut3.initialize();
-
-	//Scene2 wut4(groundData, model3, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, wut);
-	Scene2 wut4(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, gg, texture[5]);
-	wut4.initialize();
-
+	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7], shadow.shadowMap, dirLight, texture[5]);
+	cubeObject.initialize();
 
 	// SKYBOX
-	//Data skyboxData("resources/skybox.obj");
-	//skyboxData.initialize();
 	Skybox skybox(cubeData);
 
-	
+
 	bool show_demo_window = true;
 	bool show_another_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -384,10 +340,11 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear depth and color buffer
 		glEnable(GL_DEPTH_TEST);  // if enabled, do depth comparison and update the depth buffer
 
-		//glCullFace(GL_FRONT);  // this
+		glCullFace(GL_FRONT);  // this
+		//cubeShadow.render();
 		raptorShadow.render();
 		groundShadow.render();
-		//glCullFace(GL_BACK);  // this
+		glCullFace(GL_BACK);  // this
 
 		// RENDER SCENE
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
@@ -395,16 +352,15 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		//wut.render(camera);		// point light object
-		gg.render(camera);
-		wut2.render(camera);	// raptor
-		//wut3.render(camera);	// cube
-		wut4.render(camera);	// floor
+		dirLight.render(camera);
+		raptorObject.render(camera);
+		groundObject.render(camera);
+		//cubeObject.render(camera);
 
 		shadow.renderShadowMap();
 		
 		//wut.changeParams();
-		gg.changeParams();
+		dirLight.changeParams();
 		
 
 		// render skybox last
@@ -440,37 +396,6 @@ int main(void)
 	return 0;
 }
 
-/*
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad()
-{
-	if (quadVAO == 0)
-	{
-		float quadVertices[] = {
-			// positions        // texture Coords
-			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		};
-		// setup plane VAO
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	}
-	glBindVertexArray(quadVAO);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glDrawArrays(GL_TRIANGLES, 0, 4);
-	glBindVertexArray(0);
-}
-*/
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -591,79 +516,3 @@ glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAn
 
 	return modelMatrix;
 }
-
-/*
-std::string shaderSourceCodeReader(std::string shaderFileName)
-{
-	std::ifstream ifs(shaderFileName, std::ifstream::in);
-	std::string line;
-	std::stringstream ss;
-
-	if (ifs.is_open())
-	{
-		while (std::getline(ifs, line))
-		{
-			ss << line << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Shader file is NOT open: " << shaderFileName << std::endl;
-	}
-
-	return ss.str();
-}
-
-
-GLuint setUpShader(GLenum shaderType, std::string shaderFileName, GLuint programObject)
-{
-	GLuint shaderObject = glCreateShader(shaderType);  // empty shader object
-	std::string shaderSrc = shaderSourceCodeReader(shaderFileName);  // read shader source code
-	const GLchar* shaderSrc_ = (const GLchar*)shaderSrc.c_str();  // convert string to GLchar*
-	glShaderSource(shaderObject, 1, &shaderSrc_, 0);  // give the shader src to the shader object, copy shader into internal memory
-	glCompileShader(shaderObject);  // compile shader object
-
-	shaderErrorHandling(shaderObject);
-
-	glAttachShader(programObject, shaderObject);  // attach shader object to the program object
-	return shaderObject;
-}
-
-void shaderErrorHandling(GLuint shaderObject)
-{
-	GLint isCompiled = 0;  // shader compilation error checking
-	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &isCompiled);
-
-	if (!isCompiled)
-	{
-		std::cout << "Error: Shader compilation has failed!" << std::endl;
-		glDeleteShader(shaderObject);
-	}
-	else if (isCompiled)
-	{
-		std::cout << "Shader compilation was successful!" << std::endl;
-	}
-}
-
-void linkingErrorHandling(GLuint programObject)
-{
-	GLint isLinked = 0;  // program linking error checking
-	glGetProgramiv(programObject, GL_LINK_STATUS, &isLinked);
-
-	if (!isLinked)
-	{
-		std::cout << "Error: Program linking has failed!" << std::endl;
-		glDeleteProgram(programObject);
-	}
-	else if (isLinked)
-	{
-		std::cout << "Program linking was successful!" << std::endl;
-	}
-}
-
-void cleanUpShader(GLuint programObject, GLuint shaderObject)
-{
-	glDetachShader(programObject, shaderObject);
-	glDeleteShader(shaderObject);
-}
-*/

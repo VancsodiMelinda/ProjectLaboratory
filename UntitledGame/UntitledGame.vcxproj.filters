@@ -190,13 +190,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\FragmentShader.frag" />
-    <None Include="src\VertexShader.vert" />
-    <None Include="src\ShadowFS.frag" />
-    <None Include="src\ShadowVS.vert" />
-    <None Include="src\LightObjVertexShader.vert" />
-    <None Include="src\LightObjFragmentShader.frag" />
-    <None Include="src\DebugQuadVS.vert" />
-    <None Include="src\DebugQuadFS.frag" />
+    <None Include="src\shaders\Object.frag" />
+    <None Include="src\shaders\Object.vert" />
+    <None Include="src\shaders\Light.frag" />
+    <None Include="src\shaders\Light.vert" />
+    <None Include="src\shaders\Shadow.frag" />
+    <None Include="src\shaders\Shadow.vert" />
+    <None Include="src\shaders\DebugQuad.frag" />
+    <None Include="src\shaders\DebugQuad.vert" />
   </ItemGroup>
 </Project>
