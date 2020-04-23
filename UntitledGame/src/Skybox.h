@@ -23,18 +23,18 @@ private:
 		GLint MVPloc	= 0;
 		GLint skyboxLoc	= 0;
 	};
-	Uniforms uniforms;										// ok
+	Uniforms uniforms;
 
-	Data& box;												// ok
-	std::string textureFolder = "";							// ok
-	std::vector<std::string> textureFileNames = { "" };		// ok
-	GLuint shaderID = 0;									// ok
+	Data& box;
+	std::string textureFolder = "";
+	std::vector<std::string> textureFileNames = { "" };
+	GLuint shaderID = 0;
 	GLuint textureID = 0;
 	glm::mat4 MVP = glm::mat4(1.0f);
 
-	void setUpShaders();				// ok
-	void configVertexAttributes();		// ok
-	void getUniformLocations();			// ok
+	void setUpShaders();
+	void configVertexAttributes();
+	void getUniformLocations();
 	void initializeTexture();
 	void loadTextures();
 

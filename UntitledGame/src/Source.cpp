@@ -344,7 +344,7 @@ int main(void)
 	// SKYBOX
 	//Data skyboxData("resources/skybox.obj");
 	//skyboxData.initialize();
-	//Skybox skybox(skyboxData);
+	Skybox skybox(cubeData);
 
 	
 	bool show_demo_window = true;
@@ -407,8 +407,8 @@ int main(void)
 		gg.changeParams();
 		
 
-		// render skybox
-		//skybox.render(camera);
+		// render skybox last
+		skybox.render(camera);
 
 		// Rendering ImGui
 		ImGui::Render();

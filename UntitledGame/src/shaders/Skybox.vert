@@ -10,5 +10,5 @@ void main()
 {
 	textureCoords = vertexPosition;
 	vec4 position = MVP * vec4(vertexPosition, 1.0);
-	gl_Position = position.xyww;
+	gl_Position = position.xyww;	// z component is always one, needed for depth testing
 }

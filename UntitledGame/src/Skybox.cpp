@@ -105,7 +105,7 @@ void Skybox::loadTextures()
 void Skybox::render(Camera camera)
 {
 	//glDepthMask(GL_FALSE);
-	glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_LEQUAL);		// passes if the incoming depth value is less than or equal to the stored depth value
 
 	glUseProgram(shaderID);
 	updateMVP(camera);
@@ -118,14 +118,14 @@ void Skybox::render(Camera camera)
 	glDrawElements(GL_TRIANGLES, box.data.indices.size(), GL_UNSIGNED_INT, 0);
 
 	//glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);	// back to default: passes if the incoming depth value is less than the stored depth value 
 }
 
 
 void Skybox::updateMVP(Camera camera)
 {
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
+	//modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f));
 	glm::mat4 viewMatrix = glm::mat4(glm::mat3(camera.CreateViewMatrix()));	// remove translation from view matrix;
 	//glm::mat4 viewMatrix = camera.CreateViewMatrix();	// remove translation from view matrix;
 	glm::mat4 projecionMatrix = glm::perspective(glm::radians(camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
