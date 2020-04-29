@@ -12,7 +12,7 @@ uniform sampler2D shadowMap;
 uniform sampler2D projectiveMap;
 
 uniform vec3 lightColor;  // white light
-uniform vec3 lightPos;  // position in world space
+//uniform vec3 lightPos;  // position in world space
 uniform vec3 cameraPos;
 
 struct Material{ 
@@ -55,6 +55,7 @@ struct PointLight{
 };
 uniform PointLight pointLight;
 
+//vec3 lightPos;
 
 // function definitons
 //float ShadowCalculation(vec4 lightVertexPos);
@@ -65,47 +66,9 @@ vec3 ProjectiveTextureMapping(vec3 currentColor, vec3 lightPosition);
 
 void main()
 {	
-	//vec3 color = texture(tex, out_textureCoords).rgb;  // color of current pixel read from texture
-
-	//vec3 lightDirection = normalize(-light.direction);
-	/*
-	// AMBIENT LIGHTING
-	//vec3 ambient = light.ambientStrength * material.ambient;
-	vec3 ambient = light.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;	// new
-
-	// DIFFUSE LIGHTING
-	vec3 n_normalVec = normalize(out_normalVec);
-	vec3 n_lightDirection = normalize(lightPos - out_worldVertexPos);
-	float diffuseImpact = max(dot(n_normalVec, n_lightDirection), 0.0);  // cos of angle
-	//vec3 diffuse = diffuseImpact * light.diffuseStrength * material.diffuse;
-	vec3 diffuse = diffuseImpact * light.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;  // new
-
-	// SPECULAR LIGHTING
-	float specularStrength = 0.5f;
-	vec3 n_viewVector = normalize(cameraPos - out_worldVertexPos);
-	vec3 reflectDir = reflect(-n_lightDirection, n_normalVec);
-	float spec = pow(max(dot(n_viewVector, reflectDir), 0.0), material.shininess);
-	//vec3 specular = spec * light.specularStrength * material.specular;
-	vec3 specular = spec * light.specularStrength * texture(material.specularMap, out_textureCoords).rgb;	// new
-	*/
-	
-
-	// POINT LIGHT
-	//float distance = length(pointLight.position - out_worldVertexPos);
-	//float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * distance * distance);
-	//ambient *= attenuation;
-	//diffuse *= attenuation;
-	//specular *= attenuation;
-
-	// SHADOW
-	//float shadow = ShadowCalculation();
-	//vec3 finalColor = (ambient + (1.0 - shadow) * (diffuse + specular)) * lightColor;  // with shadow
-	//vec3 finalColor = (ambient + diffuse + specular);  // without shadow
-
-	vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
-	//vec3 finalColor = CalcPointLight();	// POINT LIGHT
-	//vec3 otherColor = ProjectiveTextureMapping();
-	//vec3 otherColor = ProjectiveTextureMapping(finalColor);
+	//vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
+	vec3 finalColor = CalcPointLight();	// POINT LIGHT
+	//vec3 projectiveColor = ProjectiveTextureMapping(finalColor);
 
 	fragColor = vec4(finalColor, 1.0);
 	//fragColor = vec4(otherColor, 1.0);
@@ -130,13 +93,13 @@ vec3 ProjectiveTextureMapping(vec3 currentColor, vec3 lightVector)
 
 	float diffuseImpact = max(dot(normalize(out_normalVec), lightVector), 0.0);
 
-	//if (condition1 && condition2 && condition3)
-	if (condition1 && condition3)
+	if (condition1 && condition2 && condition3)
+	//if (condition1 && condition3)
 	{
 		//pixelColor = diffuseImpact * vec3(1.0, 0.0, 0.0);
-		pixelColor = diffuseImpact * texture(projectiveMap, projCoords.xy).rgb;	// without condition2
+		//pixelColor = diffuseImpact * texture(projectiveMap, projCoords.xy).rgb;	// without condition2
 		//pixelColor = vec3(1.0, 0.0, 0.0);
-		//pixelColor = texture(projectiveMap, projCoords.xy).rgb;	// with condition2
+		pixelColor = texture(projectiveMap, projCoords.xy).rgb;	// with condition2
 		multiplier = 0.5;
 	}
 
@@ -236,6 +199,6 @@ vec3 CalcPointLight()
 
 	float shadow = ShadowCalculation(pointLight.position);
 
-	//return (ambient + diffuse + specular);
-	return (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
+	return (ambient + diffuse + specular);
+	//return (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
 }

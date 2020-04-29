@@ -33,6 +33,45 @@ struct PointLightParams
 	std::string axes		= "x";
 };
 
+
+class PointLight : public LightBase
+{
+public:
+	PointLightParams params;
+
+private:
+	struct ObjectUniforms {
+		int positionLoc			= 0;
+		int colorLoc			= 0;
+
+		int ambientStrengthLoc	= 0;
+		int diffuseStrengthLoc	= 0;
+		int specularStrengthLoc	= 0;
+
+		int constantLoc			= 0;
+		int linearLoc			= 0;
+		int quadraticLoc		= 0;
+	};
+	ObjectUniforms objectUniforms;
+
+public:
+	PointLight(PointLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_);
+
+	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix) override;
+
+	void updateMVP() override;
+
+	void uploadLightUniforms() override;
+
+	void getObjectUniformLocations(GLuint objectShader) override;
+
+	void uploadObjectUniforms() override;
+
+	void changeParams() override;
+};
+
+
+/*
 class PointLight
 {
 private:
@@ -93,4 +132,4 @@ public:
 	glm::mat4 calculateLightSpaceMatrix(glm::mat4 actModelMatrix);
 	void changeParams();
 };
-
+*/

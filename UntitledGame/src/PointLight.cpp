@@ -1,6 +1,9 @@
 #include "PointLight.h"
 
 
+
+
+/*
 PointLight::PointLight(PointLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_)
 	: object{ object_ },
 	camera{ camera_ },
@@ -178,6 +181,99 @@ void PointLight::changeParams()
 	ImGui::SliderFloat("quadratic", &params.quadratic, 0.0f, 1.0f);
 
 	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
+
+	ImGui::End();
+}
+*/
+
+PointLight::PointLight(PointLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_) : LightBase(object_, shaderID_, camera_)
+{
+	std::cout << "PointLight ctor" << std::endl;
+
+	params = params_;
+}
+
+glm::mat4 PointLight::calculateLightSpaceMatrix(glm::mat4 actModelMatrix)
+{
+	//lookAt(eye, center, up)
+	// eye = position of lightsource
+	// center = the point where the lightsource "looks", should be the scene center
+	// up = "camera up"
+	glm::mat4 lightViewMatrix = glm::lookAt(params.position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	float nearPlane = 0.1f;
+	float farPlane = 20.0f;
+
+	glm::mat4 lightProjMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, nearPlane, farPlane);
+
+	// create MVP
+	glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix * actModelMatrix;
+
+	return lightSpaceMatrix;
+}
+
+void PointLight::updateMVP()
+{
+	glm::mat4 viewMatrix = camera.CreateViewMatrix();  // update in every frame (WASD and mouse)
+	//glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);  // update in every frame (zoom)
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.fov), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);  // update in every frame (zoom)
+	modelMatrix = glm::mat4(1.0f);
+	//modelMatrix = glm::translate(modelMatrix, params.position);
+	modelMatrix = createModelMatrix(params.position, params.scale, params.angle, params.axes);
+
+	MVP = projectionMatrix * viewMatrix * modelMatrix;
+}
+
+void PointLight::uploadLightUniforms()
+{
+	glUniformMatrix4fv(lightUniforms.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniform3fv(lightUniforms.colorLoc, 1, glm::value_ptr(params.color));
+}
+
+void PointLight::getObjectUniformLocations(GLuint objectShader)
+{
+	objectUniforms.positionLoc = glGetUniformLocation(objectShader, "pointLight.position");
+	objectUniforms.colorLoc = glGetUniformLocation(objectShader, "pointLight.color");
+
+	objectUniforms.ambientStrengthLoc = glGetUniformLocation(objectShader, "pointLight.ambientStrength");
+	objectUniforms.diffuseStrengthLoc = glGetUniformLocation(objectShader, "pointLight.diffuseStrength");
+	objectUniforms.specularStrengthLoc = glGetUniformLocation(objectShader, "pointLight.specularStrength");
+
+	objectUniforms.constantLoc = glGetUniformLocation(objectShader, "pointLight.constant");
+	objectUniforms.linearLoc = glGetUniformLocation(objectShader, "pointLight.linear");
+	objectUniforms.quadraticLoc = glGetUniformLocation(objectShader, "pointLight.quadratic");
+}
+
+void PointLight::uploadObjectUniforms()
+{
+	glUniform3fv(objectUniforms.positionLoc, 1, glm::value_ptr(params.position));
+	glUniform3fv(objectUniforms.colorLoc, 1, glm::value_ptr(params.color));
+
+	glUniform1f(objectUniforms.ambientStrengthLoc, params.ambientStrength);
+	glUniform1f(objectUniforms.diffuseStrengthLoc, params.diffuseStrength);
+	glUniform1f(objectUniforms.specularStrengthLoc, params.specularStrength);
+
+	glUniform1f(objectUniforms.constantLoc, params.constant);
+	glUniform1f(objectUniforms.linearLoc, params.linear);
+	glUniform1f(objectUniforms.quadraticLoc, params.quadratic);
+}
+
+void PointLight::changeParams()
+{
+	ImGui::Begin("Point light params");
+	ImGui::Text("Press 'P' to let go of mouse.");
+
+	ImGui::SliderFloat("ambientStrength", &params.ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("diffuseStrength", &params.diffuseStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat("specularStrength", &params.specularStrength, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("constant", &params.constant, 0.0f, 1.0f);
+	ImGui::SliderFloat("linear", &params.linear, 0.0f, 1.0f);
+	ImGui::SliderFloat("quadratic", &params.quadratic, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("x position", &params.position.x, -5.0f, 5.0f);
+	ImGui::SliderFloat("y position", &params.position.y, -5.0f, 5.0f);
+	ImGui::SliderFloat("z position", &params.position.z, -5.0f, 5.0f);
 
 	ImGui::End();
 }

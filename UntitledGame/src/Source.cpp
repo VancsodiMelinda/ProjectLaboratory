@@ -208,7 +208,7 @@ int main(void)
 
 	/////////////////////////// LIGHTS ///////////////////////////
 	// TODO: pointlight
-	/*
+	
 	PointLightParams pointLightParams;
 	{
 		pointLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
@@ -227,13 +227,10 @@ int main(void)
 		pointLightParams.axes = "y";
 	}
 
-	//glm::vec3 pointlightPos = glm::vec3(1.0f);
-	//glm::mat4 pointlightModelMatrix = createModelMatrix(pointLightParams.position, glm::vec3(0.2f, 0.2f, 0.2f), 20.0f, "y");
+	PointLight pointLight(pointLightParams, cubeData, lightObjShader.programObject, camera);
+	pointLight.initialize();
+	
 
-	//PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, pointlightModelMatrix, camera);
-	PointLight wut(pointLightParams, cubeData, lightObjShader.programObject, camera);
-	wut.initialize();
-	*/
 	// DONE: directional light
 	DirLightParams dirLightParams;
 	{
@@ -260,43 +257,26 @@ int main(void)
 	Shadow shadow(defaultData, defaultLight);  // create shadowMap and fbo
 	shadow.initRenderShadowMap(quadShader.programObject);
 
-	//Shadow shadow;  // create shadowMap texture and fbo frame buffer object
-	//shadow.initRenderShadowMap(quadShader.programObject);
 
-	//Shadow suzanneShadow(shadowShader.programObject, suzanneData.vao, suzanneData.vbo, suzanneData.ibo, suzanneData.data, suzanneModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	//suzanneShadow.initialize();
-
-	//Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	//Shadow groundShadow(shadowShader.programObject, groundData.vao, groundData.vbo, groundData.ibo, groundData.data, groundModelMatrix, light.lightPos);
-	//groundShadow.initialize();
-
-	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	//Shadow cubeShadow(shadowShader.programObject, cubeData.vao, cubeData.vbo, cubeData.ibo, cubeData.data, cubeModelMatrix, light.lightPos);
-	//cubeShadow.initialize();
-
-	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, light.lightPos, shadow.SHADOW_WIDTH, shadow.SHADOW_HEIGHT);
-	//Shadow raptorShadow(shadowShader.programObject, raptorData.vao, raptorData.vbo, raptorData.ibo, raptorData.data, raptorModelMatrix, dirLightParams.position);
-	//Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLightParams.position);
-	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLight);
+	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, pointLight);
 	raptorShadow.initialize();
 
-	//Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLightParams.position);
-	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLight);
+	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, pointLight);
 	groundShadow.initialize();
 
-	Shadow cubeShadow(shadowShader.programObject, cubeData, cubeModelMatrix, dirLight);
+	Shadow cubeShadow(shadowShader.programObject, cubeData, cubeModelMatrix, pointLight);
 	cubeShadow.initialize();
 
 	//raptorShadow.init();
 
 	/////////////////////////// SCENE ///////////////////////////
-	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6], shadow.shadowMap, dirLight, texture[5]);
+	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6], shadow.shadowMap, pointLight, texture[5]);
 	raptorObject.initialize();
 
-	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, dirLight, texture[5]);
+	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, pointLight, texture[5]);
 	groundObject.initialize();
 
-	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7], shadow.shadowMap, dirLight, texture[5]);
+	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7], shadow.shadowMap, pointLight, texture[5]);
 	cubeObject.initialize();
 
 	// SKYBOX
@@ -341,7 +321,7 @@ int main(void)
 		glEnable(GL_DEPTH_TEST);  // if enabled, do depth comparison and update the depth buffer
 
 		glCullFace(GL_FRONT);  // this
-		//cubeShadow.render();
+		cubeShadow.render();
 		raptorShadow.render();
 		groundShadow.render();
 		glCullFace(GL_BACK);  // this
@@ -352,15 +332,16 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		dirLight.render(camera);
+		//dirLight.render(camera);
+		pointLight.render(camera);
 		raptorObject.render(camera);
 		groundObject.render(camera);
-		//cubeObject.render(camera);
+		cubeObject.render(camera);
 
 		shadow.renderShadowMap();
 		
-		//wut.changeParams();
-		dirLight.changeParams();
+		//dirLight.changeParams();
+		pointLight.changeParams();
 		
 
 		// render skybox last
