@@ -25,10 +25,10 @@ struct vector3i {
 };
 
 struct objectData {
-	std::vector<float> vertices;
-	std::vector<float> uvs;
-	std::vector<float> normals;
-	std::vector<int> indices;
+	std::vector<float> vertices		= { 0.0f };
+	std::vector<float> uvs			= { 0.0f };
+	std::vector<float> normals		= { 0.0f };
+	std::vector<int> indices		= { 0 };
 };
 
 class ObjLoader

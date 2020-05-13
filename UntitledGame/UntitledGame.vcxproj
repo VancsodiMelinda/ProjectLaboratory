@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\PointShadow.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\LightBase.cpp" />
     <ClCompile Include="src\DirectionalLight.cpp" />
@@ -172,6 +173,9 @@
     <Text Include="src\FragmentShader.txt" />
     <Text Include="src\LightObjFragmentShader.txt" />
     <Text Include="src\LightObjVertexShader.txt" />
+    <Text Include="src\shaders\ShadowBox.geom" />
+    <Text Include="src\shaders\ShadowBox.frag" />
+    <Text Include="src\shaders\ShadowBox.vert" />
     <Text Include="src\shaders\Skybox.frag" />
     <Text Include="src\shaders\Skybox.vert" />
     <Text Include="src\ShadowFS.txt" />
@@ -179,6 +183,7 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PointShadow.h" />
     <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\LightBase.h" />
     <ClInclude Include="src\DirectionalLight.h" />

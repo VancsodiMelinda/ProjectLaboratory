@@ -15,6 +15,34 @@ Shader::Shader(std::string vertexShaderFileName_, std::string fragmentShaderFile
 	fragmentShaderFileName = fragmentShaderFileName_;
 }
 
+Shader::Shader(std::string vertexShaderFileName_, std::string geometryShaderFileName_, std::string fragmentShaderFileName_)
+{
+	vertexShaderFileName = vertexShaderFileName_;
+	geometryShaderFileName = geometryShaderFileName_;
+	fragmentShaderFileName = fragmentShaderFileName_;
+
+	init3shaders();
+}
+
+void Shader::init3shaders()
+{
+	std::cout << "VS: " << vertexShaderFileName << "; GS: " << geometryShaderFileName << "; FS: " << fragmentShaderFileName << std::endl;
+	programObject = glCreateProgram();
+
+	// create, compile and attach shaders
+	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, vertexShaderFileName, programObject);
+	GLuint geometryShaderObject = setUpShader(GL_GEOMETRY_SHADER, geometryShaderFileName, programObject);
+	GLuint fragmentShaderObject = setUpShader(GL_FRAGMENT_SHADER, fragmentShaderFileName, programObject);
+
+	glLinkProgram(programObject);
+	linkingErrorHandling(programObject);
+
+	// detach and delete shaders
+	cleanUpShader(programObject, vertexShaderObject);
+	cleanUpShader(programObject, geometryShaderObject);
+	cleanUpShader(programObject, fragmentShaderObject);
+}
+
 //void Shader::runShaderCode()
 void Shader::initialize()
 {

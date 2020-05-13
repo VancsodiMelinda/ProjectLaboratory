@@ -186,6 +186,9 @@ void PointLight::changeParams()
 }
 */
 
+
+
+
 PointLight::PointLight(PointLightParams params_, Data& object_, GLuint shaderID_, Camera& camera_) : LightBase(object_, shaderID_, camera_)
 {
 	std::cout << "PointLight ctor" << std::endl;

@@ -8,10 +8,14 @@ in vec4 out_lightVertexPos;
 out vec4 fragColor;
 
 //uniform sampler2D tex;
-uniform sampler2D shadowMap;
-uniform sampler2D projectiveMap;
+uniform sampler2D shadowMap;		// directional shadow map
 
-uniform vec3 lightColor;  // white light
+uniform sampler2D projectiveMap;	// projecive texture mapping
+
+uniform samplerCube shadowBox;		// point shadow map, omnidirectional shadow map
+uniform float farPlane;
+
+//uniform vec3 lightColor;  // white light
 //uniform vec3 lightPos;  // position in world space
 uniform vec3 cameraPos;
 
@@ -58,8 +62,9 @@ uniform PointLight pointLight;
 //vec3 lightPos;
 
 // function definitons
-//float ShadowCalculation(vec4 lightVertexPos);
 float ShadowCalculation(vec3 lightPosition);
+float directionalShadow(vec3 lightPosition);
+float omnidirectionalShadow();
 vec3 CalcDirLight();
 vec3 CalcPointLight();
 vec3 ProjectiveTextureMapping(vec3 currentColor, vec3 lightPosition);
@@ -197,8 +202,29 @@ vec3 CalcPointLight()
 	diffuse *= attenuation;
 	specular *= attenuation;
 
-	float shadow = ShadowCalculation(pointLight.position);
+	float shadow = omnidirectionalShadow();
 
-	return (ambient + diffuse + specular);
-	//return (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
+	vec3 lightToFrag = out_worldVertexPos - pointLight.position;
+	float mapDepth = texture(shadowBox, lightToFrag).r;  // [0, 1]
+
+	//return (ambient + diffuse + specular);
+	return (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
+	//return vec3(shadow);
+}
+
+float omnidirectionalShadow()
+{
+	// get depth from cube map
+	vec3 lightToFrag = out_worldVertexPos - pointLight.position;
+	float mapDepth = texture(shadowBox, lightToFrag).r;  // [0, 1]
+	mapDepth *= 100.0;  // [0, farPlane]
+
+	// get depth in scene
+	float sceneDepth = length(lightToFrag);
+
+	// calculate shadow
+	float bias = 0.05;
+	float shadow = sceneDepth - bias > mapDepth ? 1.0 : 0.0;
+
+	return shadow;
 }

@@ -83,6 +83,7 @@ void Shadow::createFBO()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);  // attach texture to the framebuffer
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // initialize shadow for specific object

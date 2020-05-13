@@ -14,7 +14,7 @@
 class Data
 {
 private:
-	std::string objectFileName;
+	std::string objectFileName = "";
 
 	void loadObjectData();		// data
 	void createVAOandVBOs();	// vao, vbo, ibo

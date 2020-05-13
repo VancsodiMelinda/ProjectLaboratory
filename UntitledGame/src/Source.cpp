@@ -37,6 +37,7 @@
 #include "Scene2.h"
 #include "DirectionalLight.h"
 #include "Skybox.h"
+#include "PointShadow.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -144,6 +145,9 @@ int main(void)
 
 	// skybox shader is created in the Skybox class
 
+	// shader for omnidirectional shadow
+	Shader shadowBoxShader("src/shaders/ShadowBox.vert", "src/shaders/ShadowBox.geom", "src/shaders/ShadowBox.frag");
+
 	/////////////////////////// TEXTURE ///////////////////////////
 
 	GLuint texture[8];
@@ -218,8 +222,8 @@ int main(void)
 		pointLightParams.diffuseStrength = 0.6f;
 		pointLightParams.specularStrength = 0.9f;
 
-		pointLightParams.constant = 0.5f;
-		pointLightParams.linear = 0.5f;
+		pointLightParams.constant = 0.2f;
+		pointLightParams.linear = 0.1f;
 		pointLightParams.quadratic = 0.1f;
 
 		pointLightParams.scale = glm::vec3(0.2f);
@@ -269,14 +273,25 @@ int main(void)
 
 	//raptorShadow.init();
 
+	/////////////////////////// SHADOW CUBE ///////////////////////////
+	PointShadow raptorPoint(shadowBoxShader.programObject, raptorData, raptorModelMatrix, pointLight);
+	raptorPoint.initialize();  // create texture and fbo
+
+	PointShadow groundPoint(shadowBoxShader.programObject, groundData, groundModelMatrix, pointLight);
+
+	PointShadow cubePoint(shadowBoxShader.programObject, cubeData, cubeModelMatrix, pointLight);
+
 	/////////////////////////// SCENE ///////////////////////////
-	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6], shadow.shadowMap, pointLight, texture[5]);
+	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6],
+		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
 	raptorObject.initialize();
 
-	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6], shadow.shadowMap, pointLight, texture[5]);
+	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6],
+		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
 	groundObject.initialize();
 
-	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7], shadow.shadowMap, pointLight, texture[5]);
+	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7],
+		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
 	cubeObject.initialize();
 
 	// SKYBOX
@@ -325,6 +340,16 @@ int main(void)
 		raptorShadow.render();
 		groundShadow.render();
 		glCullFace(GL_BACK);  // this
+
+		// RENDER OMNIDIRECTIONAL SHADOW
+		glViewport(0, 0, 1024, 1024);
+		glBindFramebuffer(GL_FRAMEBUFFER, raptorPoint.fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+		raptorPoint.render();
+		groundPoint.render();
+		cubePoint.render();
 
 		// RENDER SCENE
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport

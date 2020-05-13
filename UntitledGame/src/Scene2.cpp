@@ -1,7 +1,7 @@
 #include "Scene2.h"
 
 Scene2::Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& camera_,
-	GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, LightBase& pointLight_, GLuint projectiveMap_) :
+	GLuint diffuseMap_, GLuint specularMap_, GLuint shadowMap_, LightBase& pointLight_, GLuint projectiveMap_, GLuint shadowCube_) :
 	object(object_),
 	camera(camera_),
 	pointLight(pointLight_)
@@ -13,6 +13,7 @@ Scene2::Scene2(Data& object_, glm::mat4 modelMatrix_, GLuint shaderID_, Camera& 
 	specularMap = specularMap_;
 	shadowMap = shadowMap_;
 	projectiveMap = projectiveMap_;
+	shadowCube = shadowCube_;
 
 	uniforms = { 0 };
 }
@@ -78,6 +79,9 @@ void Scene2::getUniformLocations()
 	// projective map
 	uniforms.projectiveMapLoc = glGetUniformLocation(shaderID, "projectiveMap");
 
+	// point shadow
+	uniforms.shadowCubeLoc = glGetUniformLocation(shaderID, "shadowBox");
+
 	pointLight.getObjectUniformLocations(shaderID);
 }
 
@@ -101,6 +105,9 @@ void Scene2::render(Camera& camera_)
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, projectiveMap);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCube);
 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -135,6 +142,8 @@ void Scene2::uploadUniforms()
 	glUniform1i(uniforms.shadowMapLoc, 2);
 
 	glUniform1i(uniforms.projectiveMapLoc, 3);
+
+	glUniform1i(uniforms.shadowCubeLoc, 4);
 
 	pointLight.uploadObjectUniforms();
 }

@@ -39,6 +39,9 @@ public:
 	Shader();  // default constructor
 	Shader(std::string vertexShaderFileName_, std::string fragmentShaderFileName_);  // parameterized constructor
 
+	Shader(std::string vertexShaderFileName_, std::string geometryShaderFileName_, std::string fragmentShaderFileName_);  // new
+	void init3shaders();
+
 	// public methods
 	//void runShaderCode();
 	void initialize();
@@ -51,8 +54,9 @@ public:
 
 private:
 	// private attributes
-	std::string vertexShaderFileName;
-	std::string fragmentShaderFileName;
+	std::string vertexShaderFileName	= "";
+	std::string fragmentShaderFileName	= "";
+	std::string geometryShaderFileName	= "";
 
 	// methods
 	std::string shaderSourceCodeReader(std::string shaderFileName);
