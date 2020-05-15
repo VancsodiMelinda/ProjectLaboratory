@@ -51,7 +51,7 @@ PointShadow::PointShadow(GLuint shaderID_, Data& object_, glm::mat4 modelMatrix_
 {
 	configVertexAttributes();
 	getUniformLocations();		// uniLocs
-	lightSpaceTransform();		// VPs
+	//lightSpaceTransform();		// VPs
 }
 
 void PointShadow::configVertexAttributes()
@@ -80,6 +80,8 @@ void PointShadow::getUniformLocations()
 
 void PointShadow::lightSpaceTransform()
 {
+	std::vector<glm::mat4> newVPs;
+
 	// create projection matrix
 	float aspect = (float)POINT_SHADOW_WIDTH / (float)POINT_SHADOW_WIDTH;
 	float near = 1.0f;
@@ -97,17 +99,21 @@ void PointShadow::lightSpaceTransform()
 
 	// create MVPs
 	//std::vector<glm::mat4> VPs;
-	VPs.push_back(projectionMatrix * viewMatrix1);
-	VPs.push_back(projectionMatrix * viewMatrix2);
-	VPs.push_back(projectionMatrix * viewMatrix3);
-	VPs.push_back(projectionMatrix * viewMatrix4);
-	VPs.push_back(projectionMatrix * viewMatrix5);
-	VPs.push_back(projectionMatrix * viewMatrix6);
+	newVPs.push_back(projectionMatrix * viewMatrix1);
+	newVPs.push_back(projectionMatrix * viewMatrix2);
+	newVPs.push_back(projectionMatrix * viewMatrix3);
+	newVPs.push_back(projectionMatrix * viewMatrix4);
+	newVPs.push_back(projectionMatrix * viewMatrix5);
+	newVPs.push_back(projectionMatrix * viewMatrix6);
+
+	VPs = newVPs;
 }
 
 void PointShadow::render()
 {
 	glUseProgram(shaderID);
+
+	lightSpaceTransform();		// VPs
 	uploadUniforms();
 	
 	glBindVertexArray(object.vao);

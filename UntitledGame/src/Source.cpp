@@ -363,7 +363,7 @@ int main(void)
 		groundObject.render(camera);
 		cubeObject.render(camera);
 
-		shadow.renderShadowMap();
+		//shadow.renderShadowMap();
 		
 		//dirLight.changeParams();
 		pointLight.changeParams();
