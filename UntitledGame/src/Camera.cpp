@@ -4,12 +4,26 @@
 // default constructor
 Camera::Camera()
 {
-	cameraPosition = glm::vec3(0.0f, 2.0f, 4.0f);  // 1st PARAM
-	//cameraPosition = glm::vec3(0.0f, 2.0f, 2.0f);  // 1st PARAM
+	/*
+	cameraPosition = glm::vec3(-5.0f, 3.0f, 5.0f);  // 1st PARAM
 	cameraFront = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	cameraTarget = glm::vec3(cameraPosition + cameraFront);  // 2nd PARAM
+	//cameraDirection = glm::vec3(glm::normalize(cameraPosition - cameraTarget));  // UNIT VECTOR
+	cameraRight = glm::vec3(glm::normalize(glm::cross(worldUp, cameraFront)));  // UNIT VECTOR
+	cameraUp = glm::cross(cameraFront, cameraRight);  // UNIT VECTOR  3rd PARAM
+
+	yaw = 0.0f;
+	pitch = 0.0f;
+	fov = 45.0f;
+	*/
+	cameraPosition = glm::vec3(0.0f, 2.0f, 8.0f);  // 1st PARAM
+	cameraFront = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
+	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	//cameraTarget = glm::vec3(cameraPosition + cameraFront);  // 2nd PARAM
+	cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);  // 2nd PARAM
 	//cameraDirection = glm::vec3(glm::normalize(cameraPosition - cameraTarget));  // UNIT VECTOR
 	cameraRight = glm::vec3(glm::normalize(glm::cross(worldUp, cameraFront)));  // UNIT VECTOR
 	cameraUp = glm::cross(cameraFront, cameraRight);  // UNIT VECTOR  3rd PARAM
@@ -59,8 +73,9 @@ Camera::Camera(glm::vec3 cameraPosition_, glm::vec3 cameraFront_, glm::vec3 worl
 glm::mat4 Camera::CreateViewMatrix()
 {
 	//glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+
 	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(3.0f, 1.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // light point of view
+	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(-3.0f, 3.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // light point of view
 	return viewMatrix;
 }
 
@@ -101,6 +116,12 @@ void Camera::ProcessKeyInput(std::string button, float deltaTime)
 		cameraPosition -= cameraRight * cameraSpeed;
 		cameraTarget = glm::vec3(cameraPosition + cameraFront);
 		//std::cout << "D" << std::endl;
+	}
+	else if (button == "R")  // rotate camera around origo
+	{
+		cameraPosition -= cameraRight * 0.05f;  // 0.05f
+		cameraFront = glm::vec3(cameraPosition - cameraTarget);
+		cameraRight = glm::normalize(glm::cross(worldUp, cameraFront));
 	}
 }
 

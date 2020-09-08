@@ -74,7 +74,7 @@ void Skybox::loadTextures()
 		unsigned char* data = stbi_load(currentTextureName.c_str(), &imageWidth, &imageHeight, &nrChannels, 0);
 		if (data)
 		{
-			std::cout << "Skybox image has been loaded succesfully: " << currentTextureName << std::endl;
+			//std::cout << "Skybox image has been loaded succesfully: " << currentTextureName << std::endl;
 			//std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
 			GLenum format = GL_RGB;
 			if (nrChannels == 3)

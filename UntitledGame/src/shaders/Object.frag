@@ -19,6 +19,9 @@ uniform float farPlane;
 //uniform vec3 lightPos;  // position in world space
 uniform vec3 cameraPos;
 
+// skybox for environment mapping
+uniform samplerCube skybox;
+
 struct Material{ 
 	sampler2D diffuseMap;
 	sampler2D specularMap;
@@ -68,11 +71,12 @@ float omnidirectionalShadow();
 vec3 CalcDirLight();
 vec3 CalcPointLight();
 vec3 ProjectiveTextureMapping(vec3 currentColor, vec3 lightPosition);
+vec4 Reflection();
 
 void main()
-{	
-	//vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
-	vec3 finalColor = CalcPointLight();	// POINT LIGHT
+{
+	vec3 finalColor = CalcDirLight();		// DIRECTIONAL LIGHT
+	//vec3 finalColor = CalcPointLight();	// POINT LIGHT
 	//vec3 projectiveColor = ProjectiveTextureMapping(finalColor);
 
 	fragColor = vec4(finalColor, 1.0);
@@ -122,7 +126,7 @@ float ShadowCalculation(vec3 lightPosition)
 	float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPosition - out_worldVertexPos)), 0.005);  // annyira nem tunik jonak
 	float closestDepth = texture(shadowMap, projCoords.xy).r;			// depth in scene
 	float currentDepth = projCoords.z - shadowBias;						// cure shadow acne
-
+	
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);  // width and height of texture
 
@@ -147,7 +151,6 @@ float ShadowCalculation(vec3 lightPosition)
 	return shadow;
 }
 
-
 vec3 CalcDirLight()
 {
 	// AMBIENT
@@ -171,10 +174,7 @@ vec3 CalcDirLight()
 
 	vec3 otherColor = ProjectiveTextureMapping(currentColor, lightDirection);
 
-	//return (ambient + diffuse + specular);
-	//return (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;
-	return otherColor;
-	//return currentColor;
+	return currentColor;
 }
 
 
@@ -185,8 +185,8 @@ vec3 CalcPointLight()
 
 	//DIFFUSE
 	vec3 lightDirection = normalize(pointLight.position - out_worldVertexPos);	// unit
-	vec3 normalVector = normalize(out_normalVec);					// unit
-	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);  // cos of angle
+	vec3 normalVector = normalize(out_normalVec);								// unit
+	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
 	vec3 diffuse = diffuseImpact * pointLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
 	// SPECULAR
@@ -227,4 +227,14 @@ float omnidirectionalShadow()
 	float shadow = sceneDepth - bias > mapDepth ? 1.0 : 0.0;
 
 	return shadow;
+}
+
+vec4 Reflection()
+{
+	vec3 viewVector = normalize(out_worldVertexPos - cameraPos);
+	vec3 normalVector = normalize(out_normalVec);
+	vec3 reflectionVector = reflect(viewVector, normalVector);
+	vec4 fragColor = vec4(texture(skybox, reflectionVector).rgb, 1.0);
+
+	return fragColor;
 }

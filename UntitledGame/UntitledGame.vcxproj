@@ -140,6 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\LoadPrograms.cpp" />
+    <ClCompile Include="src\ver2\CreateProgram.cpp" />
+    <ClCompile Include="src\ver2\CreateScene.cpp" />
+    <ClCompile Include="src\ver2\CreateTexture.cpp" />
+    <ClCompile Include="src\ver2\ObjReader.cpp" />
+    <ClCompile Include="src\ver2\CreateModel.cpp" />
+    <ClCompile Include="src\ver2\LoadAssets.cpp" />
     <ClCompile Include="src\PointShadow.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\LightBase.cpp" />
@@ -173,6 +180,8 @@
     <Text Include="src\FragmentShader.txt" />
     <Text Include="src\LightObjFragmentShader.txt" />
     <Text Include="src\LightObjVertexShader.txt" />
+    <Text Include="src\shaders\Default.frag" />
+    <Text Include="src\shaders\Default.vert" />
     <Text Include="src\shaders\ShadowBox.geom" />
     <Text Include="src\shaders\ShadowBox.frag" />
     <Text Include="src\shaders\ShadowBox.vert" />
@@ -183,6 +192,14 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\LoadPrograms.h" />
+    <ClInclude Include="src\ver2\CreateProgram.h" />
+    <ClInclude Include="src\ver2\CreateScene.h" />
+    <ClInclude Include="src\ver2\CreateTexture.h" />
+    <ClInclude Include="src\ver2\ModelData.h" />
+    <ClInclude Include="src\ver2\ObjReader.h" />
+    <ClInclude Include="src\ver2\CreateModel.h" />
+    <ClInclude Include="src\ver2\LoadAssets.h" />
     <ClInclude Include="src\PointShadow.h" />
     <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\LightBase.h" />
@@ -211,6 +228,8 @@
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Test.h" />
     <ClInclude Include="src\Test2.h" />
+    <ClInclude Include="src\ver2\ProgramData.h" />
+    <ClInclude Include="src\ver2\TextureData.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\DebugQuad.frag" />

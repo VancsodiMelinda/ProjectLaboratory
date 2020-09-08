@@ -109,6 +109,7 @@ void Scene2::render(Camera& camera_)
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCube);
 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // wireframe mode
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 

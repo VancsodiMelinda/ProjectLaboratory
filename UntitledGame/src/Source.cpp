@@ -61,8 +61,8 @@ glm::mat4 orthographicMatrix;
 glm::mat4 perspectiveMatrix;
 bool isPpressed = false;
 
-const int WINDOW_WIDTH = 1280;
-const int WINDOW_HEIGHT = 720;
+const int WINDOW_WIDTH = 1920;
+const int WINDOW_HEIGHT = 1080;
 
 float lastX = (float)WINDOW_WIDTH / 2.0f;
 float lastY = (float)WINDOW_HEIGHT / 2.0f;
@@ -205,44 +205,48 @@ int main(void)
 	sphereData.initialize();
 
 	// CREATE MODEL MATRIXES - translate, scale, rotate
-	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -35.0f, "x");
+	glm::mat4 suzanneModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "x");
 	glm::mat4 groundModelMatrix = createModelMatrix(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(5.0f, 1.0f, 5.0f), 0.0f, "y");
-	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
-	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y");
+	glm::mat4 cubeModelMatrix = createModelMatrix(glm::vec3(2.0f, 0.0f, -1.0f), glm::vec3(0.5f, 0.5f, 0.5f), 20.0f, "y");
+	glm::mat4 raptorModelMatrix = createModelMatrix(glm::vec3(0.0f, 0.4f, -0.5f), glm::vec3(0.5f, 0.5f, 0.5f), 0.0f, "y");
+
+	glm::mat4 wallModelMatrix1 = createModelMatrix(glm::vec3(0.0f, 4.5f, -5.0f), glm::vec3(5.0f, 5.0f, 5.0f), 90.0f, "x");
+	glm::mat4 wallModelMatrix2 = createModelMatrix(glm::vec3(5.0f, 4.5f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f), 90.0f, "z");
+
 
 	/////////////////////////// LIGHTS ///////////////////////////
 	// TODO: pointlight
 	
 	PointLightParams pointLightParams;
 	{
-		pointLightParams.position = glm::vec3(-1.0f, 1.0f, 0.0f);
+		pointLightParams.position = glm::vec3(-1.0f, 1.0f, 1.0f);
 		pointLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		pointLightParams.ambientStrength = 0.3f;
 		pointLightParams.diffuseStrength = 0.6f;
-		pointLightParams.specularStrength = 0.9f;
+		pointLightParams.specularStrength = 0.03f;
 
-		pointLightParams.constant = 0.2f;
-		pointLightParams.linear = 0.1f;
-		pointLightParams.quadratic = 0.1f;
+		pointLightParams.constant = 1.0f;
+		pointLightParams.linear = 0.0f;
+		pointLightParams.quadratic = 0.05f;
 
 		pointLightParams.scale = glm::vec3(0.2f);
 		pointLightParams.angle = 30.0f;
 		pointLightParams.axes = "y";
 	}
 
-	PointLight pointLight(pointLightParams, cubeData, lightObjShader.programObject, camera);
+	PointLight pointLight(pointLightParams, sphereData, lightObjShader.programObject, camera);
 	pointLight.initialize();
 	
 
 	// DONE: directional light
 	DirLightParams dirLightParams;
 	{
-		dirLightParams.position = glm::vec3(1.0f, 1.0f, -1.0f);
+		dirLightParams.position = glm::vec3(3.0f, 3.0f, 0.0f);
 		dirLightParams.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		dirLightParams.ambientStrength = 0.3f;
-		dirLightParams.diffuseStrength = 0.6f;
+		dirLightParams.ambientStrength = 0.1f;
+		dirLightParams.diffuseStrength = 0.8f;
 		dirLightParams.specularStrength = 0.9f;
 
 		dirLightParams.scale = glm::vec3(0.2f);
@@ -262,13 +266,13 @@ int main(void)
 	shadow.initRenderShadowMap(quadShader.programObject);
 
 
-	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, pointLight);
+	Shadow raptorShadow(shadowShader.programObject, raptorData, raptorModelMatrix, dirLight);
 	raptorShadow.initialize();
 
-	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, pointLight);
+	Shadow groundShadow(shadowShader.programObject, groundData, groundModelMatrix, dirLight);
 	groundShadow.initialize();
 
-	Shadow cubeShadow(shadowShader.programObject, cubeData, cubeModelMatrix, pointLight);
+	Shadow cubeShadow(shadowShader.programObject, cubeData, cubeModelMatrix, dirLight);
 	cubeShadow.initialize();
 
 	//raptorShadow.init();
@@ -281,18 +285,34 @@ int main(void)
 
 	PointShadow cubePoint(shadowBoxShader.programObject, cubeData, cubeModelMatrix, pointLight);
 
+	PointShadow wallPoint(shadowBoxShader.programObject, groundData, wallModelMatrix1, pointLight);
+	PointShadow wallPoint2(shadowBoxShader.programObject, groundData, wallModelMatrix2, pointLight);
+
 	/////////////////////////// SCENE ///////////////////////////
-	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[2], texture[6],
-		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
+	Scene2 raptorObject(raptorData, raptorModelMatrix, objShader.programObject, camera, texture[0], texture[7],
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
 	raptorObject.initialize();
 
-	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[6],
-		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
+	Scene2 groundObject(groundData, groundModelMatrix, objShader.programObject, camera, texture[3], texture[7],
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
 	groundObject.initialize();
 
 	Scene2 cubeObject(cubeData, cubeModelMatrix, objShader.programObject, camera, texture[1], texture[7],
-		shadow.shadowMap, pointLight, texture[5], raptorPoint.textureID);
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
 	cubeObject.initialize();
+
+	Scene2 wall1(groundData, wallModelMatrix1, objShader.programObject, camera, texture[0], texture[7],
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
+	wall1.initialize();
+
+	Scene2 wall2(groundData, wallModelMatrix2, objShader.programObject, camera, texture[0], texture[7],
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
+	wall2.initialize();
+
+	Scene2 suzanneObject(suzanneData, suzanneModelMatrix, objShader.programObject, camera, texture[0], texture[7],
+		shadow.shadowMap, dirLight, texture[5], raptorPoint.textureID);
+	suzanneObject.initialize();
+
 
 	// SKYBOX
 	Skybox skybox(cubeData);
@@ -306,6 +326,7 @@ int main(void)
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		//std::cout << "cameraTarget: " << camera.cameraTarget.x << ", " << camera.cameraTarget.y << ", " << camera.cameraTarget.z << std::endl;
 		/* Render here */
 		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -325,7 +346,8 @@ int main(void)
 		lastFrame = currentFrame;
 
 		// specify clear values for the buffers
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClearDepth(1.0f);
 		glClearStencil(0);
 		
@@ -350,6 +372,8 @@ int main(void)
 		raptorPoint.render();
 		groundPoint.render();
 		cubePoint.render();
+		wallPoint.render();
+		wallPoint2.render();
 
 		// RENDER SCENE
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);  // set viewport
@@ -358,15 +382,19 @@ int main(void)
 		glEnable(GL_DEPTH_TEST);
 
 		//dirLight.render(camera);
-		pointLight.render(camera);
+		//pointLight.render(camera);
 		raptorObject.render(camera);
+		//suzanneObject.render(camera);
 		groundObject.render(camera);
 		cubeObject.render(camera);
+
+		//wall1.render(camera);
+		//wall2.render(camera);
 
 		//shadow.renderShadowMap();
 		
 		//dirLight.changeParams();
-		pointLight.changeParams();
+		//pointLight.changeParams();
 		
 
 		// render skybox last
@@ -466,6 +494,10 @@ void processKeyInput(GLFWwindow* window)  // gets called every frame
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		camera.ProcessKeyInput("D", deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput("R", deltaTime);
 	}
 }
 
