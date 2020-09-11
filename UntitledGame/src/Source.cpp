@@ -1,3 +1,4 @@
+/*
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -67,19 +68,21 @@ const int WINDOW_HEIGHT = 1080;
 float lastX = (float)WINDOW_WIDTH / 2.0f;
 float lastY = (float)WINDOW_HEIGHT / 2.0f;
 bool firstMouse;
+*/
 
+/*
 int main(void)
 {
 	GLFWwindow* window;
 
-	/* Initialize the library */
+	// Initialize the library
 	if (!glfwInit())
 	{
 		printf("Error: GLFW initialization was unsuccesful!\n");
 		return -1;
 	}
 
-	/* Create a windowed mode window and its OpenGL context */
+	// Create a windowed mode window and its OpenGL context
 	//window = glfwCreateWindow(640, 480, "Untitled Game", glfwGetPrimaryMonitor(), NULL);
 	//int WINDOW_WIDTH = 800;
 	//int WINDOW_HEIGHT = 600;
@@ -96,7 +99,7 @@ int main(void)
 	glfwSetCursorPosCallback(window, cursor_position_callback); // mouse input: cursor position - cursor position callback
 	glfwSetScrollCallback(window, scroll_callback);  // scroll input
 
-	/* Make the window's context current */
+	// Make the window's context current
 	glfwMakeContextCurrent(window);  // make current OpenGL context
 
 	// initialize extension loader library here, for example glad
@@ -323,11 +326,11 @@ int main(void)
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	glEnable(GL_DEPTH_TEST);
 
-	/* Loop until the user closes the window */
+	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(window))
 	{
 		//std::cout << "cameraTarget: " << camera.cameraTarget.x << ", " << camera.cameraTarget.y << ", " << camera.cameraTarget.z << std::endl;
-		/* Render here */
+		// Render here
 		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -404,10 +407,10 @@ int main(void)
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		/* Swap front and back buffers */
+		// Swap front and back buffers
 		glfwSwapBuffers(window);
 
-		/* Poll for and process events */
+		// Poll for and process events
 		glfwPollEvents();
 	}
 
@@ -429,8 +432,9 @@ int main(void)
 	glfwTerminate();  // terminate GLFW
 	return 0;
 }
+*/
 
-
+/*
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -460,21 +464,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 }
 
-/*
-void changeMouseInputMode(GLFWwindow* window)
-{
-	if (isPpressed)
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		isPpressed = false;
-	}
-	else if (!isPpressed)
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		isPpressed = true;
-	}
-}
-*/
+
+//void changeMouseInputMode(GLFWwindow* window)
+//{
+	//if (isPpressed)
+	//{
+		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		//isPpressed = false;
+	//}
+	//else if (!isPpressed)
+	//{
+		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		//isPpressed = true;
+	//}
+//}
+
 
 void processKeyInput(GLFWwindow* window)  // gets called every frame
 {
@@ -554,3 +558,5 @@ glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAn
 
 	return modelMatrix;
 }
+
+*/

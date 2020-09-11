@@ -3,6 +3,7 @@
 
 CreateProgram::CreateProgram(std::string vertexShaderFileName, std::string fragmentShaderFileName)
 {
+	std::cout << vertexShaderFileName << ", " << fragmentShaderFileName << std::endl;
 	programContainer.ID = glCreateProgram();	// create empty program object
 
 	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, vertexShaderFileName, programContainer.ID);			// create, compile and attach vertex shader
@@ -13,10 +14,12 @@ CreateProgram::CreateProgram(std::string vertexShaderFileName, std::string fragm
 
 	cleanUpShader(programContainer.ID, vertexShaderObject);
 	cleanUpShader(programContainer.ID, fragmentShaderObject);
+	std::cout << std::endl;
 }
 
 CreateProgram::CreateProgram(std::string vertexShaderFileName, std::string fragmentShaderFileName, std::string geometryShaderFileName)
 {
+	std::cout << vertexShaderFileName << ", " << fragmentShaderFileName << ", " << geometryShaderFileName << std::endl;
 	programContainer.ID = glCreateProgram();	// create empty program object
 
 	GLuint vertexShaderObject = setUpShader(GL_VERTEX_SHADER, vertexShaderFileName, programContainer.ID);			// create, compile and attach vertex shader
@@ -29,6 +32,7 @@ CreateProgram::CreateProgram(std::string vertexShaderFileName, std::string fragm
 	cleanUpShader(programContainer.ID, vertexShaderObject);
 	cleanUpShader(programContainer.ID, fragmentShaderObject);
 	cleanUpShader(programContainer.ID, geometryShaderObject);
+	std::cout << std::endl;
 }
 
 
@@ -47,7 +51,7 @@ std::string CreateProgram::shaderSourceCodeReader(std::string shaderFileName)
 	}
 	else
 	{
-		std::cout << "Shader file is NOT open: " << shaderFileName << std::endl;
+		std::cout << "ERROR: Can't open shader source code!" << std::endl;
 	}
 
 	return ss.str();
@@ -74,12 +78,12 @@ void CreateProgram::shaderErrorHandling(GLuint shaderObject)
 
 	if (!isCompiled)
 	{
-		std::cout << "Error: Shader compilation has failed!" << std::endl;
+		std::cout << "ERROR: Shader compilation has failed!" << std::endl;
 		glDeleteShader(shaderObject);
 	}
 	else if (isCompiled)
 	{
-		std::cout << "Shader compilation was successful!" << std::endl;
+		std::cout << "OK: Shader compilation was successful!" << std::endl;
 	}
 }
 
@@ -90,12 +94,12 @@ void CreateProgram::linkingErrorHandling(GLuint programObject)
 
 	if (!isLinked)
 	{
-		std::cout << "Error: Program linking has failed!" << std::endl;
+		std::cout << "ERROR: Program linking has failed!" << std::endl;
 		glDeleteProgram(programObject);
 	}
 	else if (isLinked)
 	{
-		std::cout << "Program linking was successful!" << std::endl;
+		std::cout << "OK: Program linking was successful!" << std::endl;
 	}
 }
 

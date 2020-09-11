@@ -2,8 +2,8 @@
 
 LoadPrograms::LoadPrograms()
 {
+	std::cout << "Loading shaders..." << std::endl;
 	programs[0] = loadDefaultProgram();
-
 }
 
 ProgramContainer LoadPrograms::loadDefaultProgram()

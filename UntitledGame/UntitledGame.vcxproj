@@ -140,6 +140,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\Render.cpp" />
+    <ClCompile Include="src\ver2\LoadLights.cpp" />
+    <ClCompile Include="src\ver2\CreateDirLight.cpp" />
+    <ClCompile Include="src\ver2\Kamera.cpp" />
+    <ClCompile Include="src\ver2\GlobalVariables.cpp" />
     <ClCompile Include="src\ver2\LoadPrograms.cpp" />
     <ClCompile Include="src\ver2\CreateProgram.cpp" />
     <ClCompile Include="src\ver2\CreateScene.cpp" />
@@ -173,6 +178,7 @@
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\Test2.cpp" />
+    <ClCompile Include="src\ver2\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\DebugQuadFS.txt" />
@@ -192,6 +198,13 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\Render.h" />
+    <ClInclude Include="src\ver2\LoadLights.h" />
+    <ClInclude Include="src\ver2\CreateDirLight.h" />
+    <ClInclude Include="src\ver2\AdditionalData.h" />
+    <ClInclude Include="src\ver2\KeyboardInput.h" />
+    <ClInclude Include="src\ver2\Kamera.h" />
+    <ClInclude Include="src\ver2\GlobalVariables.h" />
     <ClInclude Include="src\ver2\LoadPrograms.h" />
     <ClInclude Include="src\ver2\CreateProgram.h" />
     <ClInclude Include="src\ver2\CreateScene.h" />
@@ -229,6 +242,7 @@
     <ClInclude Include="src\Test.h" />
     <ClInclude Include="src\Test2.h" />
     <ClInclude Include="src\ver2\ProgramData.h" />
+    <ClInclude Include="src\ver2\stb_image.h" />
     <ClInclude Include="src\ver2\TextureData.h" />
   </ItemGroup>
   <ItemGroup>

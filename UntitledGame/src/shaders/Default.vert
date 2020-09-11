@@ -8,11 +8,12 @@ out vec3 out_worldVertexPos;
 out vec2 out_textureCoords;
 out vec3 out_normalVec;
 
+uniform mat4 MVP;
 uniform mat4 modelMatrix;
 
 void main()
 {
-	gl_Position = modelMatrix * vec4(in_vertexPosition, 1.0);
+	gl_Position = MVP * vec4(in_vertexPosition, 1.0);
 
 	out_worldVertexPos = vec3(modelMatrix * vec4(in_vertexPosition, 1.0));
 	out_textureCoords = in_textureCoords;

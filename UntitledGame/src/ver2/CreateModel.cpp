@@ -26,7 +26,7 @@ CreateModel::CreateModel(std::string objectFileName, glm::vec3 translate, glm::v
 	loadObjectData(objectFileName);		// data
 	createVAOandVBOs();		// vao, vbo, ibo
 	fillVBOs();				// vbo, ibo
-	createModelMatrix(translate, scale, rotate, rotateAxis);
+	objectContainer.modelMatrix = createModelMatrix(translate, scale, rotate, rotateAxis);
 }
 
 void CreateModel::loadObjectData(std::string objectFileName)

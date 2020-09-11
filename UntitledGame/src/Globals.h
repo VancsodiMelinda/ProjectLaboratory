@@ -1,5 +1,4 @@
 #pragma once
-#include "Camera.h"
 
 extern int windowWidth;
 extern int windowHeight;

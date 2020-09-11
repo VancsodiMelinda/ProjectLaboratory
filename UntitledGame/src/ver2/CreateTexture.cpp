@@ -55,7 +55,7 @@ void CreateTexture::loadTexture(std::string textureFileName)
 
 	if (data)
 	{
-		std::cout << "Texture image has been loaded succesfully: " << textureFileName << std::endl;
+		std::cout << "OK: " << textureFileName << std::endl;
 		//std::cout << "imageWidth: " << imageWidth << std::endl << "imageHeight: " << imageHeight << std::endl << "nrChannels: " << nrChannels << std::endl;
 		GLenum format = GL_RGB;
 		if (nrChannels == 3)
@@ -73,7 +73,7 @@ void CreateTexture::loadTexture(std::string textureFileName)
 	}
 	else
 	{
-		std::cout << "Texture image loading has failed!" << std::endl;
+		std::cout << "ERROR: " << textureFileName << std::endl;
 	}
 
 	stbi_image_free(data);  // free the image memory

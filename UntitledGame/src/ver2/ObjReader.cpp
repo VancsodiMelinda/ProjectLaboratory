@@ -128,7 +128,7 @@ ObjectData ObjReader::readObjFile(std::string objFileName)
 	allData.normals = vnVector;
 	allData.indices = iVector;
 
-	std::cout << "Obj file has been loaded succesfully: " << objFileName << std::endl;
+	std::cout << "OK: " << objFileName << std::endl;
 
 	return allData;
 }

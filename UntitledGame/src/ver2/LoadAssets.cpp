@@ -2,9 +2,12 @@
 
 LoadAssets::LoadAssets()
 {
+	std::cout << "Loading textures..." << std::endl;
 	loadDiffuseMaps();		// load all diffuse maps
 	loadSpecularMaps();		// load all spcular maps
+	std::cout << std::endl << "Loading models..." << std::endl;
 	loadObjects();			// load all models and assign texture maps
+	std::cout << std::endl;
 }
 
 void LoadAssets::loadDiffuseMaps()
@@ -24,20 +27,32 @@ void LoadAssets::loadSpecularMaps()
 	CreateTexture tex1(TextureType::specularMap);  // load default spacular map
 	specularMaps[0] = tex1.textureContainer;
 
-	CreateTexture tex2("resources/spacular maps/black.png", TextureType::specularMap);
+	CreateTexture tex2("resources/specular maps/black.png", TextureType::specularMap);
 	specularMaps[1] = tex2.textureContainer;
 }
 
 void LoadAssets::loadObjects()
 {
-	CreateModel cube("resources/RubiksCube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "x");
+	CreateModel cube("resources/models/cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	cube.objectContainer.material.diffuseMap = diffuseMaps[0].ID;
 	cube.objectContainer.material.specularMap = specularMaps[0].ID;
 	cube.objectContainer.material.shininess = 0.0f;
 	models[0] = cube.objectContainer;
+
+	CreateModel sphere("resources/models/sphere.obj", glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
+	sphere.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
+	sphere.objectContainer.material.specularMap = specularMaps[0].ID;
+	sphere.objectContainer.material.shininess = 0.0f;
+	models[1] = sphere.objectContainer;
+
+	CreateModel suzanne("resources/models/suzanne.obj", glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
+	suzanne.objectContainer.material.diffuseMap = diffuseMaps[2].ID;
+	suzanne.objectContainer.material.specularMap = specularMaps[0].ID;
+	suzanne.objectContainer.material.shininess = 0.0f;
+	models[2] = suzanne.objectContainer;
 }
 
-void LoadAssets::config(ObjectContainer& object, GLuint programID)
+void LoadAssets::configAsset(ObjectContainer& object, GLuint programID)
 {
 	//// CONFIGURE VERTEX ATTRIBUTES
 	glBindVertexArray(object.vao);
@@ -67,17 +82,26 @@ void LoadAssets::config(ObjectContainer& object, GLuint programID)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	//// GET UNIFORM LOCATIONS
+	// vertex shader
+	defaultUniformLocs.MVPloc = glGetUniformLocation(programID, "MVP");
 	defaultUniformLocs.modelMatrixLoc = glGetUniformLocation(programID, "modelMatrix");
+	// fragment shader
 	defaultUniformLocs.diffuseMapLoc = glGetUniformLocation(programID, "material.diffuseMap");
 	defaultUniformLocs.specularMapLoc = glGetUniformLocation(programID, "material.specularMap");
 	defaultUniformLocs.shininessLoc = glGetUniformLocation(programID, "material.shininess");
 }
 
-void LoadAssets::render(ObjectContainer& object, GLuint programID)
+void LoadAssets::renderAsset(ObjectContainer& object, GLuint programID, Kamera& kamera)
 {
+	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glUseProgram(programID);
 
+	glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
+
 	// upload uniforms
+	glUniformMatrix4fv(defaultUniformLocs.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniformMatrix4fv(defaultUniformLocs.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(object.modelMatrix));
 	glUniform1i(defaultUniformLocs.diffuseMapLoc, 0);
 	glUniform1i(defaultUniformLocs.specularMapLoc, 1);
@@ -93,4 +117,25 @@ void LoadAssets::render(ObjectContainer& object, GLuint programID)
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+glm::mat4 LoadAssets::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
+{
+	return P * V * M;
+}
+
+void LoadAssets::config(GLuint programID)
+{
+	for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
+	{
+		configAsset(models[i], programID);
+	}
+}
+
+void LoadAssets::render(GLuint programID, Kamera& kamera)
+{
+	for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
+	{
+		renderAsset(models[i], programID, kamera);
+	}
 }
