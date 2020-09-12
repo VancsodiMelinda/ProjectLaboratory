@@ -20,7 +20,7 @@ private:
 	TextureContainer diffuseMaps[3];
 	TextureContainer specularMaps[2];
 public:
-	ObjectContainer models[3];
+	ObjectContainer models[4];
 
 	LoadAssets();	// ctor
 private:

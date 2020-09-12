@@ -26,21 +26,26 @@ struct DirLight{
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
+
+	sampler2D shadowMap;
 };
 uniform DirLight dirLightArray[2];
 
-vec3 calcDirLight();
+vec3 calcDirLight(DirLight dirLight);
 
 void main()
 {
-	//vec3 finalColor = vec3(0.0, 0.0, 0.0);
+	int numberOfLights = 2;
+	vec3 finalColor = vec3(0.0, 0.0, 0.0);
 
-	//for (int i = 0; i < dirLightArray.length(); i++)
-	//{
-		//finalColor += calcDirLight();
-	//}
+	for (int i = 0; i < dirLightArray.length(); i++)
+	{
+		finalColor += (calcDirLight(dirLightArray[i]))/numberOfLights;
+	}
 
-	fragColor = vec4(texture(material.diffuseMap, out_textureCoords).rgb, 1.0);
+	//finalColor = texture(dirLightArray[1].shadowMap, out_textureCoords).rgb;
+
+	fragColor = vec4(finalColor, 1.0);
 }
 
 
@@ -61,7 +66,7 @@ vec3 calcDirLight(DirLight dirLight)
 	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
 	vec3 specular = spec * dirLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;
 
-	vec3 color = ambient + diffuse + specular;
+	vec3 color = (ambient + diffuse + specular) * dirLight.color;
 
 	return color;
 }

@@ -35,21 +35,27 @@ void LoadAssets::loadObjects()
 {
 	CreateModel cube("resources/models/cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	cube.objectContainer.material.diffuseMap = diffuseMaps[0].ID;
-	cube.objectContainer.material.specularMap = specularMaps[0].ID;
-	cube.objectContainer.material.shininess = 0.0f;
+	cube.objectContainer.material.specularMap = specularMaps[1].ID;
+	cube.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[0] = cube.objectContainer;
 
 	CreateModel sphere("resources/models/sphere.obj", glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	sphere.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
 	sphere.objectContainer.material.specularMap = specularMaps[0].ID;
-	sphere.objectContainer.material.shininess = 0.0f;
+	sphere.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[1] = sphere.objectContainer;
 
 	CreateModel suzanne("resources/models/suzanne.obj", glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	suzanne.objectContainer.material.diffuseMap = diffuseMaps[2].ID;
 	suzanne.objectContainer.material.specularMap = specularMaps[0].ID;
-	suzanne.objectContainer.material.shininess = 0.0f;
+	suzanne.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[2] = suzanne.objectContainer;
+
+	CreateModel plane("resources/models/plane.obj", glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(8.0f, 8.0f, 8.0f), 0.0f, "y");
+	plane.objectContainer.material.diffuseMap = diffuseMaps[2].ID;
+	plane.objectContainer.material.specularMap = specularMaps[0].ID;
+	plane.objectContainer.material.shininess = 0.6f * 128.0f;
+	models[3] = plane.objectContainer;
 }
 
 void LoadAssets::configAsset(ObjectContainer& object, GLuint programID)

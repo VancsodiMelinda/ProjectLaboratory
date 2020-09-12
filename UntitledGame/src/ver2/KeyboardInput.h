@@ -4,30 +4,6 @@
 
 Kamera kamera;
 
-bool p_press = false;
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
-	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
-	{
-		if (p_press)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // lock cursor
-			//glfwSetCursorPosCallback(window, cursor_position_callback);
-		}
-		else if (!p_press)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  // free cursor
-			//glfwSetCursorPosCallback(window, cursor_position_callback_2);
-		}
-
-		p_press = !p_press;
-	}
-}
-
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 void processKeyboardInput(GLFWwindow* window)  // gets called every frame
@@ -80,4 +56,30 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)  // 
 	lastY = (float)ypos;
 
 	kamera.processMouseMovement(xOffset, yOffset);
+}
+
+void cursor_position_callback_2(GLFWwindow* window, double xpos, double ypos) {}
+
+bool p_press = false;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		if (p_press)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // lock cursor
+			glfwSetCursorPosCallback(window, cursor_position_callback);
+		}
+		else if (!p_press)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  // free cursor
+			glfwSetCursorPosCallback(window, cursor_position_callback_2);
+		}
+
+		p_press = !p_press;
+	}
 }

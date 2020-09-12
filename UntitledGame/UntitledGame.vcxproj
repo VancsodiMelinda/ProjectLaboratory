@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\CreateDirShadow.cpp" />
+    <ClCompile Include="src\ver2\LoadShadows.cpp" />
     <ClCompile Include="src\ver2\Render.cpp" />
     <ClCompile Include="src\ver2\LoadLights.cpp" />
     <ClCompile Include="src\ver2\CreateDirLight.cpp" />
@@ -198,6 +200,8 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\CreateDirShadow.h" />
+    <ClInclude Include="src\ver2\LoadShadows.h" />
     <ClInclude Include="src\ver2\Render.h" />
     <ClInclude Include="src\ver2\LoadLights.h" />
     <ClInclude Include="src\ver2\CreateDirLight.h" />

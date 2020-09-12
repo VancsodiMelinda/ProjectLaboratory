@@ -7,7 +7,7 @@
 class LoadPrograms
 {
 public:
-	ProgramContainer programs[1];
+	ProgramContainer programs[3];
 
 	LoadPrograms();
 
@@ -16,7 +16,7 @@ private:
 	ProgramContainer loadObjectProgram();
 	ProgramContainer loadLightProgram();
 	ProgramContainer loadDirShadowProgram();
-	ProgramContainer loadOmniShadowProgram();
-	ProgramContainer skyBoxProgram();
+	//ProgramContainer loadOmniShadowProgram();
+	//ProgramContainer skyBoxProgram();
 };
 

@@ -8,6 +8,7 @@
 #include "LoadAssets.h"
 #include "LoadPrograms.h"
 #include "LoadLights.h"
+#include "LoadShadows.h"
 #include "GlobalVariables.h"
 #include "KeyboardInput.h"
 #include "Render.h"
@@ -84,21 +85,23 @@ int main(void)
 	LoadAssets assets;		// ObjectContainer models[1];
 	LoadPrograms programs;	// array of shaders
 	LoadLights lights;		// multiple arrays of different lights
-
-	//Kamera kamera;
+	LoadShadows shadows(lights, assets, programs);
 	
 	Render renderer(
 		assets,
 		programs,
 		kamera,
-		lights
+		lights,
+		shadows
 	);
 
-	renderer.config();
+	std::cout << "Configurations..." << std::endl;
+	renderer.configAssets();
+	lights.config(assets.models[0], programs.programs[1]);
+	shadows.config();
 
-	//assets.config(programs.programs[0].ID);
 
-	/* Loop until the user closes the window */
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		processKeyboardInput(window);	// WASD + R
@@ -108,12 +111,13 @@ int main(void)
 		glClearDepth(1.0f);
 		glClearStencil(0);
 
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
+		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glEnable(GL_DEPTH_TEST);
 
-		//assets.render(programs.programs[0].ID, kamera);
-		renderer.render(kamera);
+		shadows.render();
+		renderer.renderAssets(kamera);
+		lights.render(assets.models[0], programs.programs[1], kamera);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
