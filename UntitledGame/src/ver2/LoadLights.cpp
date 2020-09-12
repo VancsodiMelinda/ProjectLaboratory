@@ -5,21 +5,67 @@ LoadLights::LoadLights()
 	std::cout << "Loading directional lights..." << std::endl;
 	loadDirectionalLights();
 	std::cout << std::endl;
+
+	std::cout << "Loading point lights..." << std::endl;
+	loadPointLights();
+	std::cout << std::endl;
 }
 
 void LoadLights::loadDirectionalLights()
 {
 	CreateDirLight light1;	// creates default directional light
+	light1.dirLightContainer.position = glm::vec3(0.0f, 3.0f, -5.0f);
+	light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light1.dirLightContainer.ambientStrength = 0.3f;
+	light1.dirLightContainer.diffuseStrength = 0.8f;
+	light1.dirLightContainer.specularStrength = 1.0f;
+	light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	dirLights[0] = light1.dirLightContainer;
 
 	CreateDirLight light2;
 	light2.dirLightContainer.position = glm::vec3(-5.0f, 3.0f, 0.0f);
-	light2.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light2.dirLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);
 	light2.dirLightContainer.ambientStrength = 0.3f;
 	light2.dirLightContainer.diffuseStrength = 0.8f;
 	light2.dirLightContainer.specularStrength = 1.0f;
 	light2.dirLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	dirLights[1] = light2.dirLightContainer;
+
+	CreateDirLight light3;
+	light3.dirLightContainer.position = glm::vec3(0.0f, 3.0f, 5.0f);
+	light3.dirLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);
+	light3.dirLightContainer.ambientStrength = 0.3f;
+	light3.dirLightContainer.diffuseStrength = 0.8f;
+	light3.dirLightContainer.specularStrength = 1.0f;
+	light3.dirLightContainer.lightSpaceMatrix = light3.createLightSpaceMatrix();
+	dirLights[2] = light3.dirLightContainer;
+	
+	CreateDirLight light4;
+	light4.dirLightContainer.position = glm::vec3(5.0f, 3.0f, 0.0f);
+	light4.dirLightContainer.color = glm::vec3(0.0f, 0.0f, 1.0f);
+	light4.dirLightContainer.ambientStrength = 0.3f;
+	light4.dirLightContainer.diffuseStrength = 0.8f;
+	light4.dirLightContainer.specularStrength = 1.0f;
+	light4.dirLightContainer.lightSpaceMatrix = light4.createLightSpaceMatrix();
+	dirLights[3] = light4.dirLightContainer;
+}
+
+void LoadLights::loadPointLights()
+{
+	CreatePointLight light1;
+	pointLights[0] = light1.pointLightContainer;
+
+	CreatePointLight light2;
+	light2.pointLightContainer.position = glm::vec3(3.0f, 3.0f, 3.0f);
+	light2.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 1.0f);
+	light2.pointLightContainer.ambientStrength = 0.1f;
+	light2.pointLightContainer.diffuseStrength = 0.9f;
+	light2.pointLightContainer.specularStrength = 0.8f;
+	light2.pointLightContainer.constant = 0.2f;
+	light2.pointLightContainer.linear = 0.4f;
+	light2.pointLightContainer.quadratic = 0.9f;
+	light2.pointLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
+	pointLights[1] = light2.pointLightContainer;
 }
 
 void LoadLights::configLight(ObjectContainer& object, GLuint programID)
@@ -51,7 +97,7 @@ void LoadLights::configLight(ObjectContainer& object, GLuint programID)
 	uniformLocations.colorLoc = glGetUniformLocation(programID, "lightColor");
 }
 
-void LoadLights::renderLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
+void LoadLights::renderDirLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
 {
 	glUseProgram(programID);
 
@@ -70,33 +116,51 @@ void LoadLights::renderLight(DirLightContainer& dirLight, ObjectContainer& objec
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void LoadLights::config(ObjectContainer& object, ProgramContainer programContainer)
+void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
+{
+	glUseProgram(programID);
+
+	// create/update MVP
+	glm::mat4 modelMatrix = glm::mat4(1.0);
+	modelMatrix = glm::translate(modelMatrix, pointLight.position);
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
+	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * kamera.cameraContainer.viewMatrix * modelMatrix;
+
+	// upload uniforms
+	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(pointLight.color));
+
+	// draw
+	glBindVertexArray(object.vao);
+	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void LoadLights::config(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer)
 {
 	if (programContainer.type == ProgramType::light)
 	{
-		configLight(object, programContainer.ID);
+		configLight(dirLightObject, programContainer.ID);
+		configLight(pointLightObject, programContainer.ID);
 		std::cout << "OK: Lights are configured using the correct program." << std::endl;
 	}
 	else
 	{
 		std::cout << "ERROR: You are using the incorrect program for configuring the lights!" << std::endl;
 	}
-
-	//for (int i = 0; i < sizeof(dirLights) / sizeof(dirLights[0]); i++)
-	//{
-		//configLight(object, programID);
-	//}
-
-	//for (int i = 0; i < sizeof(pointLights) / sizeof(pointLights[0]); i++) {}
-
-	//for (int i = 0; i < sizeof(spotLights) / sizeof(spotLights[0]); i++) {}
 }
 
-void LoadLights::render(ObjectContainer& object, ProgramContainer programContainer, Kamera& kamera)
+void LoadLights::render(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer, Kamera& kamera)
 {
-	for (int i = 0; i < sizeof(dirLights) / sizeof(dirLights[0]); i++)
+	// render directional lights
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
-		renderLight(dirLights[i], object, programContainer.ID, kamera);
+		renderDirLight(dirLights[i], dirLightObject, programContainer.ID, kamera);
+	}
+
+	// render point lights
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+		renderPointLight(pointLights[i], pointLightObject, programContainer.ID, kamera);
 	}
 }
 

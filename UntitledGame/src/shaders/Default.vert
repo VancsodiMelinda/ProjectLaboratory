@@ -8,6 +8,9 @@ out vec3 out_worldVertexPos;
 out vec2 out_textureCoords;
 out vec3 out_normalVec;
 
+out vec4 rawVertexPosition;
+out mat4 out_modelMatrix;
+
 uniform mat4 MVP;
 uniform mat4 modelMatrix;
 
@@ -19,4 +22,6 @@ void main()
 	out_textureCoords = in_textureCoords;
 	mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
 	out_normalVec = normalMatrix * in_normalVec;
+	rawVertexPosition = vec4(in_vertexPosition, 1.0);
+	out_modelMatrix = modelMatrix;
 }

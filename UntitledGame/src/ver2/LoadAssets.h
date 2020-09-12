@@ -12,38 +12,22 @@
 #include "CreateTexture.h"
 #include "GlobalVariables.h"
 #include "Kamera.h"
+#include "ConstantVariables.h"
 
 
 class LoadAssets
 {
 private:
-	TextureContainer diffuseMaps[3];
+	TextureContainer diffuseMaps[4];
 	TextureContainer specularMaps[2];
 public:
-	ObjectContainer models[4];
+	ObjectContainer models[NUMBER_OF_OBJECTS];
 
 	LoadAssets();	// ctor
 private:
 	void loadDiffuseMaps();
 	void loadSpecularMaps();
 	void loadObjects();
-
-	void configAsset(ObjectContainer& object, GLuint programID);
-	void renderAsset(ObjectContainer& object, GLuint programID, Kamera& kamera);
-	glm::mat4 updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P);
-
-	struct DefaultUniformLocs {
-		int MVPloc;
-		int modelMatrixLoc;
-		int diffuseMapLoc;
-		int specularMapLoc;
-		int shininessLoc;
-	};
-	DefaultUniformLocs defaultUniformLocs;
-
-public:
-	void config(GLuint programID);
-	void render(GLuint programID, Kamera& kamera);
 };
 
 /*

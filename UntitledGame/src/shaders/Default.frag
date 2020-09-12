@@ -4,6 +4,9 @@ in vec3 out_worldVertexPos;
 in vec2 out_textureCoords;
 in vec3 out_normalVec;
 
+in vec4 rawVertexPosition;
+in mat4 out_modelMatrix;
+
 out vec4 fragColor;
 
 struct Material{ 
@@ -28,10 +31,12 @@ struct DirLight{
 	float specularStrength;
 
 	sampler2D shadowMap;
+	mat4 lightSpaceMatrix;
 };
-uniform DirLight dirLightArray[2];
+uniform DirLight dirLightArray[4];
 
 vec3 calcDirLight(DirLight dirLight);
+float calcDirShadow(DirLight dirLight);
 
 void main()
 {
@@ -66,7 +71,39 @@ vec3 calcDirLight(DirLight dirLight)
 	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
 	vec3 specular = spec * dirLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;
 
-	vec3 color = (ambient + diffuse + specular) * dirLight.color;
+
+	float shadow = calcDirShadow(dirLight);
+	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;
+	//vec3 color = (ambient + diffuse + specular) * dirLight.color;
 
 	return color;
+}
+
+float calcDirShadow(DirLight dirLight)
+{
+	vec4 out_lightVertexPos =  dirLight.lightSpaceMatrix * out_modelMatrix * rawVertexPosition;
+	vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;	// [-1, 1]
+	projCoords = (projCoords * 0.5) + 0.5;								// [0, 1]
+	//float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPosition - out_worldVertexPos)), 0.005);  // annyira nem tunik jonak
+	float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, (-dirLight.direction) - out_worldVertexPos)), 0.005);
+	float closestDepth = texture(dirLight.shadowMap, projCoords.xy).r;	// depth in scene
+	float currentDepth = projCoords.z - shadowBias;						// cure shadow acne
+	
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(dirLight.shadowMap, 0);  // width and height of texture
+
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(dirLight.shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;	// depth in shadow map
+			shadow += currentDepth > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+
+	shadow /= 9.0;
+
+	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+	return shadow;
 }

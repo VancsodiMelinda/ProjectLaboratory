@@ -5,8 +5,6 @@
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "ModelData.h"
-
 struct DirLightContainer
 {
 	glm::vec3 position	= glm::vec3(0.0f);

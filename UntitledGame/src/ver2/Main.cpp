@@ -97,11 +97,10 @@ int main(void)
 
 	std::cout << "Configurations..." << std::endl;
 	renderer.configAssets();
-	lights.config(assets.models[0], programs.programs[1]);
+	lights.config(assets.models[0], assets.models[1], programs.programs[1]);
 	shadows.config();
 
 
-	
 	while (!glfwWindowShouldClose(window))
 	{
 		processKeyboardInput(window);	// WASD + R
@@ -117,7 +116,7 @@ int main(void)
 
 		shadows.render();
 		renderer.renderAssets(kamera);
-		lights.render(assets.models[0], programs.programs[1], kamera);
+		lights.render(assets.models[0], assets.models[1], programs.programs[1], kamera);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

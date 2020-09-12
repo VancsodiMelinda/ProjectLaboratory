@@ -59,7 +59,8 @@ void Render::getUniformLocations()
 	uniformLocations.cameraPosLoc = glGetUniformLocation(programID, "camera.position");
 	uniformLocations.cameraFarPlaneLoc = glGetUniformLocation(programID, "camera.farPlane");
 
-	for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		uniformLocations.dirLightLocs[i][0] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].direction").c_str());
 		uniformLocations.dirLightLocs[i][1] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].color").c_str());
@@ -69,6 +70,7 @@ void Render::getUniformLocations()
 		uniformLocations.dirLightLocs[i][4] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].specularStrength").c_str());
 
 		uniformLocations.dirLightLocs[i][5] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].shadowMap").c_str());
+		uniformLocations.dirLightLocs[i][6] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str());
 	}
 }
 
@@ -88,7 +90,8 @@ void Render::renderAsset(ObjectContainer& object)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
-	for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
+	//for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		glActiveTexture(GL_TEXTURE2 + i);
 		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[i].shadowMap);
@@ -113,7 +116,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 	glUniform3fv(uniformLocations.cameraPosLoc, 1, glm::value_ptr(kamera.cameraContainer.cameraPosition));
 	glUniform1f(uniformLocations.cameraFarPlaneLoc, kamera.cameraContainer.farPlane);
 
-	for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		glm::vec3 direction = glm::vec3(0.0f) - lights.dirLights[i].position;
 		glUniform3fv(uniformLocations.dirLightLocs[i][0], 1, glm::value_ptr(direction));
@@ -124,8 +128,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.dirLightLocs[i][4], lights.dirLights[i].specularStrength);
 
 		glUniform1i(uniformLocations.dirLightLocs[i][5], 2 + i);
+		glUniformMatrix4fv(uniformLocations.dirLightLocs[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights[i].lightSpaceMatrix));
 	}
-
 }
 
 glm::mat4 Render::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
@@ -135,7 +139,8 @@ glm::mat4 Render::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
 
 void Render::configAssets()
 {
-	for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		configAsset(assets.models[i]);
 	}
@@ -151,7 +156,8 @@ void Render::renderAssets(Kamera& kamera_)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-	for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		renderAsset(assets.models[i]);
 	}

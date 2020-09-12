@@ -7,6 +7,7 @@
 #include "LoadAssets.h"
 #include "LoadPrograms.h"
 #include "GlobalVariables.h"
+#include "ConstantVariables.h"
 
 class LoadShadows
 {
@@ -17,12 +18,12 @@ private:
 
 	ProgramContainer dirShadowProgramContainer;
 public:
-	DirShadowContainer dirShadows[2];
+	DirShadowContainer dirShadows[NUMBER_OF_DIR_LIGHTS];
 	//PointShadowContainer pointShadows[];
 	LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_);
 
 private:
-	void loadDirShadows(int numberOfDirShadows);
+	void loadDirShadows();
 	//void loadPointShadows();
 	//void loadSpotShadows();
 

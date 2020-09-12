@@ -5,6 +5,7 @@
 #include "LoadLights.h"
 #include "LoadPrograms.h"
 #include "LoadShadows.h"
+#include "ConstantVariables.h"
 
 class Render
 {
@@ -35,16 +36,12 @@ private:
 		int shininessLoc = 0;
 		int cameraPosLoc = 0;
 		int cameraFarPlaneLoc = 0;
-		int dirLightLocs[2][6];
+		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
 	};
 	UniformLocations uniformLocations;
 
 public:
 	void configAssets();
 	void renderAssets(Kamera& kamera_);
-
-private:
-	
-	void uploadLightUniformLocation();
 };
 

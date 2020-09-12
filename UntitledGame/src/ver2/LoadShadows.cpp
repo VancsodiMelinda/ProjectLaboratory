@@ -8,14 +8,13 @@ LoadShadows::LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms&
 	// get programs
 	dirShadowProgramContainer = programs.programs[2];
 
-	std::cout << "Load directional shadows..." << std::endl;
-	int numberOfDirShadows = sizeof(lights.dirLights) / sizeof(lights.dirLights[0]);
-	loadDirShadows(numberOfDirShadows);
+	loadDirShadows();
 }
 
-void LoadShadows::loadDirShadows(int numberOfDirShadows)
+void LoadShadows::loadDirShadows()
 {
-	for (int i = 0; i < numberOfDirShadows; i++)
+	std::cout << "Load directional shadows..." << std::endl;
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		std::cout << "OK: Created directional shadow." << std::endl;
 		CreateDirShadow shadow;
@@ -66,7 +65,8 @@ void LoadShadows::config()
 {
 	if (dirShadowProgramContainer.type == ProgramType::directionalShadow)
 	{
-		for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+		//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configDirShadow(assets.models[i], dirShadowProgramContainer.ID);
 		}
@@ -82,13 +82,15 @@ void LoadShadows::render()
 {
 	glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 
-	for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		for (int j = 0; j < sizeof(assets.models) / sizeof(assets.models[0]); j++)
+		//for (int j = 0; j < sizeof(assets.models) / sizeof(assets.models[0]); j++)
+		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)
 		{
 			renderDirShadow(lights.dirLights[i], assets.models[j], dirShadowProgramContainer.ID);
 		}
