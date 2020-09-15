@@ -80,14 +80,14 @@ void LoadShadows::config()
 
 void LoadShadows::render()
 {
-	glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+	//glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+	//glEnable(GL_DEPTH_TEST);
 
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
 
 		//for (int j = 0; j < sizeof(assets.models) / sizeof(assets.models[0]); j++)
 		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)

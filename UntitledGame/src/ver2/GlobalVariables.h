@@ -8,4 +8,3 @@ extern int DIR_SHADOW_HEIGHT;
 
 //extern int POINT_SHADOW_WIDTH;
 //extern int POINT_SHADOW_HEIGHT;
-

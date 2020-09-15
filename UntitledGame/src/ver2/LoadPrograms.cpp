@@ -7,6 +7,7 @@ LoadPrograms::LoadPrograms()
 	programs[0] = loadDefaultProgram();
 	programs[1] = loadLightProgram();
 	programs[2] = loadDirShadowProgram();
+	programs[3] = loadSkyboxProgram();
 }
 
 ProgramContainer LoadPrograms::loadDefaultProgram()
@@ -45,6 +46,16 @@ ProgramContainer LoadPrograms::loadDirShadowProgram()
 	std::string fragmentShaderFileName = "src/shaders/Shadow.frag";
 	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
 	program.programContainer.type = ProgramType::directionalShadow;
+
+	return program.programContainer;
+}
+
+ProgramContainer LoadPrograms::loadSkyboxProgram()
+{
+	std::string vertexShaderFileName = "src/shaders/Skybox.vert";
+	std::string fragmentShaderFileName = "src/shaders/Skybox.frag";
+	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
+	program.programContainer.type = ProgramType::skybox;
 
 	return program.programContainer;
 }

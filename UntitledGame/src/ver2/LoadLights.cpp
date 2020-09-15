@@ -61,9 +61,9 @@ void LoadLights::loadPointLights()
 	light2.pointLightContainer.ambientStrength = 0.1f;
 	light2.pointLightContainer.diffuseStrength = 0.9f;
 	light2.pointLightContainer.specularStrength = 0.8f;
-	light2.pointLightContainer.constant = 0.2f;
-	light2.pointLightContainer.linear = 0.4f;
-	light2.pointLightContainer.quadratic = 0.9f;
+	//light2.pointLightContainer.constant = 0.2f;
+	//light2.pointLightContainer.linear = 0.4f;
+	//light2.pointLightContainer.quadratic = 0.9f;
 	light2.pointLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	pointLights[1] = light2.pointLightContainer;
 }
@@ -114,6 +114,7 @@ void LoadLights::renderDirLight(DirLightContainer& dirLight, ObjectContainer& ob
 	// draw
 	glBindVertexArray(object.vao);
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
@@ -133,6 +134,7 @@ void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContain
 	// draw
 	glBindVertexArray(object.vao);
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void LoadLights::config(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer)

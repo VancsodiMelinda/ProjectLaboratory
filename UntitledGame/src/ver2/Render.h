@@ -37,6 +37,7 @@ private:
 		int cameraPosLoc = 0;
 		int cameraFarPlaneLoc = 0;
 		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
+		int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
 	};
 	UniformLocations uniformLocations;
 

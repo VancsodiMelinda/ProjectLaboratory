@@ -72,6 +72,22 @@ void Render::getUniformLocations()
 		uniformLocations.dirLightLocs[i][5] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].shadowMap").c_str());
 		uniformLocations.dirLightLocs[i][6] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str());
 	}
+
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+		uniformLocations.pointLightLocs[i][0] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].position").c_str());
+		uniformLocations.pointLightLocs[i][1] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].color").c_str());
+
+		uniformLocations.pointLightLocs[i][2] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].ambientStrength").c_str());
+		uniformLocations.pointLightLocs[i][3] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].diffuseStrength").c_str());
+		uniformLocations.pointLightLocs[i][4] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].specularStrength").c_str());
+
+		uniformLocations.pointLightLocs[i][5] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].constant").c_str());
+		uniformLocations.pointLightLocs[i][6] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].linear").c_str());
+		uniformLocations.pointLightLocs[i][7] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].quadratic").c_str());
+
+		uniformLocations.pointLightLocs[i][8] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].shadowBox").c_str());
+	}
 }
 
 
@@ -91,13 +107,22 @@ void Render::renderAsset(ObjectContainer& object)
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
 	//for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
-	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
+	for (int i = 2, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 2); i++, j++)
 	{
-		glActiveTexture(GL_TEXTURE2 + i);
-		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[i].shadowMap);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[j].shadowMap);
 	}
 
+	/*
+	for (int i = (NUMBER_OF_DIR_LIGHTS + 2), j = 0; i < (NUMBER_OF_DIR_LIGHTS + NUMBER_OF_POINT_LIGHTS + 2); i++, j++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, );
+	}
+	*/
+
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void Render::uploadUniforms(ObjectContainer& object)
@@ -130,6 +155,20 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1i(uniformLocations.dirLightLocs[i][5], 2 + i);
 		glUniformMatrix4fv(uniformLocations.dirLightLocs[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights[i].lightSpaceMatrix));
 	}
+
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+		glUniform3fv(uniformLocations.pointLightLocs[i][0], 1, glm::value_ptr(lights.pointLights[i].position));
+		glUniform3fv(uniformLocations.pointLightLocs[i][1], 1, glm::value_ptr(lights.pointLights[i].color));
+
+		glUniform1f(uniformLocations.pointLightLocs[i][2], lights.pointLights[i].ambientStrength);
+		glUniform1f(uniformLocations.pointLightLocs[i][3], lights.pointLights[i].diffuseStrength);
+		glUniform1f(uniformLocations.pointLightLocs[i][4], lights.pointLights[i].specularStrength);
+
+		glUniform1f(uniformLocations.pointLightLocs[i][5], lights.pointLights[i].constant);
+		glUniform1f(uniformLocations.pointLightLocs[i][6], lights.pointLights[i].linear);
+		glUniform1f(uniformLocations.pointLightLocs[i][7], lights.pointLights[i].quadratic);
+	}
 }
 
 glm::mat4 Render::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
@@ -151,10 +190,10 @@ void Render::configAssets()
 void Render::renderAssets(Kamera& kamera_)
 {
 	kamera = kamera_;
-
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glEnable(GL_DEPTH_TEST);
 
 	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)

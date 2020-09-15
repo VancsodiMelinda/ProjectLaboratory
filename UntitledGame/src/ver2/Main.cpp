@@ -9,6 +9,7 @@
 #include "LoadPrograms.h"
 #include "LoadLights.h"
 #include "LoadShadows.h"
+#include "LoadSkyboxes.h"
 #include "GlobalVariables.h"
 #include "KeyboardInput.h"
 #include "Render.h"
@@ -86,6 +87,7 @@ int main(void)
 	LoadPrograms programs;	// array of shaders
 	LoadLights lights;		// multiple arrays of different lights
 	LoadShadows shadows(lights, assets, programs);
+	LoadSkyboxes skybox;
 	
 	Render renderer(
 		assets,
@@ -99,7 +101,9 @@ int main(void)
 	renderer.configAssets();
 	lights.config(assets.models[0], assets.models[1], programs.programs[1]);
 	shadows.config();
+	//skybox.config(assets.models[0], programs.programs[3]);
 
+	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -107,16 +111,24 @@ int main(void)
 
 		// specify clear values for the buffers
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClearDepth(1.0f);
-		glClearStencil(0);
+		//glClearDepth(1.0f);
+		//glClearStencil(0);
 
-		//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glEnable(GL_DEPTH_TEST);
-
+		// render shadows
+		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 		shadows.render();
+
+		// render scene
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		renderer.renderAssets(kamera);
 		lights.render(assets.models[0], assets.models[1], programs.programs[1], kamera);
+
+		// render skybox
+		glDepthFunc(GL_LEQUAL);		// passes if the incoming depth value is less than or equal to the stored depth value
+		skybox.render(assets.models[0], programs.programs[3], kamera);
+		glDepthFunc(GL_LESS);	// back to default: passes if the incoming depth value is less than the stored depth value 
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

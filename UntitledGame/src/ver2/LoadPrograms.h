@@ -3,11 +3,12 @@
 #include <iostream>
 
 #include "CreateProgram.h"
+#include "ConstantVariables.h"
 
 class LoadPrograms
 {
 public:
-	ProgramContainer programs[3];
+	ProgramContainer programs[NUMBER_OF_PROGRAMS];
 
 	LoadPrograms();
 
@@ -17,6 +18,6 @@ private:
 	ProgramContainer loadLightProgram();
 	ProgramContainer loadDirShadowProgram();
 	//ProgramContainer loadOmniShadowProgram();
-	//ProgramContainer skyBoxProgram();
+	ProgramContainer loadSkyboxProgram();
 };
 

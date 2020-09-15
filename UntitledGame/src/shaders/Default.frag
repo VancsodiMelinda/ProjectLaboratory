@@ -33,22 +33,48 @@ struct DirLight{
 	sampler2D shadowMap;
 	mat4 lightSpaceMatrix;
 };
-uniform DirLight dirLightArray[4];
+const int NR_DIR_LIGHTS  = 4;
+uniform DirLight dirLightArray[NR_DIR_LIGHTS];
+
+struct PointLight{
+	vec3 position;
+	vec3 color;
+	
+	float ambientStrength;
+	float diffuseStrength;
+	float specularStrength;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	//samplerCube shadowBox;
+};
+const int NR_POINT_LIGHTS = 2;
+uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
 vec3 calcDirLight(DirLight dirLight);
 float calcDirShadow(DirLight dirLight);
 
+vec3 caclPointLight(PointLight pointLight);
+
+
 void main()
 {
-	int numberOfLights = 2;
-	vec3 finalColor = vec3(0.0, 0.0, 0.0);
+	int numberOfLights = 6;
+	vec3 finalColor = vec3(0.0);
 
-	for (int i = 0; i < dirLightArray.length(); i++)
+	// directional lights
+	for (int i = 0; i < NR_DIR_LIGHTS; i++)
 	{
 		finalColor += (calcDirLight(dirLightArray[i]))/numberOfLights;
 	}
 
-	//finalColor = texture(dirLightArray[1].shadowMap, out_textureCoords).rgb;
+	// point lights
+	for (int j = 0; j < NR_POINT_LIGHTS; j++)
+	{
+		finalColor += caclPointLight(pointLightArray[j]);
+	}
 
 	fragColor = vec4(finalColor, 1.0);
 }
@@ -106,4 +132,33 @@ float calcDirShadow(DirLight dirLight)
 	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
 	return shadow;
+}
+
+vec3 caclPointLight(PointLight pointLight)
+{
+	// AMBIENT
+	vec3 ambient = pointLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+	//DIFFUSE
+	vec3 lightDirection = normalize(pointLight.position - out_worldVertexPos);	// unit
+	vec3 normalVector = normalize(out_normalVec);								// unit
+	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
+	vec3 diffuse = diffuseImpact * pointLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+	// SPECULAR
+	vec3 viewVector = normalize(camera.position - out_worldVertexPos);
+	vec3 reflectDir = reflect(-lightDirection, normalVector);
+	float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
+	vec3 specular = spec * pointLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;
+
+	float dist = length(pointLight.position - out_worldVertexPos);
+	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * dist * dist);
+
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
+
+	vec3 color = (ambient + diffuse + specular) * pointLight.color;
+
+	return color;
 }
