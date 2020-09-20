@@ -20,6 +20,7 @@ class LoadAssets
 private:
 	TextureContainer diffuseMaps[4];
 	TextureContainer specularMaps[2];
+	TextureContainer normalMaps[1];
 public:
 	ObjectContainer models[NUMBER_OF_OBJECTS];
 
@@ -27,6 +28,7 @@ public:
 private:
 	void loadDiffuseMaps();
 	void loadSpecularMaps();
+	void loadNormalMaps();
 	void loadObjects();
 };
 

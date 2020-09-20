@@ -94,7 +94,8 @@ int main(void)
 		programs,
 		kamera,
 		lights,
-		shadows
+		shadows,
+		skybox.skyboxes[1]
 	);
 
 	std::cout << "Configurations..." << std::endl;

@@ -53,11 +53,14 @@ struct PointLight{
 const int NR_POINT_LIGHTS = 2;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
+uniform samplerCube skybox;
+
 vec3 calcDirLight(DirLight dirLight);
 float calcDirShadow(DirLight dirLight);
 
 vec3 caclPointLight(PointLight pointLight);
-
+vec3 reflection();
+vec3 refraction();
 
 void main()
 {
@@ -76,7 +79,10 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
-	fragColor = vec4(finalColor, 1.0);
+	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+
+	fragColor = vec4(reflection(), 1.0);
+	//fragColor = vec4(refraction(), 1.0);
 }
 
 
@@ -161,4 +167,24 @@ vec3 caclPointLight(PointLight pointLight)
 	vec3 color = (ambient + diffuse + specular) * pointLight.color;
 
 	return color;
+}
+
+vec3 reflection()
+{
+	vec3 viewVector = normalize(out_worldVertexPos - camera.position);
+	vec3 reflectionVector = reflect(viewVector, normalize(out_normalVec));
+
+	return texture(skybox, reflectionVector).rgb;
+}
+
+vec3 refraction()
+{
+	float refractiveIndex_air = 1.0;
+	float refractiveIndex_glass = 1.52;
+	float ratio = refractiveIndex_air/refractiveIndex_glass;
+
+	vec3 viewVector = normalize(out_worldVertexPos - camera.position);
+	vec3 refractionVector = refract(viewVector, normalize(out_normalVec), ratio);
+	
+	return texture(skybox, refractionVector).rgb;
 }

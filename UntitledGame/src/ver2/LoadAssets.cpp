@@ -5,6 +5,8 @@ LoadAssets::LoadAssets()
 	std::cout << "Loading textures..." << std::endl;
 	loadDiffuseMaps();		// load all diffuse maps
 	loadSpecularMaps();		// load all spcular maps
+	loadNormalMaps();		// load all normal maps
+
 	std::cout << std::endl << "Loading models..." << std::endl;
 	loadObjects();			// load all models and assign texture maps
 	std::cout << std::endl;
@@ -32,6 +34,12 @@ void LoadAssets::loadSpecularMaps()
 
 	CreateTexture tex2("resources/specular maps/black.png", TextureType::specularMap);
 	specularMaps[1] = tex2.textureContainer;
+}
+
+void LoadAssets::loadNormalMaps()
+{
+	CreateTexture tex1("resources/normal maps/cracked asphalt.png", TextureType::normalMap);
+	normalMaps[0] = tex1.textureContainer;
 }
 
 void LoadAssets::loadObjects()

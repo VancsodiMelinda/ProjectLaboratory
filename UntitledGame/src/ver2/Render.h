@@ -5,6 +5,7 @@
 #include "LoadLights.h"
 #include "LoadPrograms.h"
 #include "LoadShadows.h"
+#include "CreateSkybox.h"
 #include "ConstantVariables.h"
 
 class Render
@@ -15,9 +16,10 @@ private:
 	Kamera& kamera;
 	LoadLights& lights;
 	LoadShadows& shadows;
+	SkyboxContainer skybox;
 	GLuint programID = 0;
 public:
-	Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_);
+	Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
 
 private:
 	void configAsset(ObjectContainer& object);
@@ -36,6 +38,7 @@ private:
 		int shininessLoc = 0;
 		int cameraPosLoc = 0;
 		int cameraFarPlaneLoc = 0;
+		int skyboxLoc = 0;
 		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
 		int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
 	};

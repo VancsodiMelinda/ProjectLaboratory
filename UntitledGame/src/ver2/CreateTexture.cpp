@@ -16,6 +16,7 @@ CreateTexture::CreateTexture(TextureType textureType)
 		setUpTexture();
 		loadTexture(textureContainer.name);
 	}
+	
 }
 
 CreateTexture::CreateTexture(std::string textureFileName, TextureType textureType)
@@ -31,6 +32,13 @@ CreateTexture::CreateTexture(std::string textureFileName, TextureType textureTyp
 	{
 		textureContainer.name = textureFileName;
 		textureContainer.type = TextureType::specularMap;
+		setUpTexture();
+		loadTexture(textureFileName);
+	}
+	else if (textureType == TextureType::normalMap)
+	{
+		textureContainer.name = textureFileName;
+		textureContainer.type = TextureType::normalMap;
 		setUpTexture();
 		loadTexture(textureFileName);
 	}

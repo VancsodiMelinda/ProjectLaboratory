@@ -10,9 +10,7 @@ enum struct TextureType
 	diffuseMap,		// object color
 	specularMap,	// object specularity
 	projectiveMap,	// projective texture mapping
-	//shadowMap,		// directional light shadow
-	//shadowBox,		// pointlight shadow
-	//skybox			// environment mapping
+	normalMap		// per fragment normals
 };
 
 struct TextureContainer

@@ -1,11 +1,12 @@
 #include "Render.h"
 
-Render::Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_) :
+Render::Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_) :
 	assets(assets_),
 	programs(programs_),
 	kamera(kamera_),
 	lights(lights_),
-	shadows(shadows_)
+	shadows(shadows_),
+	skybox(skybox_)
 {
 	programID = programs.programs[0].ID;
 }
@@ -59,6 +60,8 @@ void Render::getUniformLocations()
 	uniformLocations.cameraPosLoc = glGetUniformLocation(programID, "camera.position");
 	uniformLocations.cameraFarPlaneLoc = glGetUniformLocation(programID, "camera.farPlane");
 
+	uniformLocations.skyboxLoc = glGetUniformLocation(programID, "skybox");
+
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
@@ -106,8 +109,11 @@ void Render::renderAsset(ObjectContainer& object)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.ID);
+
 	//for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
-	for (int i = 2, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 2); i++, j++)
+	for (int i = 3, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 2); i++, j++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[j].shadowMap);
@@ -134,12 +140,14 @@ void Render::uploadUniforms(ObjectContainer& object)
 	glUniformMatrix4fv(uniformLocations.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(object.modelMatrix));
 
 	// fragment shader
-	glUniform1i(uniformLocations.diffuseMapLoc, 0);
-	glUniform1i(uniformLocations.specularMapLoc, 1);
+	glUniform1i(uniformLocations.diffuseMapLoc, 0);	// tex
+	glUniform1i(uniformLocations.specularMapLoc, 1);	// tex
 	glUniform1f(uniformLocations.shininessLoc, object.material.shininess);
 
 	glUniform3fv(uniformLocations.cameraPosLoc, 1, glm::value_ptr(kamera.cameraContainer.cameraPosition));
 	glUniform1f(uniformLocations.cameraFarPlaneLoc, kamera.cameraContainer.farPlane);
+
+	glUniform1i(uniformLocations.skyboxLoc, 2);	// tex
 
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
@@ -152,7 +160,7 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.dirLightLocs[i][3], lights.dirLights[i].diffuseStrength);
 		glUniform1f(uniformLocations.dirLightLocs[i][4], lights.dirLights[i].specularStrength);
 
-		glUniform1i(uniformLocations.dirLightLocs[i][5], 2 + i);
+		glUniform1i(uniformLocations.dirLightLocs[i][5], 3 + i);
 		glUniformMatrix4fv(uniformLocations.dirLightLocs[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights[i].lightSpaceMatrix));
 	}
 
