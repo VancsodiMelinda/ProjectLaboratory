@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\PostProcessing.cpp" />
     <ClCompile Include="src\ver2\DebugOpenGL.cpp" />
     <ClCompile Include="src\ver2\CreatePointShadow.cpp" />
     <ClCompile Include="src\ver2\LoadSkyboxes.cpp" />
@@ -195,6 +196,8 @@
     <Text Include="src\LightObjVertexShader.txt" />
     <Text Include="src\shaders\Default.frag" />
     <Text Include="src\shaders\Default.vert" />
+    <Text Include="src\shaders\PostProcessing.frag" />
+    <Text Include="src\shaders\PostProcessing.vert" />
     <Text Include="src\shaders\ShadowBox.geom" />
     <Text Include="src\shaders\ShadowBox.frag" />
     <Text Include="src\shaders\ShadowBox.vert" />
@@ -205,6 +208,7 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\PostProcessing.h" />
     <ClInclude Include="src\ver2\DebugOpenGL.h" />
     <ClInclude Include="src\ver2\CreatePointShadow.h" />
     <ClInclude Include="src\ver2\LoadSkyboxes.h" />

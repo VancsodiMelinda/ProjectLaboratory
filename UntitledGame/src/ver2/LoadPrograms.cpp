@@ -9,7 +9,7 @@ LoadPrograms::LoadPrograms()
 	programs[2] = loadDirShadowProgram();
 	programs[3] = loadOmniShadowProgram();
 	programs[4] = loadSkyboxProgram();
-	
+	programs[5] = loadPostProcessingProgram();
 }
 
 ProgramContainer LoadPrograms::loadDefaultProgram()
@@ -69,6 +69,16 @@ ProgramContainer LoadPrograms::loadSkyboxProgram()
 	std::string fragmentShaderFileName = "src/shaders/Skybox.frag";
 	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
 	program.programContainer.type = ProgramType::skybox;
+
+	return program.programContainer;
+}
+
+ProgramContainer LoadPrograms::loadPostProcessingProgram()
+{
+	std::string vertexShaderFileName = "src/shaders/PostProcessing.vert";
+	std::string fragmentShaderFileName = "src/shaders/PostProcessing.frag";
+	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
+	program.programContainer.type = ProgramType::postProcessing;
 
 	return program.programContainer;
 }

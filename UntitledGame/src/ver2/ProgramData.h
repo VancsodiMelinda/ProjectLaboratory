@@ -9,7 +9,8 @@ enum struct ProgramType
 	light,
 	directionalShadow,
 	omnidirectionalShadow,
-	skybox
+	skybox,
+	postProcessing
 };
 
 struct ProgramContainer

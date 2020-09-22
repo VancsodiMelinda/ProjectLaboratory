@@ -156,6 +156,9 @@
     <ClCompile Include="src\ver2\DebugOpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ver2\PostProcessing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -173,6 +176,8 @@
     <Text Include="src\shaders\ShadowBox.frag" />
     <Text Include="src\shaders\Default.vert" />
     <Text Include="src\shaders\Default.frag" />
+    <Text Include="src\shaders\PostProcessing.vert" />
+    <Text Include="src\shaders\PostProcessing.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Transformation.h">
@@ -335,6 +340,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ver2\DebugOpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ver2\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

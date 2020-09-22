@@ -19,5 +19,6 @@ private:
 	ProgramContainer loadDirShadowProgram();
 	ProgramContainer loadOmniShadowProgram();
 	ProgramContainer loadSkyboxProgram();
+	ProgramContainer loadPostProcessingProgram();
 };
 

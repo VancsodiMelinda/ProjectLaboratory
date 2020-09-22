@@ -13,6 +13,7 @@
 #include "GlobalVariables.h"
 #include "KeyboardInput.h"
 #include "Render.h"
+#include "PostProcessing.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -88,6 +89,7 @@ int main(void)
 	LoadLights lights;
 	LoadShadows shadows(lights, assets, programs);
 	LoadSkyboxes skybox;
+	PostProcessing postProc(programs.programs[5]);
 	
 	Render renderer(
 		assets,
@@ -117,11 +119,15 @@ int main(void)
 
 		// render shadows
 		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+		glEnable(GL_DEPTH_TEST);
 		shadows.render();
 
 		// render scene
+		glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
 		renderer.renderAssets(kamera);
 		lights.render(programs.programs[1], kamera);
@@ -130,6 +136,9 @@ int main(void)
 		glDepthFunc(GL_LEQUAL);
 		skybox.render(programs.programs[4], kamera);
 		glDepthFunc(GL_LESS);
+
+		// render post processing quad
+		postProc.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
