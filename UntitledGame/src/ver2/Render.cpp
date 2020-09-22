@@ -26,20 +26,28 @@ void Render::configVertexAttributes(ObjectContainer& object)
 	GLuint positionAttribIndex = glGetAttribLocation(programID, "in_vertexPosition");
 	GLuint textureAttribIndex = glGetAttribLocation(programID, "in_textureCoords");
 	GLuint normalAttribIndex = glGetAttribLocation(programID, "in_normalVec");
+	GLuint tangentAttribIndex = glGetAttribLocation(programID, "in_tangent"); //
+	GLuint bitangentAttribIndex = glGetAttribLocation(programID, "in_bitangent"); //
 
 	glEnableVertexAttribArray(positionAttribIndex);
 	glEnableVertexAttribArray(textureAttribIndex);
 	glEnableVertexAttribArray(normalAttribIndex);
+	glEnableVertexAttribArray(tangentAttribIndex);  //
+	glEnableVertexAttribArray(bitangentAttribIndex);  //
 
 	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
 	GLintptr tOffset = object.data.vertices.size() * sizeof(GL_FLOAT);
 	GLintptr nOffset = (object.data.vertices.size() + object.data.uvs.size()) * sizeof(GL_FLOAT);
+	GLintptr tanOffset = (object.data.vertices.size() + object.data.uvs.size() + object.data.normals.size()) * sizeof(GL_FLOAT);  //
+	GLintptr bitOffset = (object.data.vertices.size() + object.data.uvs.size() + object.data.normals.size() + object.data.tangents.size()) * sizeof(GL_FLOAT);  //
 	int stride3f = 3 * sizeof(GL_FLOAT);
 	int stride2f = 2 * sizeof(GL_FLOAT);
 
 	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
 	glVertexAttribPointer(textureAttribIndex, 2, GL_FLOAT, GL_FALSE, stride2f, (GLvoid*)tOffset);
 	glVertexAttribPointer(normalAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)nOffset);
+	glVertexAttribPointer(tangentAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)tanOffset);  //
+	glVertexAttribPointer(bitangentAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)bitOffset);  //
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -56,6 +64,8 @@ void Render::getUniformLocations()
 	uniformLocations.diffuseMapLoc = glGetUniformLocation(programID, "material.diffuseMap");
 	uniformLocations.specularMapLoc = glGetUniformLocation(programID, "material.specularMap");
 	uniformLocations.shininessLoc = glGetUniformLocation(programID, "material.shininess");
+	uniformLocations.normalMapLoc = glGetUniformLocation(programID, "material.normalMap");
+	uniformLocations.hasNormalMapLoc = glGetUniformLocation(programID, "hasNormalMap");
 
 	uniformLocations.cameraPosLoc = glGetUniformLocation(programID, "camera.position");
 	uniformLocations.cameraFarPlaneLoc = glGetUniformLocation(programID, "camera.farPlane");
@@ -110,22 +120,25 @@ void Render::renderAsset(ObjectContainer& object)
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
 	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, object.material.normalMap);
+
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.ID);
 
 	//for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
-	for (int i = 3, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 2); i++, j++)
+	for (int i = 4, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 4); i++, j++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[j].shadowMap);
 	}
 
-	/*
-	for (int i = (NUMBER_OF_DIR_LIGHTS + 2), j = 0; i < (NUMBER_OF_DIR_LIGHTS + NUMBER_OF_POINT_LIGHTS + 2); i++, j++)
+	
+	for (int i = (NUMBER_OF_DIR_LIGHTS + 4), j = 0; i < (NUMBER_OF_DIR_LIGHTS + NUMBER_OF_POINT_LIGHTS + 4); i++, j++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, );
+		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.pointShadows[j].shadowCube);
 	}
-	*/
+	
 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -142,12 +155,18 @@ void Render::uploadUniforms(ObjectContainer& object)
 	// fragment shader
 	glUniform1i(uniformLocations.diffuseMapLoc, 0);	// tex
 	glUniform1i(uniformLocations.specularMapLoc, 1);	// tex
+	glUniform1i(uniformLocations.normalMapLoc, 2);	// tex
 	glUniform1f(uniformLocations.shininessLoc, object.material.shininess);
+
+	if (object.material.normalMap == 0)
+		glUniform1i(uniformLocations.hasNormalMapLoc, 0);	// false, object doesn't have normal map
+	else
+		glUniform1i(uniformLocations.hasNormalMapLoc, 1);	// true, object has normal map
 
 	glUniform3fv(uniformLocations.cameraPosLoc, 1, glm::value_ptr(kamera.cameraContainer.cameraPosition));
 	glUniform1f(uniformLocations.cameraFarPlaneLoc, kamera.cameraContainer.farPlane);
 
-	glUniform1i(uniformLocations.skyboxLoc, 2);	// tex
+	glUniform1i(uniformLocations.skyboxLoc, 3);	// tex
 
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
@@ -160,7 +179,7 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.dirLightLocs[i][3], lights.dirLights[i].diffuseStrength);
 		glUniform1f(uniformLocations.dirLightLocs[i][4], lights.dirLights[i].specularStrength);
 
-		glUniform1i(uniformLocations.dirLightLocs[i][5], 3 + i);
+		glUniform1i(uniformLocations.dirLightLocs[i][5], 4 + i);
 		glUniformMatrix4fv(uniformLocations.dirLightLocs[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights[i].lightSpaceMatrix));
 	}
 
@@ -176,6 +195,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.pointLightLocs[i][5], lights.pointLights[i].constant);
 		glUniform1f(uniformLocations.pointLightLocs[i][6], lights.pointLights[i].linear);
 		glUniform1f(uniformLocations.pointLightLocs[i][7], lights.pointLights[i].quadratic);
+
+		glUniform1i(uniformLocations.pointLightLocs[i][8], 4 + NUMBER_OF_DIR_LIGHTS + i);
 	}
 }
 

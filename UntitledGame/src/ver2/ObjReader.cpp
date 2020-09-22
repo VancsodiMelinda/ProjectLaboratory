@@ -1,7 +1,6 @@
 #include "ObjReader.h"
 
-
-ObjectData ObjReader::readObjFile(std::string objFileName)
+void ObjReader::readObjFile(std::string objFileName)
 {
 	std::list<vector3f> vList;  // 3 vertex coordinates, does NOT need to be rearranges
 	std::list<vector2f> vtList;  // 2 texture coordinates, needs to be rearranged
@@ -122,13 +121,93 @@ ObjectData ObjReader::readObjFile(std::string objFileName)
 		loopCounter += 1;
 	}
 
-	ObjectData allData;
-	allData.vertices = vVector;
-	allData.uvs = vtVector;
-	allData.normals = vnVector;
-	allData.indices = iVector;
+	//ObjectData allData;
+	//allData.vertices = vVector;
+	//allData.uvs = vtVector;
+	//allData.normals = vnVector;
+	//allData.indices = iVector;
+
+	data.vertices = vVector;
+	data.uvs = vtVector;
+	data.normals = vnVector;
+	data.indices = iVector;
+
+	calculateTangentsAndBitangents(vVector, vtVector, iVector);
 
 	std::cout << "OK: " << objFileName << std::endl;
 
-	return allData;
+	//return allData;
+}
+
+void ObjReader::calculateTangentsAndBitangents(std::vector<float>& vertices, std::vector<float>& uvs, std::vector<int>& indices)
+{
+	for (int i = 0; i < indices.size() - 2; i += 3)
+	{
+		int vertexPos1 = indices[i] * 3;
+		int vertexPos2 = indices[i + 1] * 3;
+		int vertexPos3 = indices[i + 2] * 3;
+
+		int uvPos1 = indices[i] * 2;
+		int uvPos2 = indices[i + 1] * 2;
+		int uvPos3 = indices[i + 2] * 2;
+
+		glm::vec3 v0 = glm::vec3(vertices[vertexPos1], vertices[vertexPos1 + 1], vertices[vertexPos1 + 2]);
+		glm::vec3 v1 = glm::vec3(vertices[vertexPos2], vertices[vertexPos2 + 1], vertices[vertexPos2 + 2]);
+		glm::vec3 v2 = glm::vec3(vertices[vertexPos3], vertices[vertexPos3 + 1], vertices[vertexPos3 + 2]);
+
+		glm::vec2 u0 = glm::vec2(uvs[uvPos1], uvs[uvPos1 + 1]);
+		glm::vec2 u1 = glm::vec2(uvs[uvPos2], uvs[uvPos2 + 1]);
+		glm::vec2 u2 = glm::vec2(uvs[uvPos3], uvs[uvPos3 + 1]);
+
+		//glm::vec3 edge1 = v1 - v0;
+		//glm::vec3 edge2 = v2 - v0;
+
+		//glm::vec2 deltaUV1 = u1 - u0;
+		//glm::vec2 deltaUV2 = u2 - u0;
+
+		calculateForOneVertex(v1 - v0, v2 - v0, u1 - u0, u2 - u0);
+		calculateForOneVertex(v0 - v1, v2 - v1, u0 - u1, u2 - u1);
+		calculateForOneVertex(v0 - v2, v1 - v2, u0 - u2, u1 - u2);
+
+		/*
+		float det = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+
+		glm::vec3 tangent = (edge1 * deltaUV2.y - edge2 * deltaUV1.y) * det;
+		glm::vec3 bitangent = (edge2 * deltaUV1.x - edge1 * deltaUV2.x) * det;
+
+		data.tangents.push_back(tangent.x);
+		data.tangents.push_back(tangent.y);
+		data.tangents.push_back(tangent.z);
+
+		data.bitangents.push_back(bitangent.x);
+		data.bitangents.push_back(bitangent.y);
+		data.bitangents.push_back(bitangent.z);
+		*/
+	}
+
+	/*
+	std::cout << "DEBUG..." << std::endl;
+	std::cout << "INDICES: " << data.indices.size() << std::endl;
+	std::cout << "VERTICES: " << data.vertices.size() << std::endl;
+	std::cout << "UVS: " << data.uvs.size() << std::endl;
+	std::cout << "NORMALS: " << data.normals.size() << std::endl;
+	std::cout << "TANGENTS: " << data.tangents.size() << std::endl;
+	std::cout << "BITANGENTS: " << data.bitangents.size() << std::endl;
+	*/
+}
+
+void ObjReader::calculateForOneVertex(glm::vec3 edge1, glm::vec3 edge2, glm::vec2 deltaUV1, glm::vec2 deltaUV2)
+{
+	float det = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+
+	glm::vec3 tangent = (edge1 * deltaUV2.y - edge2 * deltaUV1.y) * det;
+	glm::vec3 bitangent = (edge2 * deltaUV1.x - edge1 * deltaUV2.x) * det;
+
+	data.tangents.push_back(tangent.x);
+	data.tangents.push_back(tangent.y);
+	data.tangents.push_back(tangent.z);
+
+	data.bitangents.push_back(bitangent.x);
+	data.bitangents.push_back(bitangent.y);
+	data.bitangents.push_back(bitangent.z);
 }

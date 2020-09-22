@@ -7,8 +7,10 @@ LoadShadows::LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms&
 {
 	// get programs
 	dirShadowProgramContainer = programs.programs[2];
+	pointShadowProgramContainer = programs.programs[3];
 
 	loadDirShadows();
+	loadPointShadows();
 }
 
 void LoadShadows::loadDirShadows()
@@ -19,6 +21,18 @@ void LoadShadows::loadDirShadows()
 		std::cout << "OK: Created directional shadow." << std::endl;
 		CreateDirShadow shadow;
 		dirShadows[i] = shadow.dirShadowContainer;
+	}
+	std::cout << std::endl;
+}
+
+void LoadShadows::loadPointShadows()
+{
+	std::cout << "Load point shadows..." << std::endl;
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+		std::cout << "OK: Created point shadow." << std::endl;
+		CreatePointShadow shadow;
+		pointShadows[i] = shadow.pointShadowContainer;
 	}
 	std::cout << std::endl;
 }
@@ -60,12 +74,72 @@ void LoadShadows::renderDirShadow(DirLightContainer dirLight, ObjectContainer& o
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void LoadShadows::configPointShadow(ObjectContainer& object, GLuint programID)
+{
+	glBindVertexArray(object.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);
+
+	GLuint positionAttribIndex = glGetAttribLocation(programID, "vertexPos");
+	glEnableVertexAttribArray(positionAttribIndex);
+
+	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
+	int stride3f = 3 * sizeof(GL_FLOAT);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+	uniformLocations_.modelMatrixLoc = glGetUniformLocation(programID, "modelMatrix");
+	uniformLocations_.VPsLoc = glGetUniformLocation(programID, "VPs");
+	uniformLocations_.lightPosLoc = glGetUniformLocation(programID, "lightPos");
+	uniformLocations_.farPlaneLoc = glGetUniformLocation(programID, "farPlane");
+}
+
+void LoadShadows::renderPointShadow(PointLightContainer light, ObjectContainer& object, GLuint programID)
+{
+	glUseProgram(programID);
+
+	std::vector<glm::mat4> VPs;
+
+	// create projection matrix
+	float aspect = (float)POINT_SHADOW_WIDTH_ / (float)POINT_SHADOW_HEIGHT_;
+	float near = 1.0f;
+	float farPlane = 100.0f;
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
+
+
+	// create view matrices
+	glm::mat4 viewMatrix1 = glm::lookAt(light.position, light.position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));	// right
+	glm::mat4 viewMatrix2 = glm::lookAt(light.position, light.position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));	// left
+	glm::mat4 viewMatrix3 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));		// top
+	glm::mat4 viewMatrix4 = glm::lookAt(light.position, light.position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0));	// bottom
+	glm::mat4 viewMatrix5 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0));	// near
+	glm::mat4 viewMatrix6 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0));	// far
+
+	// create MVPs
+	//std::vector<glm::mat4> VPs;
+	VPs.push_back(projectionMatrix * viewMatrix1);
+	VPs.push_back(projectionMatrix * viewMatrix2);
+	VPs.push_back(projectionMatrix * viewMatrix3);
+	VPs.push_back(projectionMatrix * viewMatrix4);
+	VPs.push_back(projectionMatrix * viewMatrix5);
+	VPs.push_back(projectionMatrix * viewMatrix6);
+
+	glUniformMatrix4fv(uniformLocations_.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(object.modelMatrix));
+	glUniformMatrix4fv(uniformLocations_.VPsLoc, 6, GL_FALSE, glm::value_ptr(VPs[0]));
+	glUniform3fv(uniformLocations_.lightPosLoc, 1, glm::value_ptr(light.position));
+	glUniform1f(uniformLocations_.farPlaneLoc, farPlane);
+
+	glBindVertexArray(object.vao);
+	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
 
 void LoadShadows::config()
 {
 	if (dirShadowProgramContainer.type == ProgramType::directionalShadow)
 	{
-		//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
 		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configDirShadow(assets.models[i], dirShadowProgramContainer.ID);
@@ -76,6 +150,19 @@ void LoadShadows::config()
 	{
 		std::cout << "ERROR: You are using the incorrect program for configuring directional shadows!" << std::endl;
 	}
+
+	if (pointShadowProgramContainer.type == ProgramType::omnidirectionalShadow)
+	{
+		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
+		{
+			configPointShadow(assets.models[i], pointShadowProgramContainer.ID);
+		}
+		std::cout << "OK: Omnidirectional shadows are configured using the correct program." << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: You are using the incorrect program for configuring omnidirectional shadows!" << std::endl;
+	}
 }
 
 void LoadShadows::render()
@@ -83,16 +170,27 @@ void LoadShadows::render()
 	//glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 	//glEnable(GL_DEPTH_TEST);
 
-	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		//for (int j = 0; j < sizeof(assets.models) / sizeof(assets.models[0]); j++)
 		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)
 		{
 			renderDirShadow(lights.dirLights[i], assets.models[j], dirShadowProgramContainer.ID);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows[i].fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)
+		{
+			renderPointShadow(lights.pointLights[i], assets.models[j], pointShadowProgramContainer.ID);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

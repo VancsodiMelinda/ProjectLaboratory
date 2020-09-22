@@ -11,6 +11,8 @@ struct ObjectData {
 	std::vector<float> uvs = { 0.0f };
 	std::vector<float> normals = { 0.0f };
 	std::vector<int> indices = { 0 };
+	std::vector<float> tangents;
+	std::vector<float> bitangents;
 };
 
 struct ObjectMaterial {

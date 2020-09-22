@@ -13,6 +13,7 @@
 #include "ModelData.h"
 #include "ProgramData.h"
 #include "ConstantVariables.h"
+#include "CreateModel.h"
 
 class LoadLights
 {
@@ -27,6 +28,9 @@ private:
 	void loadPointLights();
 	//void loadSpotLights();
 
+	void loadLightModels();
+	ObjectContainer models[2];
+
 	void configLight(ObjectContainer& object, GLuint programID);
 	void renderDirLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
 	void renderPointLight(PointLightContainer& pointLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
@@ -38,7 +42,9 @@ private:
 	UniformLocations uniformLocations;
 
 public:
-	void config(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer);
-	void render(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer, Kamera& kamera);
+	//void config(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer);
+	//void render(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer, Kamera& kamera);
+	void config(ProgramContainer programContainer);
+	void render(ProgramContainer programContainer, Kamera& kamera);
 };
 

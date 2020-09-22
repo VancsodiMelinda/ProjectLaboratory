@@ -83,9 +83,9 @@ int main(void)
 
 	////////////////////////////////////////////////////////
 
-	LoadAssets assets;		// ObjectContainer models[1];
-	LoadPrograms programs;	// array of shaders
-	LoadLights lights;		// multiple arrays of different lights
+	LoadAssets assets;
+	LoadPrograms programs;
+	LoadLights lights;
 	LoadShadows shadows(lights, assets, programs);
 	LoadSkyboxes skybox;
 	
@@ -100,9 +100,9 @@ int main(void)
 
 	std::cout << "Configurations..." << std::endl;
 	renderer.configAssets();
-	lights.config(assets.models[0], assets.models[1], programs.programs[1]);
+	lights.config(programs.programs[1]);
 	shadows.config();
-	//skybox.config(assets.models[0], programs.programs[3]);
+	skybox.config(programs.programs[4]);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -112,8 +112,8 @@ int main(void)
 
 		// specify clear values for the buffers
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		//glClearDepth(1.0f);
-		//glClearStencil(0);
+		glClearDepth(1.0f);
+		glClearStencil(0);
 
 		// render shadows
 		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
@@ -124,12 +124,12 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		renderer.renderAssets(kamera);
-		lights.render(assets.models[0], assets.models[1], programs.programs[1], kamera);
+		lights.render(programs.programs[1], kamera);
 
 		// render skybox
-		glDepthFunc(GL_LEQUAL);		// passes if the incoming depth value is less than or equal to the stored depth value
-		skybox.render(assets.models[0], programs.programs[3], kamera);
-		glDepthFunc(GL_LESS);	// back to default: passes if the incoming depth value is less than the stored depth value 
+		glDepthFunc(GL_LEQUAL);
+		skybox.render(programs.programs[4], kamera);
+		glDepthFunc(GL_LESS);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

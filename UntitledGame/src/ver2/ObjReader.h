@@ -29,6 +29,11 @@ class ObjReader
 	};
 
 public:
-	ObjectData readObjFile(std::string objFileName);
+	//ObjectData readObjFile(std::string objFileName);
+	void readObjFile(std::string objFileName);
+	ObjectData data;
 
+private:
+	void calculateTangentsAndBitangents(std::vector<float>& vertices, std::vector<float>& uvs, std::vector<int>& indices);
+	void calculateForOneVertex(glm::vec3 edge1, glm::vec3 edge2, glm::vec2 deltaUV1, glm::vec2 deltaUV2);
 };

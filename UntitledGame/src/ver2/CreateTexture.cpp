@@ -16,6 +16,13 @@ CreateTexture::CreateTexture(TextureType textureType)
 		setUpTexture();
 		loadTexture(textureContainer.name);
 	}
+	else if (textureType == TextureType::normalMap)
+	{
+		textureContainer.name = "resources/normal maps/default normal map.jpg";
+		textureContainer.type = TextureType::normalMap;
+		setUpTexture();
+		loadTexture(textureContainer.name);
+	}
 	
 }
 

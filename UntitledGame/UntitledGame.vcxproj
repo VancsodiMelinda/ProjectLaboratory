@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\DebugOpenGL.cpp" />
+    <ClCompile Include="src\ver2\CreatePointShadow.cpp" />
     <ClCompile Include="src\ver2\LoadSkyboxes.cpp" />
     <ClCompile Include="src\ver2\CreateSkybox.cpp" />
     <ClCompile Include="src\ver2\CreatePointLight.cpp" />
@@ -203,6 +205,8 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\DebugOpenGL.h" />
+    <ClInclude Include="src\ver2\CreatePointShadow.h" />
     <ClInclude Include="src\ver2\LoadSkyboxes.h" />
     <ClInclude Include="src\ver2\CreateSkybox.h" />
     <ClInclude Include="src\ver2\CreatePointLight.h" />

@@ -25,7 +25,7 @@ void Kamera::updateProjectionMatrix()
 
 void Kamera::processKeyInput(std::string button, float deltaTime)
 {
-	float cameraSpeed = 2.5f * deltaTime;
+	float cameraSpeed = 5.0f * deltaTime;
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	if (button == "W")

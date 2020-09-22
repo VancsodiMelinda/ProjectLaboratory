@@ -31,14 +31,16 @@ private:
 	glm::mat4 updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P);
 
 	struct UniformLocations {
-		int MVPloc = 0;
-		int modelMatrixLoc = 0;
-		int diffuseMapLoc = 0;
-		int specularMapLoc = 0;
-		int shininessLoc = 0;
-		int cameraPosLoc = 0;
-		int cameraFarPlaneLoc = 0;
-		int skyboxLoc = 0;
+		int MVPloc = -1;
+		int modelMatrixLoc = -1;
+		int diffuseMapLoc = -1;
+		int specularMapLoc = -1;
+		int normalMapLoc = -1;
+		int shininessLoc = -1;
+		int hasNormalMapLoc = -1;
+		int cameraPosLoc = -1;
+		int cameraFarPlaneLoc = -1;
+		int skyboxLoc = -1;
 		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
 		int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
 	};

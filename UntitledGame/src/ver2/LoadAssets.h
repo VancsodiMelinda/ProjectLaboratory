@@ -18,9 +18,9 @@
 class LoadAssets
 {
 private:
-	TextureContainer diffuseMaps[4];
-	TextureContainer specularMaps[2];
-	TextureContainer normalMaps[1];
+	TextureContainer diffuseMaps[6];
+	TextureContainer specularMaps[3];
+	TextureContainer normalMaps[2];
 public:
 	ObjectContainer models[NUMBER_OF_OBJECTS];
 

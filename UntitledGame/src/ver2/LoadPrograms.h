@@ -17,7 +17,7 @@ private:
 	ProgramContainer loadObjectProgram();
 	ProgramContainer loadLightProgram();
 	ProgramContainer loadDirShadowProgram();
-	//ProgramContainer loadOmniShadowProgram();
+	ProgramContainer loadOmniShadowProgram();
 	ProgramContainer loadSkyboxProgram();
 };
 

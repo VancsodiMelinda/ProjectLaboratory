@@ -21,8 +21,13 @@ private:
 	};
 	UniformLocations uniformLocations;
 
+	void loadSkyboxModel();
+	ObjectContainer model;
+
 public:
-	void config(ObjectContainer& object, ProgramContainer programContainer);
-	void render(ObjectContainer& object, ProgramContainer programContainer, Kamera& kamera);
+	//void config(ObjectContainer& object, ProgramContainer programContainer);
+	//void render(ObjectContainer& object, ProgramContainer programContainer, Kamera& kamera);
+	void config(ProgramContainer programContainer);
+	void render(ProgramContainer programContainer, Kamera& kamera);
 };
 

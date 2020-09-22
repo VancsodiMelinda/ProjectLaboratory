@@ -3,6 +3,9 @@
 in vec3 out_worldVertexPos;
 in vec2 out_textureCoords;
 in vec3 out_normalVec;
+in vec3 out_tangent;
+in vec3 out_bitangent;
+in mat3 out_TBN;
 
 in vec4 rawVertexPosition;
 in mat4 out_modelMatrix;
@@ -12,9 +15,11 @@ out vec4 fragColor;
 struct Material{ 
 	sampler2D diffuseMap;
 	sampler2D specularMap;
+	sampler2D normalMap;
 	float shininess;
 };
 uniform Material material;
+uniform int hasNormalMap;
 
 struct Camera{
 	vec3 position;
@@ -48,7 +53,7 @@ struct PointLight{
 	float linear;
 	float quadratic;
 
-	//samplerCube shadowBox;
+	samplerCube shadowBox;
 };
 const int NR_POINT_LIGHTS = 2;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
@@ -59,19 +64,21 @@ vec3 calcDirLight(DirLight dirLight);
 float calcDirShadow(DirLight dirLight);
 
 vec3 caclPointLight(PointLight pointLight);
+float calcPointShadow(PointLight pointLight);
+
 vec3 reflection();
 vec3 refraction();
 
 void main()
 {
-	int numberOfLights = 6;
+	float intensityFactor = 1.0;
 	vec3 finalColor = vec3(0.0);
 
 	// directional lights
-	for (int i = 0; i < NR_DIR_LIGHTS; i++)
-	{
-		finalColor += (calcDirLight(dirLightArray[i]))/numberOfLights;
-	}
+	//for (int i = 0; i < NR_DIR_LIGHTS; i++)
+	//{
+		//finalColor += ((calcDirLight(dirLightArray[i]))*intensityFactor);
+	//}
 
 	// point lights
 	for (int j = 0; j < NR_POINT_LIGHTS; j++)
@@ -79,10 +86,25 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
-	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+	fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+	//fragColor = vec4(normalize(out_tangent), 1.0);
 
-	fragColor = vec4(reflection(), 1.0);
+	//fragColor = vec4(reflection(), 1.0);
 	//fragColor = vec4(refraction(), 1.0);
+
+	//vec3 test = texture(material.normalMap, out_textureCoords).rgb;  // [0, 1]
+	//fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
+	
+
+	/*
+	if (hasNormalMap == 0)
+		fragColor = vec4(finalColor, 1.0);
+	else
+	{
+		vec3 test = texture(material.normalMap, out_textureCoords).rgb;
+		fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
+	}
+	*/
 }
 
 
@@ -91,9 +113,16 @@ vec3 calcDirLight(DirLight dirLight)
 	// AMBIENT
 	vec3 ambient = dirLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
+	
+	vec3 normalVector = normalize(out_normalVec);
+	if (hasNormalMap == 1)
+		normalVector = normalize(out_TBN * (texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0));
+	
+
 	// DIFFUSE
 	vec3 lightDirection = normalize(-dirLight.direction);				// unit vector, points towards the light
-	vec3 normalVector = normalize(out_normalVec);						// unit vector, normal of vertex/fragment
+	//vec3 normalVector = normalize(out_normalVec);						// unit vector, normal of vertex/fragment
+	//vec3 normalVector = normalize(texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0);
 	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);  // cos of angle
 	vec3 diffuse = diffuseImpact * dirLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
@@ -145,9 +174,16 @@ vec3 caclPointLight(PointLight pointLight)
 	// AMBIENT
 	vec3 ambient = pointLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
+	
+	vec3 normalVector = normalize(out_normalVec);
+	if (hasNormalMap == 1)
+		normalVector = normalize(out_TBN * (texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0));
+	
+
 	//DIFFUSE
 	vec3 lightDirection = normalize(pointLight.position - out_worldVertexPos);	// unit
-	vec3 normalVector = normalize(out_normalVec);								// unit
+	//vec3 normalVector = normalize(out_normalVec);								// unit
+	//vec3 normalVector = normalize(texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0);
 	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
 	vec3 diffuse = diffuseImpact * pointLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
@@ -164,9 +200,22 @@ vec3 caclPointLight(PointLight pointLight)
 	diffuse *= attenuation;
 	specular *= attenuation;
 
-	vec3 color = (ambient + diffuse + specular) * pointLight.color;
+	float shadow = calcPointShadow(pointLight);
+	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
 
 	return color;
+}
+
+float calcPointShadow(PointLight pointLight)
+{
+	vec3 lightToFrag = out_worldVertexPos - pointLight.position;
+	float mapDepth = texture(pointLight.shadowBox, lightToFrag).r * camera.farPlane;
+	float sceneDepth = length(lightToFrag);
+
+	float bias = 0.05;
+	float shadow = sceneDepth - bias > mapDepth ? 1.0 : 0.0;
+
+	return shadow;
 }
 
 vec3 reflection()
