@@ -11,14 +11,16 @@ out vec4 fragColor;
 vec4 normal();
 vec4 inversion();
 vec4 grayscale();
+vec4 nightVision();
 vec4 calcKernel(float kernel[9]);
 vec4 sharpen();
 vec4 blur();
 vec4 edge();
+vec4 emboss();
 
 void main()
 {
-	fragColor = inversion();
+	fragColor = edge();
 }
 
 vec4 normal()
@@ -37,6 +39,12 @@ vec4 grayscale()
 	float average = (color.r + color.g + color.b) / 3.0;
 	//float average = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
 	return vec4(average, average, average, 1.0);
+}
+
+vec4 nightVision()
+{
+	vec4 color = texture(screenTexture, fs_in.uvs);
+	return vec4(0.0, color.g, 0.0, 1.0);
 }
 
 vec4 calcKernel(float kernel[9])
@@ -106,6 +114,17 @@ vec4 edge()
 		1, 1, 1,
 		1, -8, 1,
 		1, 1, 1
+	);
+
+	return calcKernel(kernel);
+}
+
+vec4 emboss()
+{
+	float kernel[9] = float[](
+		-2, -1, 0,
+		-1, 1, 1,
+		 0, 1, 2
 	);
 
 	return calcKernel(kernel);
