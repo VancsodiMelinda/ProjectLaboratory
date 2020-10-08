@@ -20,7 +20,7 @@ vec4 emboss();
 
 void main()
 {
-	fragColor = edge();
+	fragColor = normal();
 }
 
 vec4 normal()
@@ -128,4 +128,9 @@ vec4 emboss()
 	);
 
 	return calcKernel(kernel);
+}
+
+vec4 depth()
+{
+	return vec4(vec3(gl_FragCoord.z), 1.0);
 }

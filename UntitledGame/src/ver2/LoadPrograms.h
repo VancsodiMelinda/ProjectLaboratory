@@ -20,5 +20,6 @@ private:
 	ProgramContainer loadOmniShadowProgram();
 	ProgramContainer loadSkyboxProgram();
 	ProgramContainer loadPostProcessingProgram();
+	ProgramContainer loadOutlineProgram();
 };
 

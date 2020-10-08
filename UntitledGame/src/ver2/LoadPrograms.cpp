@@ -10,6 +10,7 @@ LoadPrograms::LoadPrograms()
 	programs[3] = loadOmniShadowProgram();
 	programs[4] = loadSkyboxProgram();
 	programs[5] = loadPostProcessingProgram();
+	programs[6] = loadOutlineProgram();
 }
 
 ProgramContainer LoadPrograms::loadDefaultProgram()
@@ -79,6 +80,16 @@ ProgramContainer LoadPrograms::loadPostProcessingProgram()
 	std::string fragmentShaderFileName = "src/shaders/PostProcessing.frag";
 	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
 	program.programContainer.type = ProgramType::postProcessing;
+
+	return program.programContainer;
+}
+
+ProgramContainer LoadPrograms::loadOutlineProgram()
+{
+	std::string vertexShaderFileName = "src/shaders/Outline.vert";
+	std::string fragmentShaderFileName = "src/shaders/Outline.frag";
+	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
+	program.programContainer.type = ProgramType::outline;
 
 	return program.programContainer;
 }

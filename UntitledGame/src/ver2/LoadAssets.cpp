@@ -78,7 +78,6 @@ void LoadAssets::loadObjects()
 	suzanne.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[2] = suzanne.objectContainer;
 	
-
 	CreateModel plane("resources/models/plane.obj", glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(8.0f, 8.0f, 8.0f), 0.0f, "y");
 	plane.objectContainer.material.diffuseMap = diffuseMaps[4].ID;
 	plane.objectContainer.material.specularMap = specularMaps[1].ID;

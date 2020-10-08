@@ -159,6 +159,9 @@
     <ClCompile Include="src\ver2\PostProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ver2\LoadOutlines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -345,6 +348,9 @@
     <ClInclude Include="src\ver2\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ver2\LoadOutlines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\Object.frag" />
@@ -355,5 +361,7 @@
     <None Include="src\shaders\Shadow.vert" />
     <None Include="src\shaders\DebugQuad.frag" />
     <None Include="src\shaders\DebugQuad.vert" />
+    <None Include="src\shaders\Outline.vert" />
+    <None Include="src\shaders\Outline.frag" />
   </ItemGroup>
 </Project>

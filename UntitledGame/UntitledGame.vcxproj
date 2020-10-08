@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\LoadOutlines.cpp" />
     <ClCompile Include="src\ver2\PostProcessing.cpp" />
     <ClCompile Include="src\ver2\DebugOpenGL.cpp" />
     <ClCompile Include="src\ver2\CreatePointShadow.cpp" />
@@ -208,6 +209,7 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\LoadOutlines.h" />
     <ClInclude Include="src\ver2\PostProcessing.h" />
     <ClInclude Include="src\ver2\DebugOpenGL.h" />
     <ClInclude Include="src\ver2\CreatePointShadow.h" />
@@ -270,6 +272,8 @@
     <None Include="src\shaders\Object.frag" />
     <None Include="src\shaders\Light.frag" />
     <None Include="src\shaders\Light.vert" />
+    <None Include="src\shaders\Outline.frag" />
+    <None Include="src\shaders\Outline.vert" />
     <None Include="src\shaders\Shadow.frag" />
     <None Include="src\shaders\Shadow.vert" />
     <None Include="src\shaders\Object.vert" />

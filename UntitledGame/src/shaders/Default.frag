@@ -68,6 +68,7 @@ float calcPointShadow(PointLight pointLight);
 
 vec3 reflection();
 vec3 refraction();
+vec3 depthBuffer();  // not working
 
 void main()
 {
@@ -86,6 +87,8 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
+
+	//fragColor = vec4(depthBuffer(), 1.0);
 	fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
 
@@ -236,4 +239,14 @@ vec3 refraction()
 	vec3 refractionVector = refract(viewVector, normalize(out_normalVec), ratio);
 	
 	return texture(skybox, refractionVector).rgb;
+}
+
+vec3 depthBuffer()
+{
+	float depth = gl_FragCoord.z;
+	float z = depth * 2.0 -1.0;
+	float nearPlane = 0.1;
+	float color = (2.0 * nearPlane * camera.farPlane) / (camera.farPlane + nearPlane - z * (camera.farPlane - nearPlane));
+
+	return vec3(color);
 }
