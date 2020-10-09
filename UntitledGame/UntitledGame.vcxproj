@@ -188,6 +188,7 @@
     <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\Test2.cpp" />
     <ClCompile Include="src\ver2\Main.cpp" />
+    <ClCompile Include="src\ver2\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\DebugQuadFS.txt" />
@@ -265,6 +266,7 @@
     <ClInclude Include="src\ver2\ProgramData.h" />
     <ClInclude Include="src\ver2\stb_image.h" />
     <ClInclude Include="src\ver2\TextureData.h" />
+    <ClInclude Include="src\ver2\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\DebugQuad.frag" />

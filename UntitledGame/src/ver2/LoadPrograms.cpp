@@ -2,6 +2,7 @@
 
 LoadPrograms::LoadPrograms()
 {
+	//InstrumentationTimer timer("Load programs");
 	std::cout << "Loading shaders..." << std::endl;
 
 	programs[0] = loadDefaultProgram();

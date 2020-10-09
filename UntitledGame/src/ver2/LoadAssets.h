@@ -13,6 +13,7 @@
 #include "GlobalVariables.h"
 #include "Kamera.h"
 #include "ConstantVariables.h"
+#include "Instrumentor.h"
 
 
 class LoadAssets

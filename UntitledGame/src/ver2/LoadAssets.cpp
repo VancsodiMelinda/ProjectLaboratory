@@ -2,6 +2,8 @@
 
 LoadAssets::LoadAssets()
 {
+	InstrumentationTimer timer("Load assets");
+
 	std::cout << "Loading textures..." << std::endl;
 	loadDiffuseMaps();		// load all diffuse maps
 	loadSpecularMaps();		// load all spcular maps
@@ -14,6 +16,8 @@ LoadAssets::LoadAssets()
 
 void LoadAssets::loadDiffuseMaps()
 {
+	InstrumentationTimer timer("Load diffuse maps");
+
 	CreateTexture tex1(TextureType::diffuseMap);  // load default diffuse map
 	diffuseMaps[0] = tex1.textureContainer;
 
@@ -35,6 +39,7 @@ void LoadAssets::loadDiffuseMaps()
 
 void LoadAssets::loadSpecularMaps()
 {
+	InstrumentationTimer timer("Load specular maps");
 	CreateTexture tex1(TextureType::specularMap);  // load default spacular map
 	specularMaps[0] = tex1.textureContainer;
 
@@ -47,6 +52,7 @@ void LoadAssets::loadSpecularMaps()
 
 void LoadAssets::loadNormalMaps()
 {
+	InstrumentationTimer timer("Load normal maps");
 	CreateTexture tex1(TextureType::normalMap);
 	normalMaps[0] = tex1.textureContainer;
 
@@ -56,7 +62,7 @@ void LoadAssets::loadNormalMaps()
 
 void LoadAssets::loadObjects()
 {
-	
+	InstrumentationTimer timer("Load models");
 	CreateModel cube("resources/models/cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	cube.objectContainer.material.diffuseMap = diffuseMaps[5].ID;
 	cube.objectContainer.material.specularMap = specularMaps[2].ID;

@@ -15,6 +15,8 @@
 #include "Render.h"
 #include "PostProcessing.h"
 #include "LoadOutlines.h"
+#include "Timer.h"
+#include "Instrumentor.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -84,9 +86,11 @@ int main(void)
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	////////////////////////////////////////////////////////
-
+	Instrumentor::Get().BeginSession("New profile");
 	LoadAssets assets;
+	Instrumentor::Get().EndSession();
 	LoadPrograms programs;
+
 	LoadLights lights;
 	LoadShadows shadows(lights, assets, programs);
 	LoadSkyboxes skybox;
@@ -113,6 +117,8 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
+		//glFinish();
+		//Timer timer;
 		processKeyboardInput(window);	// WASD + R
 
 		// specify clear values for the buffers
@@ -165,13 +171,8 @@ int main(void)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		//glFinish();
 	}
-
-
-
-
-
-
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

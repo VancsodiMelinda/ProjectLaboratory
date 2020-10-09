@@ -4,6 +4,7 @@
 
 #include "CreateProgram.h"
 #include "ConstantVariables.h"
+#include "Instrumentor.h"
 
 class LoadPrograms
 {
