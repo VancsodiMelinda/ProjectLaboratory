@@ -86,9 +86,9 @@ int main(void)
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	////////////////////////////////////////////////////////
-	Instrumentor::Get().BeginSession("New profile");
+	//Instrumentor::Get().BeginSession("New profile");
 	LoadAssets assets;
-	Instrumentor::Get().EndSession();
+	//Instrumentor::Get().EndSession();
 	LoadPrograms programs;
 
 	LoadLights lights;
@@ -146,7 +146,7 @@ int main(void)
 
 		// each pixel we draw something, the stencil buffer becomes 1
 		renderer.renderAssets(kamera);
-		lights.render(programs.programs[1], kamera);
+		//lights.render(programs.programs[1], kamera);
 		
 		// RENDER SKYBOX
 		glDisable(GL_STENCIL_TEST);
@@ -156,6 +156,7 @@ int main(void)
 		glDepthFunc(GL_LESS);
 
 		// RENDER OUTLINES
+		/*
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		//glStencilMask(0x00);
@@ -164,6 +165,7 @@ int main(void)
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
+		*/
 
 		// POST PROCESSING
 		//postProc.render();

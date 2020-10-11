@@ -88,8 +88,8 @@ void main()
 	}
 
 
-	//fragColor = vec4(depthBuffer(), 1.0);
-	fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+	fragColor = vec4(depthBuffer(), 1.0);
+	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
 
 	//fragColor = vec4(reflection(), 1.0);
@@ -243,10 +243,14 @@ vec3 refraction()
 
 vec3 depthBuffer()
 {
+	// I don't use the camera's farPlane so the depth is more visible
 	float depth = gl_FragCoord.z;
-	float z = depth * 2.0 -1.0;
-	float nearPlane = 0.1;
-	float color = (2.0 * nearPlane * camera.farPlane) / (camera.farPlane + nearPlane - z * (camera.farPlane - nearPlane));
+	float z = depth * 2.0 - 1.0;
+	float near = 0.1; 
+	float far  = 20.0; 
+	float color = (2.0 * near * far) / (far + near - z * (far - near));
 
-	return vec3(color);
+	return vec3(color) / far;
+
+	//return vec3(gl_FragCoord.z);
 }
