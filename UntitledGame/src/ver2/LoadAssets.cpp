@@ -94,11 +94,19 @@ void LoadAssets::loadObjects()
 	plane.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[3] = plane.objectContainer;
 	*/
-	CreateModel room("resources/models/depth testing scene joined.obj", glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(8.0f, 8.0f, 8.0f), 0.0f, "y");
+
+	CreateModel room("resources/models/velociraptor.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	room.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
 	room.objectContainer.material.specularMap = specularMaps[1].ID;
-	room.objectContainer.material.normalMap = normalMaps[0].ID;
+	//room.objectContainer.material.normalMap = normalMaps[0].ID;
 	room.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[0] = room.objectContainer;
+
+	CreateModel plane("resources/models/plane.obj", glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(8.0f, 8.0f, 8.0f), 0.0f, "y");
+	plane.objectContainer.material.diffuseMap = diffuseMaps[4].ID;
+	plane.objectContainer.material.specularMap = specularMaps[1].ID;
+	plane.objectContainer.material.normalMap = normalMaps[1].ID;
+	plane.objectContainer.material.shininess = 0.6f * 128.0f;
+	models[1] = plane.objectContainer;
 
 }

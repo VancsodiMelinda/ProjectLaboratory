@@ -17,10 +17,11 @@ vec4 sharpen();
 vec4 blur();
 vec4 edge();
 vec4 emboss();
+vec4 pixelate();
 
 void main()
 {
-	fragColor = normal();
+	fragColor = pixelate();
 }
 
 vec4 normal()
@@ -130,7 +131,17 @@ vec4 emboss()
 	return calcKernel(kernel);
 }
 
-vec4 depth()
+vec4 pixelate()
 {
-	return vec4(vec3(gl_FragCoord.z), 1.0);
+	// source: http://coding-experiments.blogspot.com/2010/06/pixelation.html
+	float param = 10.0;  // at 100.0 you get back the original resolution (1920x1080) I think
+	float uPixels = 192.0 * param;
+	float vPixels = 108.0 * param;
+    float dx = 10.0 * (1.0 / uPixels);
+    float dy = 10.0 * (1.0 / vPixels);
+    vec2 Coord = vec2(dx * floor(fs_in.uvs.x / dx), dy * floor(fs_in.uvs.y / dy));
+    vec3 finalColor = texture(screenTexture, Coord).rgb;
+
+	return vec4(finalColor, 1.0);
+	//return vec4(fs_in.uvs, 0.0, 1.0);
 }

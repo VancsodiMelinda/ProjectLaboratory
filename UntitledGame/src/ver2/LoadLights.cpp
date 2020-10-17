@@ -169,13 +169,13 @@ void LoadLights::config(ProgramContainer programContainer)
 void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 {
 	// render directional lights
-	/*
+	
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
 		//renderDirLight(dirLights[i], dirLightObject, programContainer.ID, kamera);
 		renderDirLight(dirLights[i], models[0], programContainer.ID, kamera);
 	}
-	*/
+	
 	// render point lights
 	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
 	{

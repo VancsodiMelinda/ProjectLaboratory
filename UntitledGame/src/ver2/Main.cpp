@@ -134,8 +134,8 @@ int main(void)
 		shadows.render();
 
 		// RENDER SCENE (OBJECTS AND LIGHTS)
-		//glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -146,7 +146,7 @@ int main(void)
 
 		// each pixel we draw something, the stencil buffer becomes 1
 		renderer.renderAssets(kamera);
-		//lights.render(programs.programs[1], kamera);
+		lights.render(programs.programs[1], kamera);
 		
 		// RENDER SKYBOX
 		glDisable(GL_STENCIL_TEST);
@@ -168,7 +168,7 @@ int main(void)
 		*/
 
 		// POST PROCESSING
-		//postProc.render();
+		postProc.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

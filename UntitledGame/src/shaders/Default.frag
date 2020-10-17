@@ -66,9 +66,15 @@ float calcDirShadow(DirLight dirLight);
 vec3 caclPointLight(PointLight pointLight);
 float calcPointShadow(PointLight pointLight);
 
-vec3 reflection();
-vec3 refraction();
-vec3 depthBuffer();  // not working
+vec4 vertexColor();
+vec4 normalColor();
+vec4 plainTexture();
+vec4 directionalLightingWithShadows();
+vec4 pointLightingWithShadows();
+vec4 allLightingWithShadows();
+vec4 reflection();
+vec4 refraction();
+vec4 depthBuffer();
 
 void main()
 {
@@ -87,13 +93,18 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
-
-	fragColor = vec4(depthBuffer(), 1.0);
 	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
 
-	//fragColor = vec4(reflection(), 1.0);
-	//fragColor = vec4(refraction(), 1.0);
+	//fragColor = vertexColor();
+	//fragColor = normalColor();
+	//fragColor = plainTexture();
+	//fragColor = directionalLightingWithShadows();
+	//fragColor = pointLightingWithShadows();
+	//fragColor = allLightingWithShadows();
+	fragColor = depthBuffer();
+	//fragColor = reflection();
+	//fragColor = refraction();
 
 	//vec3 test = texture(material.normalMap, out_textureCoords).rgb;  // [0, 1]
 	//fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
@@ -110,6 +121,73 @@ void main()
 	*/
 }
 
+vec4 vertexColor()
+{
+	return vec4(out_worldVertexPos, 1.0);
+}
+
+vec4 normalColor()
+{
+	vec3 finalColor = vec3(0.0);
+
+	if (hasNormalMap == 0)  // per face normal vectors from model file
+		finalColor = out_normalVec;
+	else  // per fragment normal vectors from normal map
+	{
+		vec3 normalCoords = texture(material.normalMap, out_textureCoords).rgb;
+		finalColor = normalize(normalCoords * 2.0 - 1.0);
+	}
+
+	return vec4(finalColor, 1.0);
+}
+
+vec4 plainTexture()
+{
+	return vec4(texture(material.diffuseMap, out_textureCoords).rgb, 1.0);
+}
+
+vec4 directionalLightingWithShadows()
+{
+	float intensityFactor = 1;
+	vec3 finalColor = vec3(0.0);
+
+	for (int i = 0; i < NR_DIR_LIGHTS; i++)
+	{
+		finalColor += ((calcDirLight(dirLightArray[i]))/intensityFactor);
+	}
+
+	return vec4(finalColor, 1.0);
+}
+
+vec4 pointLightingWithShadows()
+{
+	vec3 finalColor = vec3(0.0);
+	
+	for (int j = 0; j < NR_POINT_LIGHTS; j++)
+	{
+		finalColor += caclPointLight(pointLightArray[j]);
+	}
+
+	 return vec4(finalColor, 1.0);
+}
+
+vec4 allLightingWithShadows()
+{
+	float intensityFactor = 1;
+	vec3 finalColor = vec3(0.0);
+
+	for (int i = 0; i < NR_DIR_LIGHTS; i++)
+	{
+		finalColor += ((calcDirLight(dirLightArray[i]))/intensityFactor);
+	}
+
+	for (int j = 0; j < NR_POINT_LIGHTS; j++)
+	{
+		finalColor += caclPointLight(pointLightArray[j]);
+	}
+
+	return vec4(finalColor, 1.0);
+}
 
 vec3 calcDirLight(DirLight dirLight)
 {
@@ -221,15 +299,15 @@ float calcPointShadow(PointLight pointLight)
 	return shadow;
 }
 
-vec3 reflection()
+vec4 reflection()
 {
 	vec3 viewVector = normalize(out_worldVertexPos - camera.position);
 	vec3 reflectionVector = reflect(viewVector, normalize(out_normalVec));
 
-	return texture(skybox, reflectionVector).rgb;
+	return vec4(texture(skybox, reflectionVector).rgb, 1.0);
 }
 
-vec3 refraction()
+vec4 refraction()
 {
 	float refractiveIndex_air = 1.0;
 	float refractiveIndex_glass = 1.52;
@@ -238,19 +316,19 @@ vec3 refraction()
 	vec3 viewVector = normalize(out_worldVertexPos - camera.position);
 	vec3 refractionVector = refract(viewVector, normalize(out_normalVec), ratio);
 	
-	return texture(skybox, refractionVector).rgb;
+	return vec4(texture(skybox, refractionVector).rgb, 1.0);
 }
 
-vec3 depthBuffer()
+vec4 depthBuffer()
 {
 	// I don't use the camera's farPlane so the depth is more visible
 	float depth = gl_FragCoord.z;
 	float z = depth * 2.0 - 1.0;
 	float near = 0.1; 
-	float far  = 20.0; 
+	float far  = 5.0; 
 	float color = (2.0 * near * far) / (far + near - z * (far - near));
 
-	return vec3(color) / far;
+	return vec4(vec3(color) / far, 1.0);
 
 	//return vec3(gl_FragCoord.z);
 }
