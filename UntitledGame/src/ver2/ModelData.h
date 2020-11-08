@@ -31,4 +31,5 @@ struct ObjectContainer
 	GLuint ibo = 0;
 	glm::mat4 modelMatrix = glm::mat4();	// identity matrix
 	ObjectMaterial material;
+	int ID = -1;
 };

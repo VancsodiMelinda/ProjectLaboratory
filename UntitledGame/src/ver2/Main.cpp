@@ -155,6 +155,22 @@ int main(void)
 		skybox.render(programs.programs[4], kamera);
 		glDepthFunc(GL_LESS);
 
+		// pick object
+		/*
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
+		{
+			glFlush();
+			glFinish();
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+			unsigned char pixel[4] = { 'x', 'x', 'x', 'x' };
+			glReadPixels(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);  // color in [0-255] range
+			std::cout << "pixel color: " << pixel[0] << ", " << pixel[1] << ", " << pixel[2] << std::endl;
+			//int pickedID = pixel[0] + pixel[1] * 256 + pixel[2] * 256 * 256;
+			//std::cout << "ID: " << pickedID << std::endl;
+		}
+		*/
+
 		// RENDER OUTLINES
 		/*
 		glEnable(GL_STENCIL_TEST);

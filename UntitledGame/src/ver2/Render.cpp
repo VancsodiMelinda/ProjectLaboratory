@@ -72,6 +72,8 @@ void Render::getUniformLocations()
 
 	uniformLocations.skyboxLoc = glGetUniformLocation(programID, "skybox");
 
+	uniformLocations.IDloc = glGetUniformLocation(programID, "ID");
+
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
@@ -168,6 +170,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 
 	glUniform1i(uniformLocations.skyboxLoc, 3);	// tex
 
+	glUniform1i(uniformLocations.IDloc, object.ID);
+
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
@@ -205,6 +209,27 @@ glm::mat4 Render::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
 	return P * V * M;
 }
 
+void Render::generateIDs()
+{
+	int ID = 0;
+
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
+	{
+		assets.models[i].ID = ID;
+		ID++;
+	}
+
+	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
+	{
+
+	}
+
+	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	{
+
+	}
+}
+
 void Render::configAssets()
 {
 	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
@@ -213,7 +238,9 @@ void Render::configAssets()
 		configAsset(assets.models[i]);
 	}
 
-	std::cout << "OK: Assets are configured." << std::endl;
+	generateIDs();
+
+	std::cout << "OK: Assets are configured and IDs are generated." << std::endl;
 }
 
 void Render::renderAssets(Kamera& kamera_)

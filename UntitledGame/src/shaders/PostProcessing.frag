@@ -5,8 +5,11 @@ in VS_OUT {
 } fs_in;
 
 uniform sampler2D screenTexture;
+uniform sampler2D selectionTexture;
 
 out vec4 fragColor;
+
+vec4 showSelectionTexture();
 
 vec4 normal();
 vec4 inversion();
@@ -21,7 +24,13 @@ vec4 pixelate();
 
 void main()
 {
+	//fragColor = showSelectionTexture();
 	fragColor = pixelate();
+}
+
+vec4 showSelectionTexture()
+{
+	return texture(selectionTexture, fs_in.uvs);
 }
 
 vec4 normal()

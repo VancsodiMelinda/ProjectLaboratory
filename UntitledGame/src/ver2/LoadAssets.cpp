@@ -95,6 +95,7 @@ void LoadAssets::loadObjects()
 	models[3] = plane.objectContainer;
 	*/
 
+	/*
 	CreateModel room("resources/models/velociraptor.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	room.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
 	room.objectContainer.material.specularMap = specularMaps[1].ID;
@@ -108,5 +109,16 @@ void LoadAssets::loadObjects()
 	plane.objectContainer.material.normalMap = normalMaps[1].ID;
 	plane.objectContainer.material.shininess = 0.6f * 128.0f;
 	models[1] = plane.objectContainer;
+	*/
+
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
+	{
+		CreateModel cube("resources/models/cube.obj", glm::vec3(i * 3.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
+		cube.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
+		cube.objectContainer.material.specularMap = specularMaps[1].ID;
+		//cube.objectContainer.material.normalMap = normalMaps[0].ID;
+		cube.objectContainer.material.shininess = 0.6f * 128.0f;
+		models[i] = cube.objectContainer;
+	}
 
 }

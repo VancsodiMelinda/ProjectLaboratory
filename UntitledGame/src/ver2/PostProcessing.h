@@ -14,6 +14,7 @@ private:
 	struct PostProcContainer
 	{
 		GLuint texture = 0;
+		GLuint selectionTexture = 0;
 		GLuint rbo = 0;
 		GLuint fbo = 0;
 		ObjectContainer object;
@@ -30,10 +31,12 @@ private:
 	struct UniformLocs
 	{
 		GLint screenTextureLoc = -1;
+		GLint selectionTextureLoc = -1;
 	};
 	UniformLocs uniformLocs;
 
 	GLuint createTexture();
+	GLuint createSelectionTexture();
 	GLuint createRbo();
 	GLuint createFbo();
 	ObjectContainer createQuad();

@@ -6,6 +6,7 @@ PostProcessing::PostProcessing(ProgramContainer program)
 	checkProgram(program);
 	programID = program.ID;
 	postProcContainer.texture = createTexture();	// for color attachment
+	postProcContainer.selectionTexture = createSelectionTexture();  // for object selection
 	postProcContainer.rbo = createRbo();			// for depth and stencil attachment
 	postProcContainer.fbo = createFbo();
 	postProcContainer.object = createQuad();		// create data, vao, vbo, ibo, config vertex attribs, get uniform locs
@@ -39,6 +40,20 @@ GLuint PostProcessing::createTexture()
 	return texture;
 }
 
+GLuint PostProcessing::createSelectionTexture()
+{
+	GLuint texture;
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texture;
+}
+
 GLuint PostProcessing::createRbo()
 {
 	GLuint rbo;  // renderbuffer object
@@ -57,8 +72,13 @@ GLuint PostProcessing::createFbo()
 
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcContainer.texture, 0);  // color attachment
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcContainer.texture, 0);  // color attachment #1
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, postProcContainer.selectionTexture, 0);  // color attachment #2
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, postProcContainer.rbo);  // depth and stencil attachment
+
+	GLenum buffersToDraw[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, buffersToDraw);
+
 	debugFramebuffer(GL_FRAMEBUFFER);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -137,6 +157,7 @@ ObjectContainer PostProcessing::createQuad()
 
 	// get uniform locations
 	uniformLocs.screenTextureLoc = glGetUniformLocation(programID, "screenTexture");
+	uniformLocs.selectionTextureLoc = glGetUniformLocation(programID, "selectionTexture");
 
 	return object;
 }
@@ -149,12 +170,16 @@ void PostProcessing::render()
 
 	glUseProgram(programID);
 
-	glUniform1i(uniformLocs.screenTextureLoc, 0);	// tex
+	glUniform1i(uniformLocs.screenTextureLoc, 0);
+	glUniform1i(uniformLocs.selectionTextureLoc, 1);
 
 	glBindVertexArray(postProcContainer.object.vao);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, postProcContainer.texture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, postProcContainer.selectionTexture);
 
 	glDrawElements(GL_TRIANGLES, postProcContainer.object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }

@@ -43,10 +43,12 @@ private:
 		int skyboxLoc = -1;
 		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
 		int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
+		int IDloc = -1;
 	};
 	UniformLocations uniformLocations;
 
 public:
+	void generateIDs();
 	void configAssets();
 	void renderAssets(Kamera& kamera_);
 };

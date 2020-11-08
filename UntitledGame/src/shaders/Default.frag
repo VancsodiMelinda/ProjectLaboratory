@@ -11,6 +11,10 @@ in vec4 rawVertexPosition;
 in mat4 out_modelMatrix;
 
 out vec4 fragColor;
+layout (location = 0) out vec3 standardColor;
+layout (location = 1) out vec3 selectionColor;
+
+uniform int ID;
 
 struct Material{ 
 	sampler2D diffuseMap;
@@ -66,6 +70,7 @@ float calcDirShadow(DirLight dirLight);
 vec3 caclPointLight(PointLight pointLight);
 float calcPointShadow(PointLight pointLight);
 
+vec4 calcSelectionColor();
 vec4 vertexColor();
 vec4 normalColor();
 vec4 plainTexture();
@@ -109,6 +114,8 @@ void main()
 	//vec3 test = texture(material.normalMap, out_textureCoords).rgb;  // [0, 1]
 	//fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
 	
+	standardColor = normalColor().rgb;
+	selectionColor = calcSelectionColor().rgb;
 
 	/*
 	if (hasNormalMap == 0)
@@ -119,6 +126,16 @@ void main()
 		fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
 	}
 	*/
+}
+
+vec4 calcSelectionColor()
+{
+	int R = (ID & 0x000000FF) >>  0;
+	int G = (ID & 0x0000FF00) >>  8;
+	int B = (ID & 0x00FF0000) >> 16;
+
+	return vec4(R/255.0, G/255.0, B/255.0, 1.0);
+	//return vec4(ID, 0.0, 0.0, 1.0);
 }
 
 vec4 vertexColor()
