@@ -7,6 +7,7 @@
 #include "DebugOpenGL.h"
 #include "ModelData.h"
 #include "ProgramData.h"
+#include "Instrumentor.h"
 
 class PostProcessing
 {
@@ -42,6 +43,7 @@ private:
 	ObjectContainer createQuad();
 
 public:
+	void selectObject();
 	void render();
 };
 

@@ -2,6 +2,8 @@
 
 LoadLights::LoadLights()
 {
+	InstrumentationTimer timer("Load lights");
+
 	std::cout << "Loading light models..." << std::endl;
 	loadLightModels();
 	std::cout << std::endl;
@@ -17,8 +19,10 @@ LoadLights::LoadLights()
 
 void LoadLights::loadDirectionalLights()
 {
+	InstrumentationTimer timer("Load dir lights");
+
 	CreateDirLight light1;	// creates default directional light
-	light1.dirLightContainer.position = glm::vec3(0.0f, 3.0f, -5.0f);
+	light1.dirLightContainer.position = glm::vec3(0.0f, 10.0f, -5.0f);
 	light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light1.dirLightContainer.ambientStrength = 0.2f;
 	light1.dirLightContainer.diffuseStrength = 0.8f;
@@ -26,6 +30,7 @@ void LoadLights::loadDirectionalLights()
 	light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	dirLights[0] = light1.dirLightContainer;
 
+	
 	CreateDirLight light2;
 	light2.dirLightContainer.position = glm::vec3(-5.0f, 3.0f, 0.0f);
 	light2.dirLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -52,15 +57,19 @@ void LoadLights::loadDirectionalLights()
 	light4.dirLightContainer.specularStrength = 1.0f;
 	light4.dirLightContainer.lightSpaceMatrix = light4.createLightSpaceMatrix();
 	dirLights[3] = light4.dirLightContainer;
+	
 }
 
 void LoadLights::loadPointLights()
 {
+	InstrumentationTimer timer("Load point lights");
+
 	CreatePointLight light1;
+	light1.pointLightContainer.position = glm::vec3(0.0f, 10.0f, 0.0f);
 	pointLights[0] = light1.pointLightContainer;
 
 	CreatePointLight light2;
-	light2.pointLightContainer.position = glm::vec3(3.0f, 3.0f, 3.0f);
+	light2.pointLightContainer.position = glm::vec3(3.0f, 10.0f, 3.0f);
 	light2.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 1.0f);
 	light2.pointLightContainer.ambientStrength = 0.3f;
 	light2.pointLightContainer.diffuseStrength = 0.9f;
@@ -74,6 +83,8 @@ void LoadLights::loadPointLights()
 
 void LoadLights::loadLightModels()
 {
+	InstrumentationTimer timer("Load light models");
+
 	CreateModel cube("resources/models/cube.obj");
 	models[0] = cube.objectContainer;
 
@@ -152,6 +163,8 @@ void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContain
 
 void LoadLights::config(ProgramContainer programContainer)
 {
+	InstrumentationTimer timer("Config point lights");
+
 	if (programContainer.type == ProgramType::light)
 	{
 		//configLight(dirLightObject, programContainer.ID);
@@ -168,10 +181,13 @@ void LoadLights::config(ProgramContainer programContainer)
 
 void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 {
+	InstrumentationTimer timer("Render lights");
+
 	// render directional lights
-	
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
+		InstrumentationTimer timer("Render dir lights");
+
 		//renderDirLight(dirLights[i], dirLightObject, programContainer.ID, kamera);
 		renderDirLight(dirLights[i], models[0], programContainer.ID, kamera);
 	}
@@ -179,6 +195,8 @@ void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 	// render point lights
 	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
 	{
+		InstrumentationTimer timer("Render point lights");
+
 		//renderPointLight(pointLights[i], pointLightObject, programContainer.ID, kamera);
 		renderPointLight(pointLights[i], models[1], programContainer.ID, kamera);
 	}

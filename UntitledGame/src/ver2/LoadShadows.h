@@ -9,6 +9,7 @@
 #include "LoadPrograms.h"
 #include "GlobalVariables.h"
 #include "ConstantVariables.h"
+#include "Instrumentor.h"
 
 class LoadShadows
 {

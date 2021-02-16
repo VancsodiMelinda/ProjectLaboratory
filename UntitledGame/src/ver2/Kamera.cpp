@@ -2,8 +2,10 @@
 
 Kamera::Kamera()
 {
-	cameraContainer.cameraPosition	= glm::vec3(0.0f, 1.0f, 8.0f);
+	//cameraContainer.cameraPosition	= glm::vec3(0.0f, 1.0f, 8.0f);
 	cameraContainer.cameraFront		= glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
+	cameraContainer.cameraPosition	= glm::vec3(0.0f, 2.5f, 10.0f);
+	//cameraContainer.cameraFront		= glm::normalize(glm::vec3(1.0f, 0.0f, -1.0f));
 	cameraContainer.cameraTarget	= cameraContainer.cameraPosition + cameraContainer.cameraFront;
 	glm::vec3 worldUp				= glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraContainer.cameraRight		= glm::vec3(glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront)));

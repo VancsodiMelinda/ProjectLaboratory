@@ -2,6 +2,8 @@
 
 LoadSkyboxes::LoadSkyboxes()
 {
+	InstrumentationTimer timer("Load skyboxes");
+
 	std::cout << "Loading skyboxes..." << std::endl;
 
 	loadSkyboxModel();
@@ -23,6 +25,8 @@ void LoadSkyboxes::loadSkyboxModel()
 
 void LoadSkyboxes::config(ProgramContainer programContainer)
 {
+	InstrumentationTimer timer("Config skyboxes");
+
 	if (programContainer.type == ProgramType::skybox)
 	{
 		std::cout << "OK: Skybox is configured using the correct program." << std::endl;
@@ -53,6 +57,9 @@ void LoadSkyboxes::config(ProgramContainer programContainer)
 
 void LoadSkyboxes::render(ProgramContainer programContainer, Kamera& kamera)
 {
+	InstrumentationTimer timer("Render skybox");
+
+
 	glUseProgram(programContainer.ID);
 
 	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * glm::mat4(glm::mat3(kamera.cameraContainer.viewMatrix));

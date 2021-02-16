@@ -2,6 +2,7 @@
 
 #include "LoadAssets.h"
 #include "ProgramData.h"
+#include "Instrumentor.h"
 
 class LoadOutlines
 {

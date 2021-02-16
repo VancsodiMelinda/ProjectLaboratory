@@ -3,6 +3,8 @@
 LoadOutlines::LoadOutlines(LoadAssets& assets_, ProgramContainer programContainer_) :
 	assets(assets_)
 {
+	InstrumentationTimer timer("Load outlines");
+
 	programContainer = programContainer_;
 	checkProgram(programContainer);
 }
@@ -58,6 +60,8 @@ void LoadOutlines::renderOutline(ObjectContainer& object, Kamera& kamera)
 
 void LoadOutlines::config()
 {
+	InstrumentationTimer timer("Config outlines");
+
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		configOutline(assets.models[i]);
@@ -66,6 +70,9 @@ void LoadOutlines::config()
 
 void LoadOutlines::render(Kamera& kamera)
 {
+	InstrumentationTimer timer("Render outlines");
+
+
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		renderOutline(assets.models[i], kamera);

@@ -19,7 +19,7 @@
 class LoadAssets
 {
 private:
-	TextureContainer diffuseMaps[6];
+	TextureContainer diffuseMaps[9];
 	TextureContainer specularMaps[3];
 	TextureContainer normalMaps[2];
 public:

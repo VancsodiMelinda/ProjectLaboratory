@@ -13,21 +13,25 @@ Render::Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, Lo
 
 void Render::configAsset(ObjectContainer& object)
 {
+	InstrumentationTimer timer("Config assets");
+
 	configVertexAttributes(object);
 	getUniformLocations();
 }
 
 void Render::configVertexAttributes(ObjectContainer& object)
 {
+	InstrumentationTimer timer("Config vertex attribs");
+
 	glBindVertexArray(object.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object.ibo);
 
-	GLuint positionAttribIndex = glGetAttribLocation(programID, "in_vertexPosition");
-	GLuint textureAttribIndex = glGetAttribLocation(programID, "in_textureCoords");
-	GLuint normalAttribIndex = glGetAttribLocation(programID, "in_normalVec");
-	GLuint tangentAttribIndex = glGetAttribLocation(programID, "in_tangent"); //
-	GLuint bitangentAttribIndex = glGetAttribLocation(programID, "in_bitangent"); //
+	GLint positionAttribIndex = glGetAttribLocation(programID, "in_vertexPosition");
+	GLint textureAttribIndex = glGetAttribLocation(programID, "in_textureCoords");
+	GLint normalAttribIndex = glGetAttribLocation(programID, "in_normalVec");
+	GLint tangentAttribIndex = glGetAttribLocation(programID, "in_tangent"); //
+	GLint bitangentAttribIndex = glGetAttribLocation(programID, "in_bitangent"); //
 
 	glEnableVertexAttribArray(positionAttribIndex);
 	glEnableVertexAttribArray(textureAttribIndex);
@@ -56,6 +60,8 @@ void Render::configVertexAttributes(ObjectContainer& object)
 
 void Render::getUniformLocations()
 {
+	InstrumentationTimer timer("Get uniform locs");
+
 	// vertex shader
 	uniformLocations.MVPloc = glGetUniformLocation(programID, "MVP");
 	uniformLocations.modelMatrixLoc = glGetUniformLocation(programID, "modelMatrix");
@@ -245,6 +251,8 @@ void Render::configAssets()
 
 void Render::renderAssets(Kamera& kamera_)
 {
+	InstrumentationTimer timer("Render models");
+
 	kamera = kamera_;
 	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);

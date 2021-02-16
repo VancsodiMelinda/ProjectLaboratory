@@ -7,6 +7,7 @@
 #include "LoadShadows.h"
 #include "CreateSkybox.h"
 #include "ConstantVariables.h"
+#include "Instrumentor.h"
 
 class Render
 {

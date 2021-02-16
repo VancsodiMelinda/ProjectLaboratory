@@ -25,7 +25,7 @@ vec4 pixelate();
 void main()
 {
 	//fragColor = showSelectionTexture();
-	fragColor = pixelate();
+	fragColor = normal();
 }
 
 vec4 showSelectionTexture()
@@ -54,7 +54,8 @@ vec4 grayscale()
 vec4 nightVision()
 {
 	vec4 color = texture(screenTexture, fs_in.uvs);
-	return vec4(0.0, color.g, 0.0, 1.0);
+	float average = (color.r + color.g + color.b) / 3.0;
+	return vec4(0.0, average, 0.0, 1.0);
 }
 
 vec4 calcKernel(float kernel[9])

@@ -2,6 +2,8 @@
 
 PostProcessing::PostProcessing(ProgramContainer program)
 {
+	InstrumentationTimer timer("Post processing");
+
 	std::cout << "Loading post-processing data..." << std::endl;
 	checkProgram(program);
 	programID = program.ID;
@@ -48,7 +50,7 @@ GLuint PostProcessing::createSelectionTexture()
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return texture;
@@ -75,8 +77,8 @@ GLuint PostProcessing::createFbo()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcContainer.texture, 0);  // color attachment #1
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, postProcContainer.selectionTexture, 0);  // color attachment #2
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, postProcContainer.rbo);  // depth and stencil attachment
-
-	GLenum buffersToDraw[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	// configure the framebuffer
+	GLenum buffersToDraw[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };  // 0: normal color, 1: selection color
 	glDrawBuffers(2, buffersToDraw);
 
 	debugFramebuffer(GL_FRAMEBUFFER);
@@ -160,6 +162,38 @@ ObjectContainer PostProcessing::createQuad()
 	uniformLocs.selectionTextureLoc = glGetUniformLocation(programID, "selectionTexture");
 
 	return object;
+}
+
+void PostProcessing::selectObject()
+{
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, postProcContainer.fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	unsigned char pixel[4];
+	glReadPixels(WINDOW_WIDTH/2, WINDOW_WIDTH/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+	std::cout << "RGBA: " << (int)pixel[0] << ", " << (int)pixel[1] << ", " << (int)pixel[2] << ", " << (int)pixel[3] << std::endl;
+	
+
+	/*
+	GLubyte* pixels = new GLubyte[WINDOW_WIDTH * WINDOW_HEIGHT * 3];
+	//glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	//glBindTexture(GL_TEXTURE_2D, postProcContainer.selectionTexture);
+	glGetTextureImage(postProcContainer.selectionTexture, 0, GL_RGB, GL_UNSIGNED_BYTE, WINDOW_WIDTH * WINDOW_HEIGHT * 3, pixels);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+	size_t x = WINDOW_HEIGHT / 2;
+	size_t y = WINDOW_WIDTH / 2;
+
+	size_t elementsPerLine = 256 * 3;
+	size_t row = y * elementsPerLine;
+	size_t column = x * 3;
+
+	GLuint R = pixels[row + column];
+	GLuint G = pixels[row + column + 1];
+	GLuint B = pixels[row + column + 2];
+
+	std::cout << "RGB: " << R << ", " << G << ", " << B << std::endl;
+	*/
 }
 
 void PostProcessing::render()

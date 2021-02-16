@@ -14,6 +14,7 @@
 #include "ProgramData.h"
 #include "ConstantVariables.h"
 #include "CreateModel.h"
+#include "Instrumentor.h"
 
 class LoadLights
 {

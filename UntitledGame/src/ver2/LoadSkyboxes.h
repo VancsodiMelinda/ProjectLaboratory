@@ -7,6 +7,7 @@
 #include "ProgramData.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include "Instrumentor.h"
 
 class LoadSkyboxes
 {

@@ -12,7 +12,7 @@ in mat4 out_modelMatrix;
 
 out vec4 fragColor;
 layout (location = 0) out vec3 standardColor;
-layout (location = 1) out vec3 selectionColor;
+layout (location = 1) out vec4 selectionColor;
 
 uniform int ID;
 
@@ -98,7 +98,7 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
-	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+	fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
 
 	//fragColor = vertexColor();
@@ -107,15 +107,16 @@ void main()
 	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = allLightingWithShadows();
-	fragColor = depthBuffer();
+	//fragColor = depthBuffer();
 	//fragColor = reflection();
 	//fragColor = refraction();
 
 	//vec3 test = texture(material.normalMap, out_textureCoords).rgb;  // [0, 1]
 	//fragColor = vec4(normalize(test * 2.0 - 1.0), 1.0);
 	
-	standardColor = normalColor().rgb;
-	selectionColor = calcSelectionColor().rgb;
+	//standardColor = normalColor().rgb;
+	standardColor = fragColor.rgb;
+	selectionColor = calcSelectionColor();
 
 	/*
 	if (hasNormalMap == 0)

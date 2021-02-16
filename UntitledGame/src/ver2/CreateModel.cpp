@@ -50,18 +50,11 @@ void CreateModel::fillVBOs()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, objectContainer.vbo);  // bind VBO
 
-	//glBufferData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() + objectContainer.data.uvs.size() + objectContainer.data.normals.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);						// reserve space
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, objectContainer.data.vertices.size() * sizeof(GL_FLOAT), &objectContainer.data.vertices[0]);															// VERTEX COORDINATES
-	//glBufferSubData(GL_ARRAY_BUFFER, objectContainer.data.vertices.size() * sizeof(GL_FLOAT), objectContainer.data.uvs.size() * sizeof(GL_FLOAT), &objectContainer.data.uvs[0]);								// TEXTURE COORDINATES
-	//glBufferSubData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() + objectContainer.data.uvs.size()) * sizeof(GL_FLOAT), objectContainer.data.normals.size() * sizeof(GL_FLOAT), &objectContainer.data.normals[0]);	// NORMAL COORDINATES
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
-
-
 	glBufferData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() +
 									objectContainer.data.uvs.size() +
 									objectContainer.data.normals.size() +
 									objectContainer.data.tangents.size() +
-									objectContainer.data.bitangents.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);						// reserve space
+									objectContainer.data.bitangents.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
 
 	glBufferSubData(GL_ARRAY_BUFFER, 0,
 					objectContainer.data.vertices.size() * sizeof(GL_FLOAT), &objectContainer.data.vertices[0]);  // VERTEX COORDINATES

@@ -5,6 +5,8 @@ LoadShadows::LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms&
 	assets(assets_),
 	programs(programs_)
 {
+	InstrumentationTimer timer("Load shadows");
+
 	// get programs
 	dirShadowProgramContainer = programs.programs[2];
 	pointShadowProgramContainer = programs.programs[3];
@@ -15,6 +17,8 @@ LoadShadows::LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms&
 
 void LoadShadows::loadDirShadows()
 {
+	InstrumentationTimer timer("Load dir shadows");
+
 	std::cout << "Load directional shadows..." << std::endl;
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
@@ -27,6 +31,8 @@ void LoadShadows::loadDirShadows()
 
 void LoadShadows::loadPointShadows()
 {
+	InstrumentationTimer timer("Load point shadows");
+
 	std::cout << "Load point shadows..." << std::endl;
 	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
 	{
@@ -138,8 +144,12 @@ void LoadShadows::renderPointShadow(PointLightContainer light, ObjectContainer& 
 
 void LoadShadows::config()
 {
+	InstrumentationTimer timer("Config shadows");
+
 	if (dirShadowProgramContainer.type == ProgramType::directionalShadow)
 	{
+		InstrumentationTimer timer("Config dir shadows");
+
 		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configDirShadow(assets.models[i], dirShadowProgramContainer.ID);
@@ -153,6 +163,8 @@ void LoadShadows::config()
 
 	if (pointShadowProgramContainer.type == ProgramType::omnidirectionalShadow)
 	{
+		InstrumentationTimer timer("Config point shadows");
+
 		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configPointShadow(assets.models[i], pointShadowProgramContainer.ID);
@@ -169,9 +181,12 @@ void LoadShadows::render()
 {
 	//glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 	//glEnable(GL_DEPTH_TEST);
+	InstrumentationTimer timer("Render shadows");
 
 	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
 	{
+		InstrumentationTimer timer("Render dir shadows");
+
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -185,6 +200,8 @@ void LoadShadows::render()
 
 	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
 	{
+		InstrumentationTimer timer("Render point shadows");
+
 		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
