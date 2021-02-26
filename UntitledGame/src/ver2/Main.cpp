@@ -88,8 +88,6 @@ int main(void)
 	const char* glsl_version = "#version 130";
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-	Scene1 testScene(window, kamera);
-
 	// OpenGL debug message callback
 	/*
 	glEnable(GL_DEBUG_OUTPUT);
@@ -99,130 +97,9 @@ int main(void)
 	*/
 	////////////////////////////////////////////////////////
 
-	/*
-	Instrumentor::Get().BeginSession("test profile");
-	LoadAssets assets;  // ok
-	LoadPrograms programs;  // ok
-	LoadLights lights;  // ok
-	LoadShadows shadows(lights, assets, programs);  // ok
-	LoadSkyboxes skybox;  // ok
-	PostProcessing postProc(programs.programs[5]);  // ok
-	LoadOutlines outlines(assets, programs.programs[6]); // ok
-	
-	Render renderer(
-		assets,
-		programs,
-		kamera,
-		lights,
-		shadows,
-		skybox.skyboxes[1]
-	);
+	// RENDER
+	Scene1 testScene(window, kamera);
 
-	std::cout << "Configurations..." << std::endl;
-	renderer.configAssets();  // ok
-	lights.config(programs.programs[1]);  // ok
-	shadows.config();  // ok
-	skybox.config(programs.programs[4]);  // ok
-	outlines.config();  // ok
-
-	Instrumentor::Get().EndSession();
-	//glEnable(GL_DEPTH_TEST);
-
-	std::cout << "START OF GAME LOOP" << std::endl;
-	int i = 1;
-	Instrumentor::Get().BeginSession("game loop profile");
-	while (!glfwWindowShouldClose(window))
-	{
-		std::string title = std::to_string(i) + ". loop";
-		const char* title_ = title.c_str();
-		InstrumentationTimer timer(title_);
-
-		//glFinish();
-		//Timer timer;
-		processKeyboardInput(window);	// WASD + R
-
-		// specify clear values for the buffers
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClearDepth(1);  // default
-		glClearStencil(0);  // default
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // clear all buffers
-
-		// RENDER SHADOWS
-		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);
-		shadows.render();  // ok
-
-		// RENDER SCENE (OBJECTS AND LIGHTS)
-		//glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);  // render to default fbo
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // replace value = ref value from glStencilFunc
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		//glStencilMask(0xFF);
-
-		// each pixel we draw something, the stencil buffer becomes 1
-		renderer.renderAssets(kamera);  // ok
-		lights.render(programs.programs[1], kamera);  // ok
-		
-		// RENDER SKYBOX
-		glDisable(GL_STENCIL_TEST);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		skybox.render(programs.programs[4], kamera);  // ok
-		glDepthFunc(GL_LESS);
-
-		// comment start
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
-		{
-			glFlush();
-			glFinish();
-			postProc.selectObject();
-		}
-		
-		// pick object
-		
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
-		{
-			glFlush();
-			glFinish();
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-			unsigned char pixel[4] = { 'x', 'x', 'x', 'x' };
-			glReadPixels(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);  // color in [0-255] range
-			std::cout << "pixel color: " << pixel[0] << ", " << pixel[1] << ", " << pixel[2] << std::endl;
-			//int pickedID = pixel[0] + pixel[1] * 256 + pixel[2] * 256 * 256;
-			//std::cout << "ID: " << pickedID << std::endl;
-		}
-		// comment end
-
-		// RENDER OUTLINES
-		glEnable(GL_STENCIL_TEST);
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		//glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);  // draw outline on top of everything
-		outlines.render(kamera);  // ok
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glEnable(GL_DEPTH_TEST);
-		
-
-		// POST PROCESSING
-		//postProc.render();
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		//glFinish();
-		i++;
-	}
-	Instrumentor::Get().EndSession();
-	*/
-	
-	
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

@@ -4,6 +4,7 @@
 
 Kamera kamera;
 
+/*
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 void processKeyboardInput(GLFWwindow* window)  // gets called every frame
@@ -35,7 +36,7 @@ void processKeyboardInput(GLFWwindow* window)  // gets called every frame
 		kamera.processKeyInput("R", deltaTime);
 	}
 }
-
+*/
 
 float lastX = (float)WINDOW_WIDTH / 2.0f;
 float lastY = (float)WINDOW_HEIGHT / 2.0f;

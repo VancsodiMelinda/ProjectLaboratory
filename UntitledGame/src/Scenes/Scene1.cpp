@@ -1,6 +1,6 @@
 #include "Scene1.h"
 
-Scene1::Scene1(GLFWwindow* window, Kamera kamera)
+Scene1::Scene1(GLFWwindow* window, Kamera& kamera)
 {
 	//Instrumentor::Get().BeginSession("test profile");
 	// load

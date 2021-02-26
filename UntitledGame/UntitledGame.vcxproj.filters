@@ -375,9 +375,6 @@
     <ClInclude Include="src\Scenes\Scene1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scenes\IScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ver2\SceneLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>

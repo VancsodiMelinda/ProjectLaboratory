@@ -216,7 +216,6 @@
   <ItemGroup>
     <ClInclude Include="src\ver2\Input.h" />
     <ClInclude Include="src\ver2\SceneLoader.h" />
-    <ClInclude Include="src\Scenes\IScene.h" />
     <ClInclude Include="src\Scenes\Scene1.h" />
     <ClInclude Include="src\ver2\Mesh.h" />
     <ClInclude Include="src\ver2\LoadOutlines.h" />

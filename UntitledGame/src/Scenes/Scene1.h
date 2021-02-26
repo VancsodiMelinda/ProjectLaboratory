@@ -1,7 +1,5 @@
 #pragma once
 
-#include "IScene.h"
-
 #include "../ver2/LoadAssets.h"
 #include "../ver2/LoadPrograms.h"
 #include "../ver2/LoadLights.h"
@@ -24,6 +22,6 @@
 class Scene1
 {
 public:
-	Scene1(GLFWwindow* window, Kamera kamera);
+	Scene1(GLFWwindow* window, Kamera& kamera);
 };
 
