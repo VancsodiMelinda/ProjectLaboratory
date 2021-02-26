@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 #include <string>
 #include <iostream>
 
@@ -39,8 +41,11 @@ public:
 private:
 	void updateViewMatrix();
 	void updateProjectionMatrix();
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
 
 public:
+	void processKeyboardInput(GLFWwindow* window);
 	void processKeyInput(std::string button, float deltaTime);
 	void processMouseMovement(float xOffset, float yOffset);
 	void processMouseScroll();

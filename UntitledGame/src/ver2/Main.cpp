@@ -17,6 +17,7 @@
 #include "LoadOutlines.h"
 #include "Timer.h"
 #include "Instrumentor.h"
+#include "../Scenes/Scene1.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -87,6 +88,8 @@ int main(void)
 	const char* glsl_version = "#version 130";
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
+	Scene1 testScene(window, kamera);
+
 	// OpenGL debug message callback
 	/*
 	glEnable(GL_DEBUG_OUTPUT);
@@ -95,6 +98,8 @@ int main(void)
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	*/
 	////////////////////////////////////////////////////////
+
+	/*
 	Instrumentor::Get().BeginSession("test profile");
 	LoadAssets assets;  // ok
 	LoadPrograms programs;  // ok
@@ -170,16 +175,16 @@ int main(void)
 		skybox.render(programs.programs[4], kamera);  // ok
 		glDepthFunc(GL_LESS);
 
-		/*
+		// comment start
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
 		{
 			glFlush();
 			glFinish();
 			postProc.selectObject();
 		}
-		*/
+		
 		// pick object
-		/*
+		
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
 		{
 			glFlush();
@@ -192,7 +197,7 @@ int main(void)
 			//int pickedID = pixel[0] + pixel[1] * 256 + pixel[2] * 256 * 256;
 			//std::cout << "ID: " << pickedID << std::endl;
 		}
-		*/
+		// comment end
 
 		// RENDER OUTLINES
 		glEnable(GL_STENCIL_TEST);
@@ -215,7 +220,9 @@ int main(void)
 		i++;
 	}
 	Instrumentor::Get().EndSession();
-
+	*/
+	
+	
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

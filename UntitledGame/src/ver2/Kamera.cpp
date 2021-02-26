@@ -25,6 +25,36 @@ void Kamera::updateProjectionMatrix()
 	cameraContainer.projectionMatrix = glm::perspective(glm::radians(cameraContainer.fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, cameraContainer.nearPlane, cameraContainer.farPlane);
 }
 
+void Kamera::processKeyboardInput(GLFWwindow* window)  // gets called every frame
+{
+	// time calculations
+	float currentFrame = (float)glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	float cameraSpeed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		processKeyInput("W", deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		processKeyInput("S", deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		processKeyInput("A", deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		processKeyInput("D", deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		processKeyInput("R", deltaTime);
+	}
+}
+
 void Kamera::processKeyInput(std::string button, float deltaTime)
 {
 	float cameraSpeed = 5.0f * deltaTime;
