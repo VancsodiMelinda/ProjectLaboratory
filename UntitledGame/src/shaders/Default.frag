@@ -98,12 +98,13 @@ void main()
 		finalColor += caclPointLight(pointLightArray[j]);
 	}
 
-	fragColor = vec4(finalColor, 1.0);	// frag color with lighting
+	//fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	//fragColor = plainTexture();
+	fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = allLightingWithShadows();

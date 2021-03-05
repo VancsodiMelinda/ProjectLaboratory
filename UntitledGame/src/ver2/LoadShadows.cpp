@@ -1,8 +1,25 @@
 #include "LoadShadows.h"
 
+/*
 LoadShadows::LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_) :
 	lights(lights_),
 	assets(assets_),
+	programs(programs_)
+{
+	InstrumentationTimer timer("Load shadows");
+
+	// get programs
+	dirShadowProgramContainer = programs.programs[2];
+	pointShadowProgramContainer = programs.programs[3];
+
+	loadDirShadows();
+	loadPointShadows();
+}
+*/
+
+LoadShadows::LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>& models_, LoadPrograms& programs_) :
+	lights(lights_),
+	models(models_),
 	programs(programs_)
 {
 	InstrumentationTimer timer("Load shadows");
@@ -150,9 +167,16 @@ void LoadShadows::config()
 	{
 		InstrumentationTimer timer("Config dir shadows");
 
+		/*
 		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configDirShadow(assets.models[i], dirShadowProgramContainer.ID);
+		}
+		*/
+
+		for (int i = 0; i < models.size(); i++)  // new
+		{
+			configDirShadow(models[i], dirShadowProgramContainer.ID);
 		}
 		std::cout << "OK: Directional shadows are configured using the correct program." << std::endl;
 	}
@@ -165,9 +189,16 @@ void LoadShadows::config()
 	{
 		InstrumentationTimer timer("Config point shadows");
 
+		/*
 		for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 		{
 			configPointShadow(assets.models[i], pointShadowProgramContainer.ID);
+		}
+		*/
+
+		for (int i = 0; i < models.size(); i++)  // new
+		{
+			configPointShadow(models[i], pointShadowProgramContainer.ID);
 		}
 		std::cout << "OK: Omnidirectional shadows are configured using the correct program." << std::endl;
 	}
@@ -190,9 +221,16 @@ void LoadShadows::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
+		/*
 		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)
 		{
 			renderDirShadow(lights.dirLights[i], assets.models[j], dirShadowProgramContainer.ID);
+		}
+		*/
+
+		for (int j = 0; j < models.size(); j++)  // new
+		{
+			renderDirShadow(lights.dirLights[i], models[j], dirShadowProgramContainer.ID);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -205,9 +243,16 @@ void LoadShadows::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
+		/*
 		for (int j = 0; j < NUMBER_OF_OBJECTS; j++)
 		{
 			renderPointShadow(lights.pointLights[i], assets.models[j], pointShadowProgramContainer.ID);
+		}
+		*/
+
+		for (int j = 0; j < models.size(); j++)  // new
+		{
+			renderPointShadow(lights.pointLights[i], models[j], pointShadowProgramContainer.ID);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

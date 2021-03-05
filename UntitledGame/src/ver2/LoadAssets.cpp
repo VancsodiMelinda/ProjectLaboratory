@@ -80,14 +80,16 @@ void LoadAssets::loadObjects()
 	suzanne.objectContainer.material.specularMap = specularMaps[0].ID;
 	//suzanne.objectContainer.material.normalMap = normalMaps[0].ID;
 	suzanne.objectContainer.material.shininess = 0.6f * 128.0f;
-	models[0] = suzanne.objectContainer;
+	//models[0] = suzanne.objectContainer;
+	models_.push_back(suzanne.objectContainer);
 
 	CreateModel sphere("resources/models/sphere.obj", glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
 	sphere.objectContainer.material.diffuseMap = diffuseMaps[6].ID;
 	sphere.objectContainer.material.specularMap = specularMaps[1].ID;
 	//sphere.objectContainer.material.normalMap = normalMaps[0].ID;
 	sphere.objectContainer.material.shininess = 0.6f * 128.0f;
-	models[1] = sphere.objectContainer;
+	//models[1] = sphere.objectContainer;
+	models_.push_back(sphere.objectContainer);
 
 	/*
 	CreateModel cube("resources/models/cube.obj", glm::vec3(-4.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");

@@ -15,7 +15,8 @@ class LoadShadows
 {
 private:
 	LoadLights& lights;
-	LoadAssets& assets;
+	//LoadAssets& assets;
+	std::vector<ObjectContainer> models;  //
 	LoadPrograms& programs;
 
 	ProgramContainer dirShadowProgramContainer;
@@ -23,7 +24,8 @@ private:
 public:
 	DirShadowContainer dirShadows[NUMBER_OF_DIR_LIGHTS];
 	PointShadowContainer pointShadows[NUMBER_OF_POINT_LIGHTS];
-	LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_);
+	//LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_);
+	LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>& models_, LoadPrograms& programs_);
 
 private:
 	void loadDirShadows();

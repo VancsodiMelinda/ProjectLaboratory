@@ -29,7 +29,7 @@ struct ObjectContainer
 	GLuint vao = 0;		// acts as ID of object
 	GLuint vbo = 0;
 	GLuint ibo = 0;
-	glm::mat4 modelMatrix = glm::mat4();	// identity matrix
+	glm::mat4 modelMatrix = glm::mat4(1.0f);	// identity matrix
 	ObjectMaterial material;
 	int ID = -1;
 };

@@ -23,7 +23,8 @@ private:
 	TextureContainer specularMaps[3];
 	TextureContainer normalMaps[2];
 public:
-	ObjectContainer models[NUMBER_OF_OBJECTS];
+	//ObjectContainer models[NUMBER_OF_OBJECTS];
+	std::vector<ObjectContainer> models_;
 
 	LoadAssets();	// ctor
 private:

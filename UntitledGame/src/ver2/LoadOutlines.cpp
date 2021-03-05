@@ -1,7 +1,18 @@
 #include "LoadOutlines.h"
 
+/*
 LoadOutlines::LoadOutlines(LoadAssets& assets_, ProgramContainer programContainer_) :
 	assets(assets_)
+{
+	InstrumentationTimer timer("Load outlines");
+
+	programContainer = programContainer_;
+	checkProgram(programContainer);
+}
+*/
+
+LoadOutlines::LoadOutlines(const std::vector<ObjectContainer>& models_, ProgramContainer programContainer_) :
+	models(models_)
 {
 	InstrumentationTimer timer("Load outlines");
 
@@ -62,9 +73,16 @@ void LoadOutlines::config()
 {
 	InstrumentationTimer timer("Config outlines");
 
+	/*
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		configOutline(assets.models[i]);
+	}
+	*/
+
+	for (int i = 0; i < models.size(); i++)  // new
+	{
+		configOutline(models[i]);
 	}
 }
 
@@ -72,9 +90,15 @@ void LoadOutlines::render(Kamera& kamera)
 {
 	InstrumentationTimer timer("Render outlines");
 
-
+	/*
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		renderOutline(assets.models[i], kamera);
+	}
+	*/
+
+	for (int i = 0; i < models.size(); i++)  // new
+	{
+		renderOutline(models[i], kamera);
 	}
 }

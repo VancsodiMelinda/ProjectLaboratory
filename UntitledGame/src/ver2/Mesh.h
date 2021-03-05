@@ -28,7 +28,7 @@ public:
 
 	Mesh(std::vector<Vertex> vertices_, std::vector<unsigned int> indices_, std::vector<ModelTexture> textures_);
 
-	void Draw(int shaderID);
+	void Draw(GLuint shaderID);
 
 private:
 	GLuint VAO;

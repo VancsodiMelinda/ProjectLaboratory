@@ -7,10 +7,12 @@
 class LoadOutlines
 {
 private:
-	LoadAssets& assets;
+	//LoadAssets& assets;
+	std::vector<ObjectContainer> models;  //
 	ProgramContainer programContainer;
 public:
-	LoadOutlines(LoadAssets& assets_, ProgramContainer programContainer_);
+	//LoadOutlines(LoadAssets& assets_, ProgramContainer programContainer_);
+	LoadOutlines(const std::vector<ObjectContainer>& models_, ProgramContainer programContainer_);
 
 private:
 	void checkProgram(ProgramContainer programContainer_);

@@ -142,7 +142,7 @@
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
     <ClCompile Include="src\ver2\Input.cpp" />
     <ClCompile Include="src\ver2\SceneLoader.cpp" />
-    <ClCompile Include="src\Scenes\Scene1.cpp" />
+    <ClCompile Include="src\ver2\ShowScene.cpp" />
     <ClCompile Include="src\ver2\Mesh.cpp" />
     <ClCompile Include="src\ver2\LoadOutlines.cpp" />
     <ClCompile Include="src\ver2\PostProcessing.cpp" />
@@ -160,7 +160,6 @@
     <ClCompile Include="src\ver2\GlobalVariables.cpp" />
     <ClCompile Include="src\ver2\LoadPrograms.cpp" />
     <ClCompile Include="src\ver2\CreateProgram.cpp" />
-    <ClCompile Include="src\ver2\CreateScene.cpp" />
     <ClCompile Include="src\ver2\CreateTexture.cpp" />
     <ClCompile Include="src\ver2\ObjReader.cpp" />
     <ClCompile Include="src\ver2\CreateModel.cpp" />
@@ -216,7 +215,7 @@
   <ItemGroup>
     <ClInclude Include="src\ver2\Input.h" />
     <ClInclude Include="src\ver2\SceneLoader.h" />
-    <ClInclude Include="src\Scenes\Scene1.h" />
+    <ClInclude Include="src\ver2\ShowScene.h" />
     <ClInclude Include="src\ver2\Mesh.h" />
     <ClInclude Include="src\ver2\LoadOutlines.h" />
     <ClInclude Include="src\ver2\PostProcessing.h" />
@@ -237,7 +236,6 @@
     <ClInclude Include="src\ver2\GlobalVariables.h" />
     <ClInclude Include="src\ver2\LoadPrograms.h" />
     <ClInclude Include="src\ver2\CreateProgram.h" />
-    <ClInclude Include="src\ver2\CreateScene.h" />
     <ClInclude Include="src\ver2\CreateTexture.h" />
     <ClInclude Include="src\ver2\ModelData.h" />
     <ClInclude Include="src\ver2\ObjReader.h" />

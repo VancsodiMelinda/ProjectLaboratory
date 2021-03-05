@@ -12,7 +12,8 @@
 class Render
 {
 private:
-	LoadAssets& assets;
+	//LoadAssets& assets;
+	std::vector<ObjectContainer> models;  //
 	LoadPrograms& programs;
 	Kamera& kamera;
 	LoadLights& lights;
@@ -20,7 +21,8 @@ private:
 	SkyboxContainer skybox;
 	GLuint programID = 0;
 public:
-	Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
+	//Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
+	Render(std::vector<ObjectContainer>& models_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
 
 private:
 	void configAsset(ObjectContainer& object);

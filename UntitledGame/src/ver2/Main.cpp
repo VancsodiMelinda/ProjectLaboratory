@@ -17,7 +17,8 @@
 #include "LoadOutlines.h"
 #include "Timer.h"
 #include "Instrumentor.h"
-#include "../Scenes/Scene1.h"
+#include "ShowScene.h"
+#include "Mesh.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -98,7 +99,19 @@ int main(void)
 	////////////////////////////////////////////////////////
 
 	// RENDER
-	Scene1 testScene(window, kamera);
+	ShowScene show(window, kamera);
+	show.scene2();
+
+	/*
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<ModelTexture> textures;
+	Mesh mesh(vertices, indices, textures);
+	while (!glfwWindowShouldClose(window))
+	{
+
+	}
+	*/
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

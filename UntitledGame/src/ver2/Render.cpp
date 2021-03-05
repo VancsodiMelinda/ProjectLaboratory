@@ -1,7 +1,20 @@
 #include "Render.h"
 
+/*
 Render::Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_) :
 	assets(assets_),
+	programs(programs_),
+	kamera(kamera_),
+	lights(lights_),
+	shadows(shadows_),
+	skybox(skybox_)
+{
+	programID = programs.programs[0].ID;
+}
+*/
+
+Render::Render(std::vector<ObjectContainer>& models_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_) :
+	models(models_),
 	programs(programs_),
 	kamera(kamera_),
 	lights(lights_),
@@ -219,9 +232,17 @@ void Render::generateIDs()
 {
 	int ID = 0;
 
+	/*
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		assets.models[i].ID = ID;
+		ID++;
+	}
+	*/
+
+	for (int i = 0; i < models.size(); i++)  // new
+	{
+		models[i].ID = ID;
 		ID++;
 	}
 
@@ -239,9 +260,16 @@ void Render::generateIDs()
 void Render::configAssets()
 {
 	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	/*
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		configAsset(assets.models[i]);
+	}
+	*/
+
+	for (int i = 0; i < models.size(); i++)  // new
+	{
+		configAsset(models[i]);
 	}
 
 	generateIDs();
@@ -260,9 +288,16 @@ void Render::renderAssets(Kamera& kamera_)
 	//glEnable(GL_DEPTH_TEST);
 
 	//for (int i = 0; i < sizeof(assets.models) / sizeof(assets.models[0]); i++)
+	/*
 	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
 	{
 		renderAsset(assets.models[i]);
+	}
+	*/
+
+	for (int i = 0; i < models.size(); i++)  // new
+	{
+		renderAsset(models[i]);
 	}
 }
 

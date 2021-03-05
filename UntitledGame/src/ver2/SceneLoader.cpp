@@ -1,5 +1,16 @@
 #include "SceneLoader.h"
 
+SceneLoader::SceneLoader(char* path)
+{
+    loadScene(path);
+}
+
+void SceneLoader::draw(GLuint programID)
+{
+    for (unsigned int i = 0; i < meshes.size(); i++)
+        meshes[i].Draw(programID);
+}
+
 void SceneLoader::loadScene(std::string filePath)
 {
 	Assimp::Importer importer;
@@ -36,6 +47,13 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     std::vector<unsigned int> indices;
     std::vector<ModelTexture> textures;
 
+    std::vector<float> myVertices;  //
+    std::vector<float> myUvs;  //
+    std::vector<float> myNormals;  //
+    std::vector<int> myIndices;  //
+    std::vector<float> myTangents;  //
+    std::vector<float> myBitangents;  //
+
     // process vertex data
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -48,6 +66,10 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
         vector.z = mesh->mVertices[i].z;
         vertex.position = vector;
 
+        myVertices.push_back(vector.x);
+        myVertices.push_back(vector.y);
+        myVertices.push_back(vector.z);
+
         // normal vector
         if (mesh->HasNormals())
         {
@@ -55,25 +77,43 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
             vector.y = mesh->mNormals[i].y;
             vector.z = mesh->mNormals[i].z;
             vertex.normal = vector;
+
+            myNormals.push_back(vector.x);  //
+            myNormals.push_back(vector.y);  //
+            myNormals.push_back(vector.z);  //
         }
 
         // uv coordinates, tangent, bitangent
         if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
         {
+            // uv coordinates
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.uv = vec;
 
+            myUvs.push_back(vec.x);  //
+            myUvs.push_back(vec.y);  //
+
+            // tangents
             vector.x = mesh->mTangents[i].x;
             vector.y = mesh->mTangents[i].y;
             vector.z = mesh->mTangents[i].z;
             vertex.tangent = vector;
 
+            myTangents.push_back(vector.x);  //
+            myTangents.push_back(vector.y);  //
+            myTangents.push_back(vector.z);  //
+
+            // bitangents
             vector.x = mesh->mBitangents[i].x;
             vector.y = mesh->mBitangents[i].y;
             vector.z = mesh->mBitangents[i].z;
             vertex.bitangent = vector;
+
+            myBitangents.push_back(vector.x);  //
+            myBitangents.push_back(vector.y);  //
+            myBitangents.push_back(vector.z);  //
         }
         else
         {
@@ -88,8 +128,15 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
+        {
             indices.push_back(face.mIndices[j]);
+            myIndices.push_back(face.mIndices[j]);
+        }
     }
+
+    GLuint myDiffuseMap = 0;
+    GLuint mySpecularMap = 0;
+    GLuint myNormalMap = 0;
 
     // process materials
     if (mesh->mMaterialIndex >= 0)
@@ -100,14 +147,38 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
         std::vector<ModelTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
+        if (!diffuseMaps.empty())
+            myDiffuseMap = diffuseMaps[0].id;
+
         // specular maps
         std::vector<ModelTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
+        if (!specularMaps.empty())
+            mySpecularMap = specularMaps[0].id;
+
         // normal maps
         std::vector<ModelTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+        if (!normalMaps.empty())
+            myNormalMap = normalMaps[0].id;
     }
+
+    ObjectContainer myContainer;
+    myContainer.data.vertices = myVertices;
+    myContainer.data.uvs = myUvs;
+    myContainer.data.normals = myNormals;
+    myContainer.data.indices = myIndices;
+    myContainer.data.tangents = myTangents;
+    myContainer.data.bitangents = myBitangents;
+    myContainer.material.diffuseMap = myDiffuseMap;
+    myContainer.material.specularMap = mySpecularMap;
+    myContainer.material.normalMap = myNormalMap;
+
+    prepareVAOandVBOs(myContainer);
+
+    models.push_back(myContainer);
 
     return Mesh(vertices, indices, textures);
 }
@@ -165,4 +236,40 @@ GLuint SceneLoader::TextureFromFile(const char* path, std::string dir)
     }
 
     return textureID;
+}
+
+void SceneLoader::prepareVAOandVBOs(ObjectContainer& objectContainer)
+{
+    // create VAO and VBOs
+    glGenVertexArrays(1, &objectContainer.vao);  // create VAO
+    glBindVertexArray(objectContainer.vao);  // bind VAO
+
+    glGenBuffers(1, &objectContainer.vbo);  // create VBO
+    glGenBuffers(1, &objectContainer.ibo);  // create IBO
+
+    // fill VBOs
+    glBindBuffer(GL_ARRAY_BUFFER, objectContainer.vbo);  // bind VBO
+
+    glBufferData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() +
+        objectContainer.data.uvs.size() +
+        objectContainer.data.normals.size() +
+        objectContainer.data.tangents.size() +
+        objectContainer.data.bitangents.size()) * sizeof(GL_FLOAT), 0, GL_STATIC_DRAW);  // reserve space
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+        objectContainer.data.vertices.size() * sizeof(GL_FLOAT), &objectContainer.data.vertices[0]);  // VERTEX COORDINATES
+    glBufferSubData(GL_ARRAY_BUFFER, objectContainer.data.vertices.size() * sizeof(GL_FLOAT),
+        objectContainer.data.uvs.size() * sizeof(GL_FLOAT), &objectContainer.data.uvs[0]);  // TEXTURE COORDINATES
+    glBufferSubData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() + objectContainer.data.uvs.size()) * sizeof(GL_FLOAT),
+        objectContainer.data.normals.size() * sizeof(GL_FLOAT), &objectContainer.data.normals[0]);  // NORMAL COORDINATES
+    glBufferSubData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() + objectContainer.data.uvs.size() + objectContainer.data.normals.size()) * sizeof(GL_FLOAT),
+        objectContainer.data.tangents.size() * sizeof(GL_FLOAT), &objectContainer.data.tangents[0]);  // TANGENTS
+    glBufferSubData(GL_ARRAY_BUFFER, (objectContainer.data.vertices.size() + objectContainer.data.uvs.size() + objectContainer.data.normals.size() + objectContainer.data.tangents.size()) * sizeof(GL_FLOAT),
+        objectContainer.data.bitangents.size() * sizeof(GL_FLOAT), &objectContainer.data.bitangents[0]);  // BITANGENTS
+    glBindBuffer(GL_ARRAY_BUFFER, 0);  // unbind VBO
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objectContainer.ibo);  // bind IBO
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, objectContainer.data.indices.size() * sizeof(GLuint), &objectContainer.data.indices[0], GL_STATIC_DRAW);  // INDICES
+
+    glBindVertexArray(0);  // unbind VAO
 }

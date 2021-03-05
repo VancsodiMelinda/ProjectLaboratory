@@ -8,11 +8,14 @@
 #include <vector>
 #include "Mesh.h"
 #include "../stb_image.h"
+#include "ModelData.h"
 
 class SceneLoader
 {
 public:
-	//SceneLoader(char* path);
+	SceneLoader(char* path);
+	void draw(GLuint programID);
+	std::vector<ObjectContainer> models;
 
 private:
 	std::string directory;
@@ -23,5 +26,6 @@ private:
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<ModelTexture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 	GLuint TextureFromFile(const char *path, std::string dir);
+	void prepareVAOandVBOs(ObjectContainer& objectContainer);
 };
 
