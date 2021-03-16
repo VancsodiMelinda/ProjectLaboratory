@@ -100,7 +100,7 @@ int main(void)
 
 	// RENDER
 	ShowScene show(window, kamera);
-	show.scene2();
+	show.scene3();
 
 	/*
 	std::vector<Vertex> vertices;

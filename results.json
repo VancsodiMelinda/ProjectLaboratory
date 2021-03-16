@@ -1,0 +1,1 @@
+{"otherData": {},"traceEvents":[{"cat":"function","dur":2160,"name":"Load diffuse maps","ph":"X","pid":0,"tid":4229176977,"ts":195743096765},{"cat":"function","dur":993,"name":"Load specular maps","ph":"X","pid":0,"tid":4229176977,"ts":195743099101},{"cat":"function","dur":520,"name":"Load normal maps","ph":"X","pid":0,"tid":4229176977,"ts":195743100170}

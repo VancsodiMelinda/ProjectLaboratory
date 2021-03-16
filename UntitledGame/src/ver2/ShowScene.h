@@ -10,6 +10,7 @@
 #include "Render.h"
 #include "GlobalVariables.h"
 #include "SceneLoader.h"
+#include "DeferredRendering.h"
 
 #include <glm/glm.hpp>
 
@@ -30,5 +31,6 @@ public:
 	ShowScene(GLFWwindow* window_, Kamera& kamera_);
 	void scene1();
 	void scene2();
+	void scene3();  // deferred rendering
 };
 

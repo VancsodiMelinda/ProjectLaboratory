@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\DeferredRendering.cpp" />
     <ClCompile Include="src\ver2\Input.cpp" />
     <ClCompile Include="src\ver2\SceneLoader.cpp" />
     <ClCompile Include="src\ver2\ShowScene.cpp" />
@@ -201,6 +202,10 @@
     <Text Include="src\LightObjVertexShader.txt" />
     <Text Include="src\shaders\Default.frag" />
     <Text Include="src\shaders\Default.vert" />
+    <Text Include="src\shaders\DR_GeometryPass.frag" />
+    <Text Include="src\shaders\DR_GeometryPass.vert" />
+    <Text Include="src\shaders\DR_LightingPass.frag" />
+    <Text Include="src\shaders\DR_LightingPass.vert" />
     <Text Include="src\shaders\PostProcessing.frag" />
     <Text Include="src\shaders\PostProcessing.vert" />
     <Text Include="src\shaders\ShadowBox.geom" />
@@ -213,6 +218,7 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\DeferredRendering.h" />
     <ClInclude Include="src\ver2\Input.h" />
     <ClInclude Include="src\ver2\SceneLoader.h" />
     <ClInclude Include="src\ver2\ShowScene.h" />

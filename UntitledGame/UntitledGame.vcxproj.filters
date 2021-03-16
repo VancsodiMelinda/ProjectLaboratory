@@ -174,6 +174,9 @@
     <ClCompile Include="src\ver2\ShowScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ver2\DeferredRendering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -193,6 +196,10 @@
     <Text Include="src\shaders\Default.frag" />
     <Text Include="src\shaders\PostProcessing.vert" />
     <Text Include="src\shaders\PostProcessing.frag" />
+    <Text Include="src\shaders\DR_GeometryPass.frag" />
+    <Text Include="src\shaders\DR_LightingPass.frag" />
+    <Text Include="src\shaders\DR_GeometryPass.vert" />
+    <Text Include="src\shaders\DR_LightingPass.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Transformation.h">
@@ -373,6 +380,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ver2\ShowScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ver2\DeferredRendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

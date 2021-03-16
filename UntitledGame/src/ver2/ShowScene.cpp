@@ -131,6 +131,7 @@ void ShowScene::scene2()
 {
 	//LoadAssets assets;
 	std::string pathStr = "resources/assimp/test/test.obj";
+	//std::string pathStr = "resources/assimp/deferred rendering/Solar system.obj";
 	SceneLoader assets(&pathStr[0]);
 	LoadPrograms programs;
 	LoadLights lights;
@@ -248,4 +249,26 @@ void ShowScene::scene2()
 		//i++;
 	}
 	//Instrumentor::Get().EndSession();
+}
+
+void ShowScene::scene3()
+{
+	DeferredRendering dr(kamera);
+
+	dr.createFboAndAttachments();
+	dr.initGeometryPass();
+	dr.initLightingPass();
+
+	glEnable(GL_DEPTH_TEST);
+
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);
+
+		dr.renderGeometryPass();
+		dr.renderLightingPass();
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
 }
