@@ -17,7 +17,7 @@ struct Light{
 	float linear;
 	float quadratic;
 };
-const int NR_LIGHTS = 20;
+const int NR_LIGHTS = 33;
 uniform Light lights[NR_LIGHTS];
 
 uniform vec3 cameraPos;
@@ -28,11 +28,8 @@ void main()
 	vec3 normal = texture(gNormal, fs_uv).rgb;
 	vec3 albedo = texture(gAlbedoSpecular, fs_uv).rgb;
 	float specular = texture(gAlbedoSpecular, fs_uv).a;
-
-
-	// TODO: check lighting calculations, try out tutorial code
-	/*
-	vec3 finalColor = 0.2 * albedo;
+	
+	vec3 finalColor = vec3(0.0);
 
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
@@ -62,8 +59,9 @@ void main()
 	}
 
 	fragColor = vec4(finalColor, 1.0);
-	*/
+	
 
+	/*
 	vec3 lighting = albedo * 0.1;
 	vec3 viewDir = normalize(cameraPos - position);
 	for (int i = 0; i < NR_LIGHTS; i++)
@@ -74,4 +72,5 @@ void main()
 	}
 
 	fragColor = vec4(lighting, 1.0);
+	*/
 }

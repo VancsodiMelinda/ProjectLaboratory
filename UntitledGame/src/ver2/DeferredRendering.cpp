@@ -53,7 +53,8 @@ void DeferredRendering::initGeometryPass()
 {
 	// load model
 	//std::string pathStr = "resources/assimp/test/test.obj";
-	std::string pathStr = "resources/assimp/plane/plane.obj";
+	//std::string pathStr = "resources/assimp/plane/plane.obj";
+	std::string pathStr = "resources/assimp/earth/Earth.obj";
 	SceneLoader assets(&pathStr[0]);
 	geomPassData.models = assets.models;
 
@@ -129,21 +130,38 @@ void DeferredRendering::renderGeometryPass()
 	glBindTexture(GL_TEXTURE_2D, geomPassData.gAlbedoSpecular);
 
 	/*
-	geomPassData.cameraPos = glm::vec3(0.0f, 20.0f, 0.0f);
+	// fix camera
+	geomPassData.cameraPos = glm::vec3(4.0f, 4.0f, 10.0f);
 	glm::mat4 P = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-	glm::mat4 V = glm::lookAt(geomPassData.cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	glm::mat4 V = glm::lookAt(geomPassData.cameraPos, glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 M = glm::mat4(1.0f);
 	*/
+
 	
+	// moving camera
 	glm::mat4 M = glm::mat4(1.0f);
 	glm::mat4 V = kamera.cameraContainer.viewMatrix;
 	glm::mat4 P = kamera.cameraContainer.projectionMatrix;
 	geomPassData.cameraPos = kamera.cameraContainer.cameraPosition;
 	
-	glm::mat4 MVP = P * V * M;
 
-	glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-	glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "M"), 1, GL_FALSE, glm::value_ptr(M));
+	std::vector<glm::vec3> modelPositions;
+	modelPositions.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+	modelPositions.push_back(glm::vec3(-4.0f, 0.0f, 0.0f));
+	modelPositions.push_back(glm::vec3(4.0f, 0.0f, 0.0f));
+
+	modelPositions.push_back(glm::vec3(0.0f, 0.0f, -4.0f));
+	modelPositions.push_back(glm::vec3(-4.0f, 0.0f, -4.0f));
+	modelPositions.push_back(glm::vec3(4.0f, 0.0f, -4.0f));
+
+	modelPositions.push_back(glm::vec3(0.0f, 0.0f, 4.0f));
+	modelPositions.push_back(glm::vec3(-4.0f, 0.0f, 4.0f));
+	modelPositions.push_back(glm::vec3(4.0f, 0.0f, 4.0f));
+
+	//glm::mat4 MVP = P * V * M;
+
+	//glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+	//glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "M"), 1, GL_FALSE, glm::value_ptr(M));
 
 	for (int i = 0; i < geomPassData.models.size(); i++)
 	{
@@ -154,7 +172,17 @@ void DeferredRendering::renderGeometryPass()
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, geomPassData.models[i].material.normalMap);
 
-		glDrawElements(GL_TRIANGLES, geomPassData.models[i].data.indices.size(), GL_UNSIGNED_INT, 0);
+		for (int j = 0; j < modelPositions.size(); j++)
+		{
+			M = glm::mat4(1.0f);
+			M = glm::translate(M, modelPositions[j]);
+			glm::mat4 MVP = P * V * M;
+			glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(glGetUniformLocation(geomPassData.programID, "M"), 1, GL_FALSE, glm::value_ptr(M));
+			glDrawElements(GL_TRIANGLES, geomPassData.models[i].data.indices.size(), GL_UNSIGNED_INT, 0);
+		}
+
+		//glDrawElements(GL_TRIANGLES, geomPassData.models[i].data.indices.size(), GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 	}
@@ -163,21 +191,128 @@ void DeferredRendering::renderGeometryPass()
 
 void DeferredRendering::initLightingPass()
 {
-	lightPassData.numberOfLights = 20;
-
+	lightPassData.numberOfLights = 33;
+	/*
 	for (int i = 0; i < lightPassData.numberOfLights; i++)
 	{
 		// generate random position
 		float x = ((rand() % 100) / 100.0f) * 20.0f - 10.0f;
 		float y = ((rand() % 100) / 100.0f) * 10.0f - 5.0f;
 		lightPassData.lightPositions.push_back(glm::vec3(x, 0.1f, y));
-		//lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+		lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
 
 		// generate random color
 		float r = ((rand() % 100) / 200.0f) + 0.5f;
 		float g = ((rand() % 100) / 200.0f) + 0.5f;
 		float b = ((rand() % 100) / 200.0f) + 0.5f;
+		//lightPassData.lightColors.push_back(glm::vec3(r, g, b));
+		lightPassData.lightColors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	*/
+
+	// positions
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 0.0f, -6.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.0f, -6.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 0.0f, -6.0f));
+
+	lightPassData.lightPositions.push_back(glm::vec3(-6.0f, 0.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-2.0f, 0.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(2.0f, 0.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(6.0f, 0.0f, -4.0f));
+
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 0.0f, -2.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.0f, -2.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 0.0f, -2.0f));
+
+	lightPassData.lightPositions.push_back(glm::vec3(-6.0f, 0.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-2.0f, 0.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(2.0f, 0.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(6.0f, 0.0f, 0.0f));
+
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 0.0f, 2.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.0f, 2.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 0.0f, 2.0f));
+	
+	lightPassData.lightPositions.push_back(glm::vec3(-6.0f, 0.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-2.0f, 0.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(2.0f, 0.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(6.0f, 0.0f, 4.0f));
+
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 0.0f, 6.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 0.0f, 6.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 0.0f, 6.0f));
+
+
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, 4.0f));
+
+	// colors
+	/*
+	glm::vec3 Red = glm::vec3(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f);
+	glm::vec3 Orange = glm::vec3(255.0f / 255.0f, 165.0f / 255.0f, 0.0f / 255.0f);
+	glm::vec3 Yellow = glm::vec3(255.0f / 255.0f, 255.0f / 255.0f, 0.0f / 255.0f);
+	glm::vec3 Green = glm::vec3(0.0f / 255.0f, 128.0f / 255.0f, 0.0f / 255.0f);
+	glm::vec3 Blue = glm::vec3(0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
+	glm::vec3 Indigo = glm::vec3(75.0f / 255.0f, 0.0f / 255.0f, 130.0f / 255.0f);
+	glm::vec3 Violet = glm::vec3(238.0f / 255.0f, 130.0f / 255.0f, 238.0f / 255.0f);
+
+	
+	lightPassData.lightColors.push_back(Red);
+	lightPassData.lightColors.push_back(Red);
+
+	lightPassData.lightColors.push_back(Orange);
+	lightPassData.lightColors.push_back(Orange);
+	lightPassData.lightColors.push_back(Orange);
+
+	lightPassData.lightColors.push_back(Yellow);
+	lightPassData.lightColors.push_back(Yellow);
+
+	lightPassData.lightColors.push_back(Indigo);
+	lightPassData.lightColors.push_back(Orange);
+	lightPassData.lightColors.push_back(Yellow);
+
+	lightPassData.lightColors.push_back(Violet);
+	lightPassData.lightColors.push_back(Green);
+	*/
+
+	glm::vec3 Red = glm::vec3(255.0f, 0.0f, 0.0f) / 255.0f;
+	glm::vec3 Orange = glm::vec3(255.0f, 165.0f, 0.0f) / 255.0f;
+	glm::vec3 Yellow = glm::vec3(255.0f, 255.0f, 0.0f) / 255.0f;
+	glm::vec3 Green = glm::vec3(0.0f, 128.0f, 0.0f) / 255.0f;
+	glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 255.0f) / 255.0f;
+	glm::vec3 Indigo = glm::vec3(75.0f, 0.0f, 130.0f) / 255.0f;
+
+	glm::vec3 MountainMeadow = glm::vec3(37.0f, 179.0f, 150.0f) / 255.0f;  // green
+	glm::vec3 MiddleBlue = glm::vec3(112.0f, 206.0f, 208.0f) / 255.0f;  // blue
+	glm::vec3 HotPink = glm::vec3(255.0f, 105.0f, 180.0f) / 255.0f;
+
+	glm::vec3 c1 = glm::vec3(255.0f, 0.0f, 166.0f) / 255.0f;
+	glm::vec3 c2 = glm::vec3(255.0f, 73.0f, 83.0f) / 255.0f;
+	glm::vec3 c3 = glm::vec3(255.0f, 152.0f, 0.0f) / 255.0f;
+	glm::vec3 c4 = glm::vec3(187.0f, 212.0f, 0.0f) / 255.0f;
+	glm::vec3 c5 = glm::vec3(0.0f, 255.0f, 133.0f) / 255.0f;
+
+	std::vector<glm::vec3> colorSelection = { c1, c2, c3, c4, c5, Blue, HotPink };
+
+	for (int i = 0; i < lightPassData.numberOfLights; i++)
+	{
+		int rndIndex = round(rand() % colorSelection.size());
+		lightPassData.lightColors.push_back(colorSelection[rndIndex]);
+		//lightPassData.lightColors.push_back(MountainMeadow);
+
+		/*
+		float r = 0.0f;
+		float g = (lightPassData.lightPositions[i].x + 6.0f) / 12.0f;
+		float b = (lightPassData.lightPositions[i].z + 6.0f) / 12.0f;
 		lightPassData.lightColors.push_back(glm::vec3(r, g, b));
+		*/
 	}
 
 	// load program
@@ -223,8 +358,8 @@ void DeferredRendering::renderLightingPass()
 			glm::value_ptr(lightPassData.lightColors[i]));
 
 		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].constant").c_str()), 1.0f);
-		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].linear").c_str()), 0.07f);
-		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].quadratic").c_str()), 0.8f);
+		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].linear").c_str()), 0.35f);
+		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].quadratic").c_str()), 0.44f);
 	}
 
 	// render quad
