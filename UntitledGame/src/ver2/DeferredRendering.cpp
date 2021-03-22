@@ -13,7 +13,7 @@ void DeferredRendering::createFboAndAttachments()
 	// position
 	glGenTextures(1, &geomPassData.gPosition);
 	glBindTexture(GL_TEXTURE_2D, geomPassData.gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, geomPassData.gPosition, 0);  // color attachment #1 of fbo
@@ -21,7 +21,7 @@ void DeferredRendering::createFboAndAttachments()
 	// normal
 	glGenTextures(1, &geomPassData.gNormal);
 	glBindTexture(GL_TEXTURE_2D, geomPassData.gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, geomPassData.gNormal, 0);  // color attachment #2 of fbo
@@ -113,6 +113,7 @@ void DeferredRendering::renderGeometryPass()
 	// use spec. framebuffer, clear
 	glBindFramebuffer(GL_FRAMEBUFFER, geomPassData.gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glUseProgram(geomPassData.programID);
 
 	// upload uniforms
@@ -243,15 +244,15 @@ void DeferredRendering::initLightingPass()
 	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 0.0f, 6.0f));
 
 
-	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, 0.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, 0.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, 0.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, -4.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, -4.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, -4.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 3.0f, 4.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 3.0f, 4.0f));
-	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 3.0f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 1.5f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 1.5f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 1.5f, 0.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 1.5f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 1.5f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 1.5f, -4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(0.0f, 1.5f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(-4.0f, 1.5f, 4.0f));
+	lightPassData.lightPositions.push_back(glm::vec3(4.0f, 1.5f, 4.0f));
 
 	// colors
 	/*
@@ -347,7 +348,6 @@ void DeferredRendering::renderLightingPass()
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, geomPassData.gAlbedoSpecular);
 
-	// TODO: debug - check these uniform values
 	glUniform3fv(glGetUniformLocation(lightPassData.programID, "cameraPos"), 1, glm::value_ptr(geomPassData.cameraPos));
 
 	for (int i = 0; i < lightPassData.numberOfLights; i++)
@@ -365,6 +365,66 @@ void DeferredRendering::renderLightingPass()
 	// render quad
 	glBindVertexArray(lightPassData.quad.vao);
 	glDrawElements(GL_TRIANGLES, lightPassData.quad.data.indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+void DeferredRendering::initLightModel()
+{
+	// load model
+	std::string pathStr = "resources/assimp/lightbulb/lightbulb.obj";
+	SceneLoader assets(&pathStr[0]);
+	lightModelData.model = assets.models[0];
+
+	// load program
+	std::string vertexShaderFileName = "src/shaders/Light.vert";
+	std::string fragmentShaderFileName = "src/shaders/Light.frag";
+	CreateProgram program(vertexShaderFileName, fragmentShaderFileName);
+	lightModelData.programID = program.programContainer.ID;
+
+	// config vertex attrib
+	glBindVertexArray(lightModelData.model.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, lightModelData.model.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightModelData.model.ibo);
+
+	GLuint positionAttribIndex = glGetAttribLocation(lightModelData.programID, "in_vertexPosition");
+	glEnableVertexAttribArray(positionAttribIndex);
+
+	GLintptr vOffset = 0 * sizeof(GL_FLOAT);
+	int stride3f = 3 * sizeof(GL_FLOAT);
+	glVertexAttribPointer(positionAttribIndex, 3, GL_FLOAT, GL_FALSE, stride3f, (GLvoid*)vOffset);
+
+	glBindVertexArray(0);
+}
+
+void DeferredRendering::renderLightModel()
+{
+	// use default framebuffer, clear depth (so the quad doesn't hide the lightsources
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, geomPassData.gBuffer);  // source fbo
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  // destination fbo
+	glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glUseProgram(lightModelData.programID);
+
+	// moving camera
+	glm::mat4 M = glm::mat4(1.0f);
+	glm::mat4 V = kamera.cameraContainer.viewMatrix;
+	glm::mat4 P = kamera.cameraContainer.projectionMatrix;
+
+	glBindVertexArray(lightModelData.model.vao);
+
+	for (int i = 0; i < lightPassData.lightPositions.size(); i++)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, lightPassData.lightPositions[i]);
+		M = glm::scale(M, glm::vec3(0.1f));
+		glm::mat4 MVP = P * V * M;
+		glUniformMatrix4fv(glGetUniformLocation(lightModelData.programID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniform3fv(glGetUniformLocation(lightModelData.programID, "lightColor"), 1, glm::value_ptr(lightPassData.lightColors[i]));
+		glDrawElements(GL_TRIANGLES, lightModelData.model.data.indices.size(), GL_UNSIGNED_INT, 0);
+	}
+
 	glBindVertexArray(0);
 }
 

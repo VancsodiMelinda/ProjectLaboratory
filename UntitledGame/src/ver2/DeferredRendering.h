@@ -37,6 +37,12 @@ private:
 	};
 	LightingPassData lightPassData;
 
+	struct LightModelData {
+		ObjectContainer model;
+		GLuint programID;
+	};
+	LightModelData lightModelData;
+
 public:
 	DeferredRendering(Kamera& kamera_);
 	void createFboAndAttachments();
@@ -45,6 +51,9 @@ public:
 
 	void initLightingPass();
 	void renderLightingPass();
+	
+	void initLightModel();
+	void renderLightModel();
 
 private:
 	void createQuad();

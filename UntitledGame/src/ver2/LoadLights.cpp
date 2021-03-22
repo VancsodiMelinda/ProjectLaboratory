@@ -117,7 +117,7 @@ void LoadLights::configLight(ObjectContainer& object, GLuint programID)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  // unbind IBO
 
 	//// GET UNIFORM LOACTIONS
-	uniformLocations.MVPloc = glGetUniformLocation(programID, "MVP");;
+	uniformLocations.MVPloc = glGetUniformLocation(programID, "MVP");
 	uniformLocations.colorLoc = glGetUniformLocation(programID, "lightColor");
 }
 

@@ -258,6 +258,7 @@ void ShowScene::scene3()
 	dr.createFboAndAttachments();
 	dr.initGeometryPass();
 	dr.initLightingPass();
+	dr.initLightModel();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -267,6 +268,7 @@ void ShowScene::scene3()
 
 		dr.renderGeometryPass();
 		dr.renderLightingPass();
+		dr.renderLightModel();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

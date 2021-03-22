@@ -1,8 +1,8 @@
 #version 440
 // deferred rendering/shading - 1st (geometry) pass
 
-layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
+layout (location = 0) out vec4 gPosition;
+layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedoSpecular;
 
 in vec3 fs_worldPosition;
@@ -24,8 +24,8 @@ void main()
 	*/
 
 	// normal from normal map - enhance normal map
-	gPosition = fs_worldPosition;
-	gNormal = normalize(fs_TBN * (texture(normalMap, fs_uv).rgb * 2.0 - 1.0));
+	gPosition = vec4(fs_worldPosition, 1.0);
+	gNormal = vec4(normalize(fs_TBN * (texture(normalMap, fs_uv).rgb * 2.0 - 1.0)), 1.0);
 	gAlbedoSpecular.rgb = vec3(1.0);
 	gAlbedoSpecular.a = 0.0f;
 }
