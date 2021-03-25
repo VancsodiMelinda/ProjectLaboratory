@@ -18,7 +18,7 @@ struct PointLightContainer
 	float linear = 0.07f;
 	float quadratic = 0.017f;
 
-	glm::mat4 lightSpaceMatrix = glm::mat4(1.0);
+	//glm::mat4 lightSpaceMatrix = glm::mat4(1.0);
 };
 
 class CreatePointLight
@@ -30,6 +30,6 @@ public:
 		float ambientStrength, float diffuseStrength, float specularStrength,
 		float constant, float linear, float quadratic);
 
-	glm::mat4 createLightSpaceMatrix();
+	//glm::mat4 createLightSpaceMatrix();
 };
 

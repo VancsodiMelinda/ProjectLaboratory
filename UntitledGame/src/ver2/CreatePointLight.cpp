@@ -2,7 +2,7 @@
 
 CreatePointLight::CreatePointLight()
 {
-	pointLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
+	//pointLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
 
 	std::cout << "OK: Loaded point light." << std::endl;
 }
@@ -19,9 +19,10 @@ CreatePointLight::CreatePointLight(glm::vec3 position, glm::vec3 color,
 	pointLightContainer.constant = constant;
 	pointLightContainer.linear = linear;
 	pointLightContainer.quadratic = quadratic;
-	pointLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
+	//pointLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
 }
 
+/*
 glm::mat4 CreatePointLight::createLightSpaceMatrix()
 {
 	float nearPlane = 0.1f;
@@ -34,3 +35,4 @@ glm::mat4 CreatePointLight::createLightSpaceMatrix()
 
 	return lightSpaceMatrix;
 }
+*/

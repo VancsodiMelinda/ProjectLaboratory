@@ -59,7 +59,7 @@ struct PointLight{
 
 	samplerCube shadowBox;
 };
-const int NR_POINT_LIGHTS = 1;
+const int NR_POINT_LIGHTS = 2;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
 struct SpotLight{
@@ -117,8 +117,8 @@ void main()
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
 	//fragColor = plainTexture();
-	fragColor = directionalLightingWithShadows();
-	//fragColor = pointLightingWithShadows();
+	//fragColor = directionalLightingWithShadows();
+	fragColor = pointLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = depthBuffer();
 	//fragColor = reflection();

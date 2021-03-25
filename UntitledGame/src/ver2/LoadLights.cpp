@@ -73,14 +73,15 @@ void LoadLights::loadDirectionalLights()
 void LoadLights::loadPointLights()
 {
 	//InstrumentationTimer timer("Load point lights");
-	/*
+	
 	CreatePointLight light1;
-	light1.pointLightContainer.position = glm::vec3(0.0f, 10.0f, 0.0f);
+	light1.pointLightContainer.color  = glm::vec3(1.0f, 0.5f, 0.3f);
+	//light1.pointLightContainer.position = glm::vec3(0.0f, 10.0f, 0.0f);
 	//pointLights[0] = light1.pointLightContainer;
 	pointLights_.push_back(light1.pointLightContainer);
 
 	CreatePointLight light2;
-	light2.pointLightContainer.position = glm::vec3(3.0f, 10.0f, 3.0f);
+	light2.pointLightContainer.position = glm::vec3(3.0f, 3.0f, 3.0f);
 	light2.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 1.0f);
 	light2.pointLightContainer.ambientStrength = 0.3f;
 	light2.pointLightContainer.diffuseStrength = 0.9f;
@@ -88,10 +89,9 @@ void LoadLights::loadPointLights()
 	light2.pointLightContainer.constant = 1.0f;
 	light2.pointLightContainer.linear = 0.045f;
 	light2.pointLightContainer.quadratic = 0.0075f;
-	light2.pointLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	//pointLights[1] = light2.pointLightContainer;
 	pointLights_.push_back(light2.pointLightContainer);
-	*/
+	
 }
 
 void LoadLights::loadSpotLights()
