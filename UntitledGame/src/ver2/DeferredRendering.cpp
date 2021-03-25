@@ -398,7 +398,7 @@ void DeferredRendering::initLightModel()
 
 void DeferredRendering::renderLightModel()
 {
-	// use default framebuffer, clear depth (so the quad doesn't hide the lightsources
+	// copy gBuffer to the default fbo
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, geomPassData.gBuffer);  // source fbo
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  // destination fbo
 	glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);

@@ -19,7 +19,7 @@ struct ObjectMaterial {
 	GLuint diffuseMap = 0;
 	GLuint specularMap = 0;
 	GLuint normalMap = 0;
-	float shininess = 0.0f;
+	float shininess = 0.6f * 128.0f;
 };
 
 struct ObjectContainer

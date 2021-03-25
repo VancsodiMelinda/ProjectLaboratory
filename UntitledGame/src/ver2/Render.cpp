@@ -26,7 +26,7 @@ Render::Render(std::vector<ObjectContainer>& models_, LoadPrograms& programs_, K
 
 void Render::configAsset(ObjectContainer& object)
 {
-	InstrumentationTimer timer("Config assets");
+	//InstrumentationTimer timer("Config assets");
 
 	configVertexAttributes(object);
 	getUniformLocations();
@@ -34,7 +34,7 @@ void Render::configAsset(ObjectContainer& object)
 
 void Render::configVertexAttributes(ObjectContainer& object)
 {
-	InstrumentationTimer timer("Config vertex attribs");
+	//InstrumentationTimer timer("Config vertex attribs");
 
 	glBindVertexArray(object.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);
@@ -94,33 +94,66 @@ void Render::getUniformLocations()
 	uniformLocations.IDloc = glGetUniformLocation(programID, "ID");
 
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
-	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
+	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
-		uniformLocations.dirLightLocs[i][0] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].direction").c_str());
-		uniformLocations.dirLightLocs[i][1] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].color").c_str());
+		/*
+		uniformLocations.dirLightLocs_[i][0] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].direction").c_str());
+		uniformLocations.dirLightLocs_[i][1] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].color").c_str());
 
-		uniformLocations.dirLightLocs[i][2] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].ambientStrength").c_str());
-		uniformLocations.dirLightLocs[i][3] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].diffuseStrength").c_str());
-		uniformLocations.dirLightLocs[i][4] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].specularStrength").c_str());
+		uniformLocations.dirLightLocs_[i][2] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].ambientStrength").c_str());
+		uniformLocations.dirLightLocs_[i][3] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].diffuseStrength").c_str());
+		uniformLocations.dirLightLocs_[i][4] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].specularStrength").c_str());
 
-		uniformLocations.dirLightLocs[i][5] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].shadowMap").c_str());
-		uniformLocations.dirLightLocs[i][6] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str());
+		uniformLocations.dirLightLocs_[i][5] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].shadowMap").c_str());
+		uniformLocations.dirLightLocs_[i][6] = glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str());
+		*/
+
+		std::vector<int> temp;
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].direction").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].color").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].ambientStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].diffuseStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].specularStrength").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].shadowMap").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str()));
+
+		uniformLocations.dirLightLocs_.push_back(temp);
 	}
 
-	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
-		uniformLocations.pointLightLocs[i][0] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].position").c_str());
-		uniformLocations.pointLightLocs[i][1] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].color").c_str());
+		/*
+		uniformLocations.pointLightLocs_[i][0] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].position").c_str());
+		uniformLocations.pointLightLocs_[i][1] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].color").c_str());
 
-		uniformLocations.pointLightLocs[i][2] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].ambientStrength").c_str());
-		uniformLocations.pointLightLocs[i][3] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].diffuseStrength").c_str());
-		uniformLocations.pointLightLocs[i][4] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].specularStrength").c_str());
+		uniformLocations.pointLightLocs_[i][2] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].ambientStrength").c_str());
+		uniformLocations.pointLightLocs_[i][3] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].diffuseStrength").c_str());
+		uniformLocations.pointLightLocs_[i][4] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].specularStrength").c_str());
 
-		uniformLocations.pointLightLocs[i][5] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].constant").c_str());
-		uniformLocations.pointLightLocs[i][6] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].linear").c_str());
-		uniformLocations.pointLightLocs[i][7] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].quadratic").c_str());
+		uniformLocations.pointLightLocs_[i][5] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].constant").c_str());
+		uniformLocations.pointLightLocs_[i][6] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].linear").c_str());
+		uniformLocations.pointLightLocs_[i][7] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].quadratic").c_str());
 
-		uniformLocations.pointLightLocs[i][8] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].shadowBox").c_str());
+		uniformLocations.pointLightLocs_[i][8] = glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].shadowBox").c_str());
+		*/
+
+		std::vector<int> temp;
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].position").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].color").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].ambientStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].diffuseStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].specularStrength").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].constant").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].linear").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].quadratic").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("pointLightArray[" + std::to_string(i) + "].shadowBox").c_str()));
+
+		uniformLocations.pointLightLocs_.push_back(temp);
 	}
 }
 
@@ -146,18 +179,17 @@ void Render::renderAsset(ObjectContainer& object)
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.ID);
 
-	//for (int i = 0; i < sizeof(shadows.dirShadows) / sizeof(shadows.dirShadows[0]); i++)
-	for (int i = 4, j = 0; i < (NUMBER_OF_DIR_LIGHTS + 4); i++, j++)
+	
+	for (int i = 4, j = 0; i < (lights.dirLights_.size() + 4); i++, j++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows[j].shadowMap);
+		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows_[j].shadowMap);
 	}
 
-	
-	for (int i = (NUMBER_OF_DIR_LIGHTS + 4), j = 0; i < (NUMBER_OF_DIR_LIGHTS + NUMBER_OF_POINT_LIGHTS + 4); i++, j++)
+	for (int i = (lights.dirLights_.size() + 4), j = 0; i < (lights.dirLights_.size() + lights.pointLights_.size() + 4); i++, j++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.pointShadows[j].shadowCube);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.pointShadows_[j].shadowCube);
 	}
 	
 
@@ -192,34 +224,34 @@ void Render::uploadUniforms(ObjectContainer& object)
 	glUniform1i(uniformLocations.IDloc, object.ID);
 
 	//for (int i = 0; i < sizeof(lights.dirLights) / sizeof(lights.dirLights[0]); i++)
-	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
+	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
-		glm::vec3 direction = glm::vec3(0.0f) - lights.dirLights[i].position;
-		glUniform3fv(uniformLocations.dirLightLocs[i][0], 1, glm::value_ptr(direction));
-		glUniform3fv(uniformLocations.dirLightLocs[i][1], 1, glm::value_ptr(lights.dirLights[i].color));
+		glm::vec3 direction = lights.dirLights_[i].target - lights.dirLights_[i].position;
+		glUniform3fv(uniformLocations.dirLightLocs_[i][0], 1, glm::value_ptr(direction));
+		glUniform3fv(uniformLocations.dirLightLocs_[i][1], 1, glm::value_ptr(lights.dirLights_[i].color));
 
-		glUniform1f(uniformLocations.dirLightLocs[i][2], lights.dirLights[i].ambientStrength);
-		glUniform1f(uniformLocations.dirLightLocs[i][3], lights.dirLights[i].diffuseStrength);
-		glUniform1f(uniformLocations.dirLightLocs[i][4], lights.dirLights[i].specularStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][2], lights.dirLights_[i].ambientStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][3], lights.dirLights_[i].diffuseStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][4], lights.dirLights_[i].specularStrength);
 
-		glUniform1i(uniformLocations.dirLightLocs[i][5], 4 + i);
-		glUniformMatrix4fv(uniformLocations.dirLightLocs[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights[i].lightSpaceMatrix));
+		glUniform1i(uniformLocations.dirLightLocs_[i][5], 4 + i);
+		glUniformMatrix4fv(uniformLocations.dirLightLocs_[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights_[i].lightSpaceMatrix));
 	}
 
-	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
-		glUniform3fv(uniformLocations.pointLightLocs[i][0], 1, glm::value_ptr(lights.pointLights[i].position));
-		glUniform3fv(uniformLocations.pointLightLocs[i][1], 1, glm::value_ptr(lights.pointLights[i].color));
+		glUniform3fv(uniformLocations.pointLightLocs_[i][0], 1, glm::value_ptr(lights.pointLights_[i].position));
+		glUniform3fv(uniformLocations.pointLightLocs_[i][1], 1, glm::value_ptr(lights.pointLights_[i].color));
 
-		glUniform1f(uniformLocations.pointLightLocs[i][2], lights.pointLights[i].ambientStrength);
-		glUniform1f(uniformLocations.pointLightLocs[i][3], lights.pointLights[i].diffuseStrength);
-		glUniform1f(uniformLocations.pointLightLocs[i][4], lights.pointLights[i].specularStrength);
+		glUniform1f(uniformLocations.pointLightLocs_[i][2], lights.pointLights_[i].ambientStrength);
+		glUniform1f(uniformLocations.pointLightLocs_[i][3], lights.pointLights_[i].diffuseStrength);
+		glUniform1f(uniformLocations.pointLightLocs_[i][4], lights.pointLights_[i].specularStrength);
 
-		glUniform1f(uniformLocations.pointLightLocs[i][5], lights.pointLights[i].constant);
-		glUniform1f(uniformLocations.pointLightLocs[i][6], lights.pointLights[i].linear);
-		glUniform1f(uniformLocations.pointLightLocs[i][7], lights.pointLights[i].quadratic);
+		glUniform1f(uniformLocations.pointLightLocs_[i][5], lights.pointLights_[i].constant);
+		glUniform1f(uniformLocations.pointLightLocs_[i][6], lights.pointLights_[i].linear);
+		glUniform1f(uniformLocations.pointLightLocs_[i][7], lights.pointLights_[i].quadratic);
 
-		glUniform1i(uniformLocations.pointLightLocs[i][8], 4 + NUMBER_OF_DIR_LIGHTS + i);
+		glUniform1i(uniformLocations.pointLightLocs_[i][8], 4 + lights.dirLights_.size() + i);
 	}
 }
 
@@ -246,12 +278,12 @@ void Render::generateIDs()
 		ID++;
 	}
 
-	for (int i = 0; i < NUMBER_OF_DIR_LIGHTS; i++)
+	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
 
 	}
 
-	for (int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++)
+	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
 
 	}

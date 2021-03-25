@@ -22,8 +22,11 @@ private:
 	ProgramContainer dirShadowProgramContainer;
 	ProgramContainer pointShadowProgramContainer;
 public:
-	DirShadowContainer dirShadows[NUMBER_OF_DIR_LIGHTS];
-	PointShadowContainer pointShadows[NUMBER_OF_POINT_LIGHTS];
+	//DirShadowContainer dirShadows[NUMBER_OF_DIR_LIGHTS];
+	//PointShadowContainer pointShadows[NUMBER_OF_POINT_LIGHTS];
+	std::vector<DirShadowContainer> dirShadows_;
+	std::vector<PointShadowContainer> pointShadows_;
+
 	//LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_);
 	LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>& models_, LoadPrograms& programs_);
 

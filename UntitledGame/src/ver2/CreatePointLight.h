@@ -26,6 +26,9 @@ class CreatePointLight
 public:
 	PointLightContainer pointLightContainer;
 	CreatePointLight();
+	CreatePointLight(glm::vec3 position, glm::vec3 color,
+		float ambientStrength, float diffuseStrength, float specularStrength,
+		float constant, float linear, float quadratic);
 
 	glm::mat4 createLightSpaceMatrix();
 };

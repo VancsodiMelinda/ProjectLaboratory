@@ -20,6 +20,8 @@ private:
 	LoadShadows& shadows;
 	SkyboxContainer skybox;
 	GLuint programID = 0;
+	int counter = 0;
+
 public:
 	//Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
 	Render(std::vector<ObjectContainer>& models_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);
@@ -44,8 +46,10 @@ private:
 		int cameraPosLoc = -1;
 		int cameraFarPlaneLoc = -1;
 		int skyboxLoc = -1;
-		int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
-		int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
+		//int dirLightLocs[NUMBER_OF_DIR_LIGHTS][7];
+		//int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
+		std::vector<std::vector<int>> dirLightLocs_;
+		std::vector<std::vector<int>> pointLightLocs_;
 		int IDloc = -1;
 	};
 	UniformLocations uniformLocations;

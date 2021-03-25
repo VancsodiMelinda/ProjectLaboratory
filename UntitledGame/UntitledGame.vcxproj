@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\ver2\CreateSpotLight.cpp" />
     <ClCompile Include="src\ver2\DeferredRendering.cpp" />
     <ClCompile Include="src\ver2\Input.cpp" />
     <ClCompile Include="src\ver2\SceneLoader.cpp" />
@@ -218,6 +219,7 @@
     <Text Include="src\VertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ver2\CreateSpotLight.h" />
     <ClInclude Include="src\ver2\DeferredRendering.h" />
     <ClInclude Include="src\ver2\Input.h" />
     <ClInclude Include="src\ver2\SceneLoader.h" />

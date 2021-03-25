@@ -18,10 +18,6 @@
 #include <string>
 #include <iostream>
 
-/*
-* Scene with models and solid colors.
-*/
-
 class ShowScene
 {
 private:
@@ -32,5 +28,6 @@ public:
 	void scene1();
 	void scene2();
 	void scene3();  // deferred rendering
+	void scene4();  // lights demo
 };
 

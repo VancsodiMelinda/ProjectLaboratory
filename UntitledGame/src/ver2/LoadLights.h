@@ -9,6 +9,7 @@
 
 #include "CreateDirLight.h"
 #include "CreatePointLight.h"
+#include "CreateSpotLight.h"
 #include "Kamera.h"
 #include "ModelData.h"
 #include "ProgramData.h"
@@ -19,15 +20,21 @@
 class LoadLights
 {
 public:
-	DirLightContainer dirLights[NUMBER_OF_DIR_LIGHTS];
-	PointLightContainer pointLights[NUMBER_OF_POINT_LIGHTS];
+	//DirLightContainer dirLights[NUMBER_OF_DIR_LIGHTS];
+	std::vector<DirLightContainer> dirLights_;
+
+	//PointLightContainer pointLights[NUMBER_OF_POINT_LIGHTS];
+	std::vector<PointLightContainer> pointLights_;
+
 	//SpotLightContainer spotLights[];
+	std::vector<SpotLightContainer> spotLights;
+
 	LoadLights();
 
 private:
 	void loadDirectionalLights();
 	void loadPointLights();
-	//void loadSpotLights();
+	void loadSpotLights();
 
 	void loadLightModels();
 	ObjectContainer models[2];

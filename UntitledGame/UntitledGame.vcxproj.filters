@@ -177,6 +177,9 @@
     <ClCompile Include="src\ver2\DeferredRendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ver2\CreateSpotLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\VertexShader.txt" />
@@ -383,6 +386,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ver2\DeferredRendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ver2\CreateSpotLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

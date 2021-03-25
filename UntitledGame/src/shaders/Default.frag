@@ -42,7 +42,7 @@ struct DirLight{
 	sampler2D shadowMap;
 	mat4 lightSpaceMatrix;
 };
-const int NR_DIR_LIGHTS  = 4;
+const int NR_DIR_LIGHTS  = 2;
 uniform DirLight dirLightArray[NR_DIR_LIGHTS];
 
 struct PointLight{
@@ -59,8 +59,20 @@ struct PointLight{
 
 	samplerCube shadowBox;
 };
-const int NR_POINT_LIGHTS = 2;
+const int NR_POINT_LIGHTS = 1;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
+
+struct SpotLight{
+	vec3 position;
+	vec3 direction;
+	float cutOffCos;
+
+	float ambientStrength;
+	float diffuseStrength;
+	float specularStrength;
+};
+const int NR_SPOT_LIGHTS = 2;
+uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
 
 uniform samplerCube skybox;
 
@@ -87,16 +99,16 @@ void main()
 	vec3 finalColor = vec3(0.0);
 
 	// directional lights
-	//for (int i = 0; i < NR_DIR_LIGHTS; i++)
-	//{
-		//finalColor += ((calcDirLight(dirLightArray[i]))*intensityFactor);
-	//}
+	for (int i = 0; i < NR_DIR_LIGHTS; i++)
+	{
+		finalColor += ((calcDirLight(dirLightArray[i]))*intensityFactor);
+	}
 
 	// point lights
-	for (int j = 0; j < NR_POINT_LIGHTS; j++)
-	{
-		finalColor += caclPointLight(pointLightArray[j]);
-	}
+	//for (int j = 0; j < NR_POINT_LIGHTS; j++)
+	//{
+		//finalColor += caclPointLight(pointLightArray[j]);
+	//}
 
 	//fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
@@ -104,8 +116,8 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	fragColor = plainTexture();
-	//fragColor = directionalLightingWithShadows();
+	//fragColor = plainTexture();
+	fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = depthBuffer();
@@ -167,7 +179,7 @@ vec4 plainTexture()
 
 vec4 directionalLightingWithShadows()
 {
-	float intensityFactor = 1;
+	float intensityFactor = 1.0;
 	vec3 finalColor = vec3(0.0);
 
 	for (int i = 0; i < NR_DIR_LIGHTS; i++)
@@ -212,7 +224,6 @@ vec3 calcDirLight(DirLight dirLight)
 {
 	// AMBIENT
 	vec3 ambient = dirLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
-
 	
 	vec3 normalVector = normalize(out_normalVec);
 	if (hasNormalMap == 1)
@@ -221,8 +232,6 @@ vec3 calcDirLight(DirLight dirLight)
 
 	// DIFFUSE
 	vec3 lightDirection = normalize(-dirLight.direction);				// unit vector, points towards the light
-	//vec3 normalVector = normalize(out_normalVec);						// unit vector, normal of vertex/fragment
-	//vec3 normalVector = normalize(texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0);
 	float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);  // cos of angle
 	vec3 diffuse = diffuseImpact * dirLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 
@@ -263,6 +272,9 @@ float calcDirShadow(DirLight dirLight)
 	}
 
 	shadow /= 9.0;
+
+	if (projCoords.z > 1.0)
+		shadow = 0.0;
 
 	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
