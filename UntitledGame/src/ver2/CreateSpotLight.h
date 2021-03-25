@@ -14,9 +14,14 @@ struct SpotLightContainer
 	glm::vec3 color;
 
 	float cutOffAngle;
+
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
+
+	float constant;
+	float linear;
+	float quadratic;
 
 	glm::mat4 lightSpaceMatrix;
 };

@@ -7,9 +7,14 @@ CreateSpotLight::CreateSpotLight()
 	spotLightContainer.color = glm::vec3(1.0);
 
 	spotLightContainer.cutOffAngle = 12.5f;
+
 	spotLightContainer.ambientStrength = 0.1f;
 	spotLightContainer.diffuseStrength = 0.8f;
 	spotLightContainer.specularStrength = 1.0f;
+
+	spotLightContainer.constant = 1.0f;
+	spotLightContainer.linear = 0.07f;
+	spotLightContainer.quadratic = 0.017f;
 
 	spotLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
 }

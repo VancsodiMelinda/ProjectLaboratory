@@ -68,9 +68,14 @@ struct SpotLight{
 	vec3 color;
 
 	float cutOffCos;
+
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
+
+	float constant;
+	float linear;
+	float quadratic;
 };
 const int NR_SPOT_LIGHTS = 1;
 uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
@@ -327,16 +332,41 @@ vec3 calcSpotLight(SpotLight spotLight)
 {
 	vec3 color = vec3(1.0);
 
+	vec3 normalVector = normalize(out_normalVec);
+	if (hasNormalMap == 1)
+		normalVector = normalize(out_TBN * (texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0));
+
 	vec3 lightDir = normalize(spotLight.position - out_worldVertexPos);
 	float theta = dot(lightDir, normalize(-spotLight.direction));
 
 	if (theta > spotLight.cutOffCos)
 	{
-		color = vec3(0.0f, 1.0f, 0.0f);
+		// AMBIENT
+		vec3 ambient = spotLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+		// DIFFUSE
+		vec3 lightDirection = normalize(spotLight.position - out_worldVertexPos);
+		float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
+		vec3 diffuse = diffuseImpact * spotLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+		// SPECULAR
+		vec3 viewVector = normalize(camera.position - out_worldVertexPos);
+		vec3 reflectDir = reflect(-lightDirection, normalVector);
+		float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
+		vec3 specular = spec * spotLight.specularStrength * texture(material.specularMap, out_textureCoords).rgb;
+
+		float dist = length(spotLight.position - out_worldVertexPos);
+		float attenuation = 1.0 / (spotLight.constant + spotLight.linear * dist + spotLight.quadratic * dist * dist);
+
+		//ambient *= attenuation;
+		diffuse *= attenuation;
+		specular *= attenuation;
+
+		color = ambient + diffuse + specular;
 	}
 	else
 	{
-		color = vec3(1.0f, 0.0f, 0.0f);
+		color = spotLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
 	}
 
 	return color;

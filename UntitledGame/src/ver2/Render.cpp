@@ -162,11 +162,16 @@ void Render::getUniformLocations()
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].position").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].direction").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].color").c_str()));
+
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].cutOffCos").c_str()));
 
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].ambientStrength").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].diffuseStrength").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].specularStrength").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].constant").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].linear").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].quadratic").c_str()));
 
 		uniformLocations.spotLightLocs.push_back(temp);
 	}
@@ -278,9 +283,14 @@ void Render::uploadUniforms(ObjectContainer& object)
 
 		float cutOffCos = glm::cos(glm::radians(lights.spotLights[i].cutOffAngle));
 		glUniform1f(uniformLocations.spotLightLocs[i][3], cutOffCos);
+
 		glUniform1f(uniformLocations.spotLightLocs[i][4], lights.spotLights[i].ambientStrength);
 		glUniform1f(uniformLocations.spotLightLocs[i][5], lights.spotLights[i].diffuseStrength);
 		glUniform1f(uniformLocations.spotLightLocs[i][6], lights.spotLights[i].specularStrength);
+
+		glUniform1f(uniformLocations.spotLightLocs[i][7], lights.spotLights[i].constant);
+		glUniform1f(uniformLocations.spotLightLocs[i][8], lights.spotLights[i].linear);
+		glUniform1f(uniformLocations.spotLightLocs[i][9], lights.spotLights[i].quadratic);
 	}
 }
 
