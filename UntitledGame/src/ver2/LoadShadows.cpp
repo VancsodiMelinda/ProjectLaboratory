@@ -137,7 +137,7 @@ void LoadShadows::renderPointShadow(PointLightContainer light, ObjectContainer& 
 	// create view matrices
 	glm::mat4 viewMatrix1 = glm::lookAt(light.position, light.position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));	// right
 	glm::mat4 viewMatrix2 = glm::lookAt(light.position, light.position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));	// left
-	glm::mat4 viewMatrix3 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));		// top
+	glm::mat4 viewMatrix3 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));	// top
 	glm::mat4 viewMatrix4 = glm::lookAt(light.position, light.position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0));	// bottom
 	glm::mat4 viewMatrix5 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0));	// near
 	glm::mat4 viewMatrix6 = glm::lookAt(light.position, light.position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0));	// far

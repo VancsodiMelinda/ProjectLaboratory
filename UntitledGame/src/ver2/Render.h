@@ -50,6 +50,7 @@ private:
 		//int pointLightLocs[NUMBER_OF_POINT_LIGHTS][9];
 		std::vector<std::vector<int>> dirLightLocs_;
 		std::vector<std::vector<int>> pointLightLocs_;
+		std::vector<std::vector<int>> spotLightLocs;
 		int IDloc = -1;
 	};
 	UniformLocations uniformLocations;

@@ -65,13 +65,14 @@ uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 struct SpotLight{
 	vec3 position;
 	vec3 direction;
-	float cutOffCos;
+	vec3 color;
 
+	float cutOffCos;
 	float ambientStrength;
 	float diffuseStrength;
 	float specularStrength;
 };
-const int NR_SPOT_LIGHTS = 2;
+const int NR_SPOT_LIGHTS = 1;
 uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
 
 uniform samplerCube skybox;
@@ -81,6 +82,8 @@ float calcDirShadow(DirLight dirLight);
 
 vec3 caclPointLight(PointLight pointLight);
 float calcPointShadow(PointLight pointLight);
+
+vec3 calcSpotLight(SpotLight spotLight);
 
 vec4 calcSelectionColor();
 vec4 vertexColor();
@@ -98,18 +101,6 @@ void main()
 	float intensityFactor = 1.0;
 	vec3 finalColor = vec3(0.0);
 
-	// directional lights
-	for (int i = 0; i < NR_DIR_LIGHTS; i++)
-	{
-		finalColor += ((calcDirLight(dirLightArray[i]))*intensityFactor);
-	}
-
-	// point lights
-	//for (int j = 0; j < NR_POINT_LIGHTS; j++)
-	//{
-		//finalColor += caclPointLight(pointLightArray[j]);
-	//}
-
 	//fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 	//fragColor = vec4(finalColor, 1.0);	// frag color with lighting
 	//fragColor = vec4(normalize(out_tangent), 1.0);
@@ -118,7 +109,9 @@ void main()
 	//fragColor = normalColor();
 	//fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
-	fragColor = pointLightingWithShadows();
+	//fragColor = pointLightingWithShadows();
+	//fragColor = vec4(spotLightArray[0].color, 1.0);
+	fragColor = vec4(calcSpotLight(spotLightArray[0]), 1.0);
 	//fragColor = allLightingWithShadows();
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
@@ -328,6 +321,25 @@ float calcPointShadow(PointLight pointLight)
 	float shadow = sceneDepth - bias > mapDepth ? 1.0 : 0.0;
 
 	return shadow;
+}
+
+vec3 calcSpotLight(SpotLight spotLight)
+{
+	vec3 color = vec3(1.0);
+
+	vec3 lightDir = normalize(spotLight.position - out_worldVertexPos);
+	float theta = dot(lightDir, normalize(-spotLight.direction));
+
+	if (theta > spotLight.cutOffCos)
+	{
+		color = vec3(0.0f, 1.0f, 0.0f);
+	}
+	else
+	{
+		color = vec3(1.0f, 0.0f, 0.0f);
+	}
+
+	return color;
 }
 
 vec4 reflection()

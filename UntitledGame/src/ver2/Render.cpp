@@ -155,6 +155,21 @@ void Render::getUniformLocations()
 
 		uniformLocations.pointLightLocs_.push_back(temp);
 	}
+
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		std::vector<int> temp;
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].position").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].direction").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].color").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].cutOffCos").c_str()));
+
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].ambientStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].diffuseStrength").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].specularStrength").c_str()));
+
+		uniformLocations.spotLightLocs.push_back(temp);
+	}
 }
 
 
@@ -252,6 +267,20 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.pointLightLocs_[i][7], lights.pointLights_[i].quadratic);
 
 		glUniform1i(uniformLocations.pointLightLocs_[i][8], 4 + lights.dirLights_.size() + i);
+	}
+
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		glm::vec3 direction = lights.spotLights[i].target - lights.spotLights[i].position;
+		glUniform3fv(uniformLocations.spotLightLocs[i][0], 1, glm::value_ptr(lights.spotLights[i].position));
+		glUniform3fv(uniformLocations.spotLightLocs[i][1], 1, glm::value_ptr(direction));
+		glUniform3fv(uniformLocations.spotLightLocs[i][2], 1, glm::value_ptr(lights.spotLights[i].color));
+
+		float cutOffCos = glm::cos(glm::radians(lights.spotLights[i].cutOffAngle));
+		glUniform1f(uniformLocations.spotLightLocs[i][3], cutOffCos);
+		glUniform1f(uniformLocations.spotLightLocs[i][4], lights.spotLights[i].ambientStrength);
+		glUniform1f(uniformLocations.spotLightLocs[i][5], lights.spotLights[i].diffuseStrength);
+		glUniform1f(uniformLocations.spotLightLocs[i][6], lights.spotLights[i].specularStrength);
 	}
 }
 

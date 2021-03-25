@@ -16,9 +16,9 @@ LoadLights::LoadLights()
 	loadPointLights();
 	std::cout << std::endl;
 
-	//std::cout << "Loading spot lights..." << std::endl;
-	//loadSpotLights();
-	//std::cout << std::endl;
+	std::cout << "Loading spot lights..." << std::endl;
+	loadSpotLights();
+	std::cout << std::endl;
 }
 
 void LoadLights::loadDirectionalLights()
@@ -97,17 +97,16 @@ void LoadLights::loadPointLights()
 void LoadLights::loadSpotLights()
 {
 	CreateSpotLight light1;
-	light1.spotLightContainer.position = glm::vec3(0.0f, 3.0f, 0.0f);
-	light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	spotLights.push_back(light1.spotLightContainer);
 
+	/*
 	CreateSpotLight light2;
 	light2.spotLightContainer.position = glm::vec3(2.0f, 3.0f, 0.0f);
 	light2.spotLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
-	light2.spotLightContainer.direction = light2.spotLightContainer.target - light2.spotLightContainer.position;
 	light2.spotLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);
 	light2.spotLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	spotLights.push_back(light2.spotLightContainer);
+	*/
 }
 
 void LoadLights::loadLightModels()

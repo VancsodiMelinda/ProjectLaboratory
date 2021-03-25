@@ -5,26 +5,27 @@
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "GlobalVariables.h"
+
 struct SpotLightContainer
 {
-	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec3 target = glm::vec3(-1.0f, 0.0f, 0.0f);
-	glm::vec3 direction = target - position;
-	glm::vec3 color = glm::vec3(1.0);
-	float cutOffAngle = 12.5f;
+	glm::vec3 position;
+	glm::vec3 target;
+	glm::vec3 color;
 
-	float ambientStrength = 0.1f;
-	float diffuseStrength = 0.8f;
-	float specularStrength = 1.0f;
+	float cutOffAngle;
+	float ambientStrength;
+	float diffuseStrength;
+	float specularStrength;
 
-	glm::mat4 lightSpaceMatrix = glm::mat4(1.0);
+	glm::mat4 lightSpaceMatrix;
 };
 
 class CreateSpotLight
 {
 public:
 	SpotLightContainer spotLightContainer;
-	CreateSpotLight();
+	CreateSpotLight();  // create default light
 	glm::mat4 createLightSpaceMatrix();
 };
 
