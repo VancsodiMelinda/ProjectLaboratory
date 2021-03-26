@@ -115,12 +115,16 @@ void LoadLights::loadLightModels()
 	//InstrumentationTimer timer("Load light models");
 
 	// model for directional light
-	CreateModel cube("resources/models/sphere.obj");
-	models[0] = cube.objectContainer;
+	CreateModel sphere("resources/models/sphere.obj");
+	models[0] = sphere.objectContainer;
 
 	// model for point light
-	CreateModel sphere("resources/models/lightbulb.obj");
-	models[1] = sphere.objectContainer;
+	CreateModel lightbulb("resources/models/lightbulb.obj");
+	models[1] = lightbulb.objectContainer;
+
+	// model for spot light
+	CreateModel flashlight("resources/models/flashlight.obj");
+	models[2] = flashlight.objectContainer;
 }
 
 void LoadLights::configLight(ObjectContainer& object, GLuint programID)
@@ -201,12 +205,12 @@ void LoadLights::renderSpotLight(SpotLightContainer& spotLight, ObjectContainer&
 	glm::vec2 dir_zy = glm::normalize(glm::vec2(dir.z, dir.y));
 	glm::vec2 dir_xz = glm::normalize(glm::vec2(dir.x, dir.z));
 
-	float angle_x = -glm::angle(dir_zy, glm::vec2(1.0f, 0.0f));
+	float angle_x = glm::angle(dir_zy, glm::vec2(0.0f, 1.0f));
 	float angle_y = glm::angle(glm::vec2(0.0f, 1.0f), dir_xz);
 
 	// correct angles
-	if (dir_zy.y < 0.0f)
-		angle_x = glm::radians(360.0f) - angle_x;
+	//if (dir_zy.y < 0.0f)
+		//angle_x = glm::radians(360.0f) - angle_x;
 
 	if (dir_xz.x < 0.0f)
 		angle_y = glm::radians(360.0f) - angle_y;
@@ -241,6 +245,7 @@ void LoadLights::config(ProgramContainer programContainer)
 		//configLight(pointLightObject, programContainer.ID);
 		configLight(models[0], programContainer.ID);
 		configLight(models[1], programContainer.ID);
+		configLight(models[2], programContainer.ID);
 		std::cout << "OK: Lights are configured using the correct program." << std::endl;
 	}
 	else
@@ -271,7 +276,7 @@ void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 
 	for (int i = 0; i < spotLights.size(); i++)
 	{
-		renderSpotLight(spotLights[i], models[1], programContainer.ID, kamera);
+		renderSpotLight(spotLights[i], models[2], programContainer.ID, kamera);
 	}
 }
 

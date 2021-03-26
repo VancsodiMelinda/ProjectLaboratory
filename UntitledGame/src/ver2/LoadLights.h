@@ -39,7 +39,7 @@ private:
 	void loadSpotLights();
 
 	void loadLightModels();
-	ObjectContainer models[2];
+	ObjectContainer models[3];
 
 	void configLight(ObjectContainer& object, GLuint programID);
 	void renderDirLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
