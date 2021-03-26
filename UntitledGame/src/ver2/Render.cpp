@@ -350,7 +350,7 @@ void Render::configAssets()
 
 void Render::renderAssets(Kamera& kamera_)
 {
-	InstrumentationTimer timer("Render models");
+	//InstrumentationTimer timer("Render models");
 
 	kamera = kamera_;
 	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);

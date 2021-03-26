@@ -362,7 +362,7 @@ vec3 calcSpotLight(SpotLight spotLight)
 		diffuse *= attenuation;
 		specular *= attenuation;
 
-		color = ambient + diffuse + specular;
+		color = (ambient + diffuse + specular) * spotLight.color;
 	}
 	else
 	{

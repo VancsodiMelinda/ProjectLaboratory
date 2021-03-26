@@ -6,6 +6,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/projection.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include "CreateDirLight.h"
 #include "CreatePointLight.h"
@@ -42,6 +44,7 @@ private:
 	void configLight(ObjectContainer& object, GLuint programID);
 	void renderDirLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
 	void renderPointLight(PointLightContainer& pointLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
+	void renderSpotLight(SpotLightContainer& spotLight, ObjectContainer& object, GLuint programID, Kamera& kamera);
 
 	struct UniformLocations {
 		GLint MVPloc = 0;

@@ -97,6 +97,7 @@ void LoadLights::loadPointLights()
 void LoadLights::loadSpotLights()
 {
 	CreateSpotLight light1;
+	light1.spotLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);
 	spotLights.push_back(light1.spotLightContainer);
 
 	/*
@@ -113,10 +114,12 @@ void LoadLights::loadLightModels()
 {
 	//InstrumentationTimer timer("Load light models");
 
-	CreateModel cube("resources/models/cube.obj");
+	// model for directional light
+	CreateModel cube("resources/models/sphere.obj");
 	models[0] = cube.objectContainer;
 
-	CreateModel sphere("resources/models/sphere.obj");
+	// model for point light
+	CreateModel sphere("resources/models/lightbulb.obj");
 	models[1] = sphere.objectContainer;
 }
 
@@ -156,7 +159,7 @@ void LoadLights::renderDirLight(DirLightContainer& dirLight, ObjectContainer& ob
 	// create/update MVP
 	glm::mat4 modelMatrix = glm::mat4(1.0);
 	modelMatrix = glm::translate(modelMatrix, dirLight.position);
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
 	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * kamera.cameraContainer.viewMatrix * modelMatrix;
 
 	// upload uniforms
@@ -176,12 +179,51 @@ void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContain
 	// create/update MVP
 	glm::mat4 modelMatrix = glm::mat4(1.0);
 	modelMatrix = glm::translate(modelMatrix, pointLight.position);
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
 	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * kamera.cameraContainer.viewMatrix * modelMatrix;
 
 	// upload uniforms
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(pointLight.color));
+
+	// draw
+	glBindVertexArray(object.vao);
+	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+void LoadLights::renderSpotLight(SpotLightContainer& spotLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
+{
+	glUseProgram(programID);
+
+	// calculate angles
+	glm::vec3 dir = spotLight.target - spotLight.position;
+	glm::vec2 dir_zy = glm::normalize(glm::vec2(dir.z, dir.y));
+	glm::vec2 dir_xz = glm::normalize(glm::vec2(dir.x, dir.z));
+
+	float angle_x = -glm::angle(dir_zy, glm::vec2(1.0f, 0.0f));
+	float angle_y = glm::angle(glm::vec2(0.0f, 1.0f), dir_xz);
+
+	// correct angles
+	if (dir_zy.y < 0.0f)
+		angle_x = glm::radians(360.0f) - angle_x;
+
+	if (dir_xz.x < 0.0f)
+		angle_y = glm::radians(360.0f) - angle_y;
+
+	// create/update MVP
+	glm::mat4 modelMatrix = glm::mat4(1.0);
+	modelMatrix = glm::translate(modelMatrix, spotLight.position);
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
+	modelMatrix = glm::rotate(modelMatrix, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
+	modelMatrix = glm::rotate(modelMatrix, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * kamera.cameraContainer.viewMatrix * modelMatrix;
+
+	// upload uniforms
+	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(spotLight.color));
 
 	// draw
 	glBindVertexArray(object.vao);
@@ -225,6 +267,11 @@ void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 		//InstrumentationTimer timer("Render point lights");
 
 		renderPointLight(pointLights_[i], models[1], programContainer.ID, kamera);
+	}
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		renderSpotLight(spotLights[i], models[1], programContainer.ID, kamera);
 	}
 }
 

@@ -98,6 +98,24 @@ int main(void)
 	*/
 	////////////////////////////////////////////////////////
 
+	// test angles
+	// calculate rotations
+	
+	glm::vec3 spotTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 spotPosition = glm::vec3(0.0f, 4.0f, 3.0f);
+	glm::vec3 dir = spotTarget - spotPosition;
+
+	//float angle_x = glm::degrees(glm::angle(glm::vec2(1.0f, 0.0f), glm::normalize(glm::vec2(dir.x, dir.z))));
+	//float angle_z = glm::degrees(glm::angle(glm::vec2(0.0f, 1.0f), glm::normalize(glm::vec2(dir.x, dir.z))));
+
+	//float angle_x = glm::degrees(glm::angle(glm::normalize(glm::vec2(dir.z, dir.y)), glm::vec2(1.0f, 0.0f)));
+	float angle_y = glm::degrees(glm::angle(glm::vec2(0.0f, 1.0f), glm::normalize(glm::vec2(dir.x, dir.z))));
+
+	float angle_x_2 = glm::degrees(glm::acos(glm::dot(glm::vec2(1.0f, 0.0f), glm::normalize(glm::vec2(dir.x, dir.z)))));
+	float angle_y_2 = glm::degrees(glm::acos(glm::dot(glm::vec2(0.0f, 1.0f), glm::normalize(glm::vec2(dir.x, dir.z)))));
+
+	//float angle_y = glm::angle(glm::vec2(1.0f, 0.0f), glm::vec2(dir.y, dir.z));
+	
 	// RENDER
 	ShowScene show(window, kamera);
 	show.scene4();
