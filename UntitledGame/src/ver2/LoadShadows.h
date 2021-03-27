@@ -26,6 +26,7 @@ public:
 	//PointShadowContainer pointShadows[NUMBER_OF_POINT_LIGHTS];
 	std::vector<DirShadowContainer> dirShadows_;
 	std::vector<PointShadowContainer> pointShadows_;
+	std::vector<DirShadowContainer> spotShadows;
 
 	//LoadShadows(LoadLights& lights_, LoadAssets& assets_, LoadPrograms& programs_);
 	LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>& models_, LoadPrograms& programs_);
@@ -33,13 +34,15 @@ public:
 private:
 	void loadDirShadows();
 	void loadPointShadows();
-	//void loadSpotShadows();
+	void loadSpotShadows();
 
 	void configDirShadow(ObjectContainer& object, GLuint programID);
 	void renderDirShadow(DirLightContainer light, ObjectContainer& object, GLuint programID);
 
 	void configPointShadow(ObjectContainer& object, GLuint programID);
 	void renderPointShadow(PointLightContainer light, ObjectContainer& object, GLuint programID);
+
+	void renderSpotShadow(SpotLightContainer light, ObjectContainer& object, GLuint programID);
 
 	struct UniformLocations {
 		GLint MVPloc = 0;

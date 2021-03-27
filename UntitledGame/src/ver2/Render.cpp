@@ -173,6 +173,9 @@ void Render::getUniformLocations()
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].linear").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].quadratic").c_str()));
 
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].shadowMap").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str()));
+
 		uniformLocations.spotLightLocs.push_back(temp);
 	}
 }
@@ -180,6 +183,7 @@ void Render::getUniformLocations()
 
 void Render::renderAsset(ObjectContainer& object)
 {
+	int k = 0;
 	glUseProgram(programID);
 
 	uploadUniforms(object);
@@ -187,31 +191,42 @@ void Render::renderAsset(ObjectContainer& object)
 	// bind textures
 	glBindVertexArray(object.vao);
 
-	glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0); k++;
 	glBindTexture(GL_TEXTURE_2D, object.material.diffuseMap);
 
-	glActiveTexture(GL_TEXTURE1);
+	//glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0 + k); k++;
 	glBindTexture(GL_TEXTURE_2D, object.material.specularMap);
 
-	glActiveTexture(GL_TEXTURE2);
+	//glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE0 + k); k++;
 	glBindTexture(GL_TEXTURE_2D, object.material.normalMap);
 
-	glActiveTexture(GL_TEXTURE3);
+	//glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE0 + k); k++;
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.ID);
 
 	
 	for (int i = 4, j = 0; i < (lights.dirLights_.size() + 4); i++, j++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
+		//glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + k); k++;
 		glBindTexture(GL_TEXTURE_2D, shadows.dirShadows_[j].shadowMap);
 	}
 
 	for (int i = (lights.dirLights_.size() + 4), j = 0; i < (lights.dirLights_.size() + lights.pointLights_.size() + 4); i++, j++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
+		//glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + k); k++;
 		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.pointShadows_[j].shadowCube);
 	}
 	
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + k); k++;
+		glBindTexture(GL_TEXTURE_2D, shadows.spotShadows[i].shadowMap);
+	}
 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -219,6 +234,7 @@ void Render::renderAsset(ObjectContainer& object)
 
 void Render::uploadUniforms(ObjectContainer& object)
 {
+	int c = 0;
 	glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
 
 	// vertex shader
@@ -226,9 +242,12 @@ void Render::uploadUniforms(ObjectContainer& object)
 	glUniformMatrix4fv(uniformLocations.modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(object.modelMatrix));
 
 	// fragment shader
-	glUniform1i(uniformLocations.diffuseMapLoc, 0);	// tex
-	glUniform1i(uniformLocations.specularMapLoc, 1);	// tex
-	glUniform1i(uniformLocations.normalMapLoc, 2);	// tex
+	//glUniform1i(uniformLocations.diffuseMapLoc, 0);	// tex
+	//glUniform1i(uniformLocations.specularMapLoc, 1);	// tex
+	//glUniform1i(uniformLocations.normalMapLoc, 2);	// tex
+	glUniform1i(uniformLocations.diffuseMapLoc, c);	// tex
+	glUniform1i(uniformLocations.specularMapLoc, ++c);	// tex
+	glUniform1i(uniformLocations.normalMapLoc, ++c);	// tex
 	glUniform1f(uniformLocations.shininessLoc, object.material.shininess);
 
 	if (object.material.normalMap == 0)
@@ -239,7 +258,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 	glUniform3fv(uniformLocations.cameraPosLoc, 1, glm::value_ptr(kamera.cameraContainer.cameraPosition));
 	glUniform1f(uniformLocations.cameraFarPlaneLoc, kamera.cameraContainer.farPlane);
 
-	glUniform1i(uniformLocations.skyboxLoc, 3);	// tex
+	//glUniform1i(uniformLocations.skyboxLoc, 3);	// tex
+	glUniform1i(uniformLocations.skyboxLoc, ++c);	// tex
 
 	glUniform1i(uniformLocations.IDloc, object.ID);
 
@@ -254,7 +274,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.dirLightLocs_[i][3], lights.dirLights_[i].diffuseStrength);
 		glUniform1f(uniformLocations.dirLightLocs_[i][4], lights.dirLights_[i].specularStrength);
 
-		glUniform1i(uniformLocations.dirLightLocs_[i][5], 4 + i);
+		//glUniform1i(uniformLocations.dirLightLocs_[i][5], 4 + i);  // tex
+		glUniform1i(uniformLocations.dirLightLocs_[i][5], ++c);  // tex
 		glUniformMatrix4fv(uniformLocations.dirLightLocs_[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights_[i].lightSpaceMatrix));
 	}
 
@@ -271,7 +292,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.pointLightLocs_[i][6], lights.pointLights_[i].linear);
 		glUniform1f(uniformLocations.pointLightLocs_[i][7], lights.pointLights_[i].quadratic);
 
-		glUniform1i(uniformLocations.pointLightLocs_[i][8], 4 + lights.dirLights_.size() + i);
+		//glUniform1i(uniformLocations.pointLightLocs_[i][8], 4 + lights.dirLights_.size() + i);  // tex
+		glUniform1i(uniformLocations.pointLightLocs_[i][8], ++c);  // tex
 	}
 
 	for (int i = 0; i < lights.spotLights.size(); i++)
@@ -291,6 +313,9 @@ void Render::uploadUniforms(ObjectContainer& object)
 		glUniform1f(uniformLocations.spotLightLocs[i][7], lights.spotLights[i].constant);
 		glUniform1f(uniformLocations.spotLightLocs[i][8], lights.spotLights[i].linear);
 		glUniform1f(uniformLocations.spotLightLocs[i][9], lights.spotLights[i].quadratic);
+
+		glUniform1i(uniformLocations.spotLightLocs[i][10], ++c);  // tex
+		glUniformMatrix4fv(uniformLocations.spotLightLocs[i][11], 1, GL_FALSE, glm::value_ptr(lights.spotLights[i].lightSpaceMatrix));
 	}
 }
 

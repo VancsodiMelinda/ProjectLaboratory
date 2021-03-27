@@ -29,7 +29,7 @@ void LoadLights::loadDirectionalLights()
 	light1.dirLightContainer.position = glm::vec3(1.0f, 2.0f, 5.0f);
 	light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
 	light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light1.dirLightContainer.ambientStrength = 0.0f;
+	light1.dirLightContainer.ambientStrength = 0.1f;
 	light1.dirLightContainer.diffuseStrength = 0.8f;
 	light1.dirLightContainer.specularStrength = 0.9f;
 	light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
@@ -40,7 +40,7 @@ void LoadLights::loadDirectionalLights()
 	light2.dirLightContainer.position = glm::vec3(-1.0f, 2.0f, 5.0f);
 	light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
 	light2.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light2.dirLightContainer.ambientStrength = 0.0f;
+	light2.dirLightContainer.ambientStrength = 0.1f;
 	light2.dirLightContainer.diffuseStrength = 0.8f;
 	light2.dirLightContainer.specularStrength = 1.0f;
 	light2.dirLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
@@ -97,7 +97,10 @@ void LoadLights::loadPointLights()
 void LoadLights::loadSpotLights()
 {
 	CreateSpotLight light1;
-	light1.spotLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);
+	light1.spotLightContainer.color = glm::vec3(0.7f, 1.0f, 0.7f);
+	light1.spotLightContainer.position = glm::vec3(0.0f, 1.0f, 2.0f);
+	light1.spotLightContainer.target = glm::vec3(0.0f, 1.0f, -2.0f);
+	light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	spotLights.push_back(light1.spotLightContainer);
 
 	/*
@@ -221,8 +224,6 @@ void LoadLights::renderSpotLight(SpotLightContainer& spotLight, ObjectContainer&
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
 	modelMatrix = glm::rotate(modelMatrix, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelMatrix = glm::rotate(modelMatrix, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	//modelMatrix = glm::rotate(modelMatrix, glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 MVP = kamera.cameraContainer.projectionMatrix * kamera.cameraContainer.viewMatrix * modelMatrix;
 
 	// upload uniforms

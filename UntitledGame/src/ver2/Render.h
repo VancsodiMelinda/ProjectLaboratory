@@ -20,7 +20,6 @@ private:
 	LoadShadows& shadows;
 	SkyboxContainer skybox;
 	GLuint programID = 0;
-	int counter = 0;
 
 public:
 	//Render(LoadAssets& assets_, LoadPrograms& programs_, Kamera& kamera_, LoadLights& lights_, LoadShadows& shadows_, SkyboxContainer skybox_);

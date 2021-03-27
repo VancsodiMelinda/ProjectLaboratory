@@ -30,6 +30,7 @@ LoadShadows::LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>
 
 	loadDirShadows();
 	loadPointShadows();
+	loadSpotShadows();
 }
 
 void LoadShadows::loadDirShadows()
@@ -58,6 +59,18 @@ void LoadShadows::loadPointShadows()
 		CreatePointShadow shadow;
 		//pointShadows[i] = shadow.pointShadowContainer;
 		pointShadows_.push_back(shadow.pointShadowContainer);
+	}
+	std::cout << std::endl;
+}
+
+void LoadShadows::loadSpotShadows()
+{
+	std::cout << "Load spot shadows..." << std::endl;
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		std::cout << "OK: Created spot shadow." << std::endl;
+		CreateDirShadow shadow;
+		spotShadows.push_back(shadow.dirShadowContainer);
 	}
 	std::cout << std::endl;
 }
@@ -160,6 +173,17 @@ void LoadShadows::renderPointShadow(PointLightContainer light, ObjectContainer& 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void LoadShadows::renderSpotShadow(SpotLightContainer light, ObjectContainer& object, GLuint programID)
+{
+	glUseProgram(programID);
+
+	glm::mat4 MVP = light.lightSpaceMatrix * object.modelMatrix;
+	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
+
+	glBindVertexArray(object.vao);
+	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
 
 void LoadShadows::config()
 {
@@ -202,6 +226,7 @@ void LoadShadows::render()
 	//glEnable(GL_DEPTH_TEST);
 	//InstrumentationTimer timer("Render shadows");
 
+	// RENDER DIRECTIONAL LIGHT SHADOWS
 	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
 		//InstrumentationTimer timer("Render dir shadows");
@@ -209,7 +234,7 @@ void LoadShadows::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows_[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		for (int j = 0; j < models.size(); j++)  // new
+		for (int j = 0; j < models.size(); j++)
 		{
 			renderDirShadow(lights.dirLights_[i], models[j], dirShadowProgramContainer.ID);
 		}
@@ -217,6 +242,7 @@ void LoadShadows::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	// RENDER SPOTLIGHT SHADOWS
 	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
 		//InstrumentationTimer timer("Render point shadows");
@@ -224,9 +250,25 @@ void LoadShadows::render()
 		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows_[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		for (int j = 0; j < models.size(); j++)  // new
+		for (int j = 0; j < models.size(); j++)
 		{
 			renderPointShadow(lights.pointLights_[i], models[j], pointShadowProgramContainer.ID);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// RENDER SPOTLIGHT SHADOW
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		//InstrumentationTimer timer("Render dir shadows");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, spotShadows[i].fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		for (int j = 0; j < models.size(); j++)
+		{
+			renderSpotShadow(lights.spotLights[i], models[j], dirShadowProgramContainer.ID);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
