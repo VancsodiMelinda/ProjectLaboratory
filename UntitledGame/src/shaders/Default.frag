@@ -83,7 +83,7 @@ struct SpotLight{
 	sampler2D shadowMap;
 	mat4 lightSpaceMatrix;
 };
-const int NR_SPOT_LIGHTS = 1;
+const int NR_SPOT_LIGHTS = 2;
 uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
 
 uniform samplerCube skybox;
@@ -103,6 +103,7 @@ vec4 normalColor();
 vec4 plainTexture();
 vec4 directionalLightingWithShadows();
 vec4 pointLightingWithShadows();
+vec4 spotLightingWithShadows();
 vec4 allLightingWithShadows();
 vec4 reflection();
 vec4 refraction();
@@ -122,7 +123,8 @@ void main()
 	//fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
-	fragColor = vec4(calcSpotLight(spotLightArray[0]), 1.0);
+	//fragColor = vec4(calcSpotLight(spotLightArray[0]), 1.0);
+	fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
@@ -204,6 +206,18 @@ vec4 pointLightingWithShadows()
 	}
 
 	 return vec4(finalColor, 1.0);
+}
+
+vec4 spotLightingWithShadows()
+{
+	vec3 finalColor = vec3(0.0);
+
+	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
+	{
+		finalColor += calcSpotLight(spotLightArray[i]);
+	}
+
+	return vec4(finalColor, 1.0);
 }
 
 // ALL LIGHTS
