@@ -24,6 +24,8 @@ struct SpotLightContainer
 	float quadratic;
 
 	glm::mat4 lightSpaceMatrix;
+
+	int ID;
 };
 
 class CreateSpotLight

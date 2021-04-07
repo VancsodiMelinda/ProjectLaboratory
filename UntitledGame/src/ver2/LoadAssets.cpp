@@ -2,7 +2,7 @@
 
 LoadAssets::LoadAssets()
 {
-	InstrumentationTimer timer("Load assets");
+	//InstrumentationTimer timer("Load assets");
 
 	std::cout << "Loading textures..." << std::endl;
 	loadDiffuseMaps();		// load all diffuse maps
@@ -16,17 +16,18 @@ LoadAssets::LoadAssets()
 
 void LoadAssets::loadDiffuseMaps()
 {
-	InstrumentationTimer timer("Load diffuse maps");
+	//InstrumentationTimer timer("Load diffuse maps");
 
-	CreateTexture tex1(TextureType::diffuseMap);  // load default diffuse map
-	diffuseMaps[0] = tex1.textureContainer;
+	//CreateTexture tex1(TextureType::diffuseMap);  // load default diffuse map
+	//diffuseMaps[0] = tex1.textureContainer;
 
 	CreateTexture tex2("resources/diffuse maps/color grid.png", TextureType::diffuseMap);
-	diffuseMaps[1] = tex2.textureContainer;
+	diffuseMaps[0] = tex2.textureContainer;
 
-	CreateTexture tex3("resources/diffuse maps/uv grid.png", TextureType::diffuseMap);
-	diffuseMaps[2] = tex3.textureContainer;
+	CreateTexture tex3("resources/diffuse maps/earth.png", TextureType::diffuseMap);
+	diffuseMaps[1] = tex3.textureContainer;
 
+	/*
 	CreateTexture tex4("resources/diffuse maps/white.png", TextureType::diffuseMap);
 	diffuseMaps[3] = tex4.textureContainer;
 
@@ -44,50 +45,53 @@ void LoadAssets::loadDiffuseMaps()
 
 	CreateTexture tex9("resources/diffuse maps/dark wood.jpg", TextureType::diffuseMap);
 	diffuseMaps[8] = tex9.textureContainer;
+	*/
 }
 
 void LoadAssets::loadSpecularMaps()
 {
-	InstrumentationTimer timer("Load specular maps");
+	//InstrumentationTimer timer("Load specular maps");
 
 	CreateTexture tex1(TextureType::specularMap);  // load default spacular map
 	specularMaps[0] = tex1.textureContainer;
 
+	/*
 	CreateTexture tex2("resources/specular maps/black.png", TextureType::specularMap);
 	specularMaps[1] = tex2.textureContainer;
 
 	CreateTexture tex3("resources/specular maps/rubik's cube specular map.png", TextureType::specularMap);
 	specularMaps[2] = tex3.textureContainer;
+	*/
 }
 
 void LoadAssets::loadNormalMaps()
 {
-	InstrumentationTimer timer("Load normal maps");
+	//InstrumentationTimer timer("Load normal maps");
 
 	CreateTexture tex1(TextureType::normalMap);
 	normalMaps[0] = tex1.textureContainer;
 
-	CreateTexture tex2("resources/normal maps/cracked asphalt.png", TextureType::normalMap);
-	normalMaps[1] = tex2.textureContainer;
+	//CreateTexture tex2("resources/normal maps/cracked asphalt.png", TextureType::normalMap);
+	//normalMaps[1] = tex2.textureContainer;
 }
 
 void LoadAssets::loadObjects()
 {
-	InstrumentationTimer timer("Load models");
+	//InstrumentationTimer timer("Load models");
 	
 	CreateModel suzanne("resources/models/suzanne.obj", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "x");
-	suzanne.objectContainer.material.diffuseMap = diffuseMaps[7].ID;
+	suzanne.objectContainer.material.diffuseMap = diffuseMaps[0].ID;
 	suzanne.objectContainer.material.specularMap = specularMaps[0].ID;
 	//suzanne.objectContainer.material.normalMap = normalMaps[0].ID;
-	suzanne.objectContainer.material.shininess = 0.6f * 128.0f;
+	//suzanne.objectContainer.material.shininess = 0.6f * 128.0f;
 	//models[0] = suzanne.objectContainer;
 	models_.push_back(suzanne.objectContainer);
 
 	CreateModel sphere("resources/models/sphere.obj", glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
-	sphere.objectContainer.material.diffuseMap = diffuseMaps[6].ID;
-	sphere.objectContainer.material.specularMap = specularMaps[1].ID;
+	sphere.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
+	sphere.objectContainer.material.specularMap = specularMaps[0].ID;
 	//sphere.objectContainer.material.normalMap = normalMaps[0].ID;
-	sphere.objectContainer.material.shininess = 0.6f * 128.0f;
+	//sphere.objectContainer.material.shininess = 0.6f * 128.0f;
 	//models[1] = sphere.objectContainer;
 	models_.push_back(sphere.objectContainer);
 

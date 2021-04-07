@@ -11,19 +11,21 @@ CreateDirLight::CreateDirLight()
 
 	dirLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
 
-	std::cout << "OK: Loaded directional light." << std::endl;
+	dirLightContainer.ID = -1;
 }
 
 CreateDirLight::CreateDirLight(glm::vec3 position, glm::vec3 color, float ambientStrength, float diffuseStrength, float specularStrength)
 {
 	dirLightContainer.position = position;
 	dirLightContainer.color = color;
+
 	dirLightContainer.ambientStrength = ambientStrength;
 	dirLightContainer.diffuseStrength = diffuseStrength;
 	dirLightContainer.specularStrength = specularStrength;
+
 	dirLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
 
-	std::cout << "OK: Loaded directional light." << std::endl;
+	dirLightContainer.ID = -1;
 }
 
 glm::mat4 CreateDirLight::createLightSpaceMatrix()

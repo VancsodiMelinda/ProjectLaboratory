@@ -33,18 +33,16 @@ void LoadLights::loadDirectionalLights()
 	light1.dirLightContainer.diffuseStrength = 0.8f;
 	light1.dirLightContainer.specularStrength = 0.9f;
 	light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
-	//dirLights[0] = light1.dirLightContainer;
 	dirLights_.push_back(light1.dirLightContainer);
 	
 	CreateDirLight light2;
 	light2.dirLightContainer.position = glm::vec3(-1.0f, 2.0f, 5.0f);
-	light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+	light2.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
 	light2.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light2.dirLightContainer.ambientStrength = 0.1f;
 	light2.dirLightContainer.diffuseStrength = 0.8f;
 	light2.dirLightContainer.specularStrength = 1.0f;
 	light2.dirLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
-	//dirLights[1] = light2.dirLightContainer;
 	dirLights_.push_back(light2.dirLightContainer);
 
 	/*
@@ -76,8 +74,6 @@ void LoadLights::loadPointLights()
 	
 	CreatePointLight light1;
 	light1.pointLightContainer.color  = glm::vec3(1.0f, 0.5f, 0.3f);
-	//light1.pointLightContainer.position = glm::vec3(0.0f, 10.0f, 0.0f);
-	//pointLights[0] = light1.pointLightContainer;
 	pointLights_.push_back(light1.pointLightContainer);
 
 	CreatePointLight light2;
@@ -89,9 +85,7 @@ void LoadLights::loadPointLights()
 	light2.pointLightContainer.constant = 1.0f;
 	light2.pointLightContainer.linear = 0.045f;
 	light2.pointLightContainer.quadratic = 0.0075f;
-	//pointLights[1] = light2.pointLightContainer;
 	pointLights_.push_back(light2.pointLightContainer);
-	
 }
 
 void LoadLights::loadSpotLights()
@@ -111,7 +105,6 @@ void LoadLights::loadSpotLights()
 	light2.spotLightContainer.cutOffAngle = 20.0f;
 	light2.spotLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	spotLights.push_back(light2.spotLightContainer);
-	
 }
 
 void LoadLights::loadLightModels()

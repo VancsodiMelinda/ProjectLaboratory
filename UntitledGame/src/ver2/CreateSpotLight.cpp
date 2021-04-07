@@ -17,6 +17,8 @@ CreateSpotLight::CreateSpotLight()
 	spotLightContainer.quadratic = 0.017f;
 
 	spotLightContainer.lightSpaceMatrix = createLightSpaceMatrix();
+
+	spotLightContainer.ID = -1;
 }
 
 glm::mat4 CreateSpotLight::createLightSpaceMatrix()

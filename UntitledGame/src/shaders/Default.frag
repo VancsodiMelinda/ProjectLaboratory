@@ -121,10 +121,9 @@ void main()
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
 	//fragColor = plainTexture();
-	//fragColor = directionalLightingWithShadows();
+	fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
-	//fragColor = vec4(calcSpotLight(spotLightArray[0]), 1.0);
-	fragColor = spotLightingWithShadows();
+	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
