@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "../stb_image.h"
 #include "ModelData.h"
+#include "CreateTexture.h"
 
 class SceneLoader
 {
@@ -16,6 +17,8 @@ public:
 	SceneLoader(char* path);
 	void draw(GLuint programID);
 	std::vector<ObjectContainer> models;
+
+	GLuint defaultSpecularMapID = 0;
 
 private:
 	std::string directory;

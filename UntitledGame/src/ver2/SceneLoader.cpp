@@ -2,6 +2,11 @@
 
 SceneLoader::SceneLoader(char* path)
 {
+    // load default specular map
+    CreateTexture tex1(TextureType::specularMap);
+    defaultSpecularMapID = tex1.textureContainer.ID;
+
+    // load obj file
     loadScene(path);
 }
 
@@ -14,7 +19,8 @@ void SceneLoader::draw(GLuint programID)
 void SceneLoader::loadScene(std::string filePath)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	//const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -156,6 +162,8 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
 
         if (!specularMaps.empty())
             mySpecularMap = specularMaps[0].id;
+        else
+            mySpecularMap = defaultSpecularMapID;
 
         // normal maps
         std::vector<ModelTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
@@ -205,6 +213,8 @@ GLuint SceneLoader::TextureFromFile(const char* path, std::string dir)
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
+
+    stbi_set_flip_vertically_on_load(true);  // flip
 
     int width, height, nrComponents;
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);

@@ -4,14 +4,14 @@ CreateTexture::CreateTexture(TextureType textureType)
 {
 	if (textureType == TextureType::diffuseMap)
 	{
-		textureContainer.name = "resources/diffuse maps/default diffuse map.png";
+		textureContainer.name = "resources/diffuse maps/default diffuse map.png";  // pink
 		textureContainer.type = TextureType::diffuseMap;
 		setUpTexture();
 		loadTexture(textureContainer.name);
 	}
 	else if (textureType == TextureType::specularMap)
 	{
-		textureContainer.name = "resources/specular maps/default specular map.png";
+		textureContainer.name = "resources/specular maps/default specular map.png";  // white
 		textureContainer.type = TextureType::specularMap;
 		setUpTexture();
 		loadTexture(textureContainer.name);

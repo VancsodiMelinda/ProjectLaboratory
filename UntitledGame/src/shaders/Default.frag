@@ -120,8 +120,8 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	//fragColor = plainTexture();
-	fragColor = directionalLightingWithShadows();
+	fragColor = plainTexture();
+	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();

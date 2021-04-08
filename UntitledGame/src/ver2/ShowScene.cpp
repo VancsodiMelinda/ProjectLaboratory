@@ -289,7 +289,7 @@ void ShowScene::scene3()
 void ShowScene::scene4()
 {
 	// load
-	std::string pathStr = "resources/assimp/test room 2/test room.obj";
+	std::string pathStr = "resources/assimp/my room/my room test.obj";
 	SceneLoader assets(&pathStr[0]);
 
 	LoadPrograms programs;

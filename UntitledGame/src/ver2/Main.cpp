@@ -38,6 +38,7 @@ int main(void)
 
 	// window creation hints
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 4);  // MSAA
 
 	// create window
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Untitled Game", NULL, NULL);
@@ -98,6 +99,8 @@ int main(void)
 	*/
 	////////////////////////////////////////////////////////
 	
+	glEnable(GL_MULTISAMPLE);  // MSAA
+
 	// RENDER
 	ShowScene show(window, kamera);
 	show.scene4();
