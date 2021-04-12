@@ -17,7 +17,8 @@ CreateModel::CreateModel(std::string objectFileName)
 	loadObjectData(objectFileName);		// data
 	createVAOandVBOs();		// vao, vbo, ibo
 	fillVBOs();				// vbo, ibo
-	objectContainer.modelMatrix = glm::mat4();	// identity matrix
+	//objectContainer.modelMatrix = glm::mat4();	// identity matrix
+	objectContainer.modelMatrix = createModelMatrix(objectContainer.position, objectContainer.scale, objectContainer.angle, objectContainer.axes);
 }
 
 CreateModel::CreateModel(std::string objectFileName, glm::vec3 translate, glm::vec3 scale, float rotate, std::string rotateAxis)

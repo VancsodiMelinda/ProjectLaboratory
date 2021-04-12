@@ -235,7 +235,9 @@ void Render::renderAsset(ObjectContainer& object)
 void Render::uploadUniforms(ObjectContainer& object)
 {
 	int c = 0;
-	glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
+	glm::mat4 modelMatrix = recalculateM(object.position, object.scale, object.angle, object.axes);
+	//glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
+	glm::mat4 MVP = updateMVP(modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
 
 	// vertex shader
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
@@ -322,6 +324,34 @@ void Render::uploadUniforms(ObjectContainer& object)
 glm::mat4 Render::updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P)
 {
 	return P * V * M;
+}
+
+glm::mat4 Render::recalculateM(glm::vec3 translate, glm::vec3 scale, float angle, std::string axes)
+{
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+	modelMatrix = glm::translate(modelMatrix, translate);
+
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	if ((axes == "x") || (axes == "X"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if ((axes == "y") || (axes == "Y"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	else if ((axes == "z") || (axes == "Z"))
+	{
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	else
+	{
+		std::cout << "The rotation angle is not correct!" << std::endl;
+	}
+
+	return modelMatrix;
 }
 
 void Render::generateIDs()
@@ -412,19 +442,18 @@ void Render::changeParams(int selectedID)
 	if (selectedID < models.size())
 	{
 		// draw gui
-		ImGui::Begin("rotate selected");
+		ImGui::Begin("ROTATE OBJECT");
 
-		float angle = 0.0f;
-		ImGui::SliderAngle("angle", &angle, 0.0f, 360.0f);
+		//float angle = 0.0f;
+		ImGui::SliderFloat("angle", &models[selectedID].angle, 0.0f, 360.0f);
 
 		// change model matrix
-		glm::mat4 modelMatrix = models[selectedID].modelMatrix;
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // zero rotation
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
-		models[selectedID].modelMatrix = modelMatrix;
+		//glm::mat4 modelMatrix = models[selectedID].modelMatrix;
+		//modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // zero rotation
+		//modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		//models[selectedID].modelMatrix = modelMatrix;
 
 		ImGui::End();
 	}
-	
 }
 

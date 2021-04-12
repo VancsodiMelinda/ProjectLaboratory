@@ -32,4 +32,9 @@ struct ObjectContainer
 	glm::mat4 modelMatrix = glm::mat4(1.0f);	// identity matrix
 	ObjectMaterial material;
 	int ID = -1;
+
+	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 scale = glm::vec3(1.0f);
+	float angle = 0.0f;
+	std::string axes = "y";
 };

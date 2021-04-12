@@ -35,6 +35,7 @@ private:
 	void renderAsset(ObjectContainer& object);
 	void uploadUniforms(ObjectContainer& object);
 	glm::mat4 updateMVP(glm::mat4 M, glm::mat4 V, glm::mat4 P);
+	glm::mat4 recalculateM(glm::vec3 translate, glm::vec3 scale, float angle, std::string axes);
 
 	struct UniformLocations {
 		int MVPloc = -1;

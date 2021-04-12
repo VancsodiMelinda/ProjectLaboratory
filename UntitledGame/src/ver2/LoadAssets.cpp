@@ -79,7 +79,8 @@ void LoadAssets::loadObjects()
 {
 	//InstrumentationTimer timer("Load models");
 	
-	CreateModel suzanne("resources/models/suzanne.obj", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "x");
+	CreateModel suzanne("resources/models/suzanne.obj");
+	suzanne.objectContainer.position = glm::vec3(0.0f, 2.0f, 0.0f);
 	suzanne.objectContainer.material.diffuseMap = diffuseMaps[0].ID;
 	suzanne.objectContainer.material.specularMap = specularMaps[0].ID;
 	//suzanne.objectContainer.material.normalMap = normalMaps[0].ID;
@@ -87,7 +88,8 @@ void LoadAssets::loadObjects()
 	//models[0] = suzanne.objectContainer;
 	models_.push_back(suzanne.objectContainer);
 
-	CreateModel sphere("resources/models/sphere.obj", glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, "y");
+	CreateModel sphere("resources/models/sphere.obj");
+	sphere.objectContainer.position = glm::vec3(3.0f, 2.0f, 0.0f);
 	sphere.objectContainer.material.diffuseMap = diffuseMaps[1].ID;
 	sphere.objectContainer.material.specularMap = specularMaps[0].ID;
 	//sphere.objectContainer.material.normalMap = normalMaps[0].ID;
