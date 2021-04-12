@@ -34,6 +34,7 @@ void ShowScene::scene1()
 	outlines.config();
 	//Instrumentor::Get().EndSession();
 
+	int selectedID = -1;
 	//int i = 1;
 	//Instrumentor::Get().BeginSession("game loop profile");
 	// render
@@ -43,10 +44,14 @@ void ShowScene::scene1()
 		//const char* title_ = title.c_str();
 		//InstrumentationTimer timer(title_);
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		kamera.processKeyboardInput(window);	// WASD + R
 
 		// specify clear values for the buffers
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClearDepth(1);  // default
 		glClearStencil(0);  // default
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // clear all buffers
@@ -58,8 +63,8 @@ void ShowScene::scene1()
 		shadows.render();  // ok
 
 		// RENDER SCENE (OBJECTS AND LIGHTS)
-		//glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);  // render to default fbo
+		glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);  // render to default fbo
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -70,23 +75,18 @@ void ShowScene::scene1()
 
 		// each pixel we draw something, the stencil buffer becomes 1
 		renderer.renderAssets(kamera);  // ok
-		lights.render(programs.programs[1], kamera);  // ok
+		//lights.render(programs.programs[1], kamera);  // ok
 
+		/*
 		// RENDER SKYBOX
 		glDisable(GL_STENCIL_TEST);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		skybox.render(programs.programs[4], kamera);  // ok
 		glDepthFunc(GL_LESS);
+		*/
 
 		/*
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
-		{
-			glFlush();
-			glFinish();
-			postProc.selectObject();
-		}
-
 		// pick object
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
@@ -103,7 +103,7 @@ void ShowScene::scene1()
 		}
 		*/
 
-
+		/*
 		// RENDER OUTLINES
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -113,10 +113,31 @@ void ShowScene::scene1()
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
-
+		*/
 
 		// POST PROCESSING
-		//postProc.render();
+		postProc.render();
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && isFisrtPress)
+		{
+			isFisrtPress = false;
+			glFlush();
+			glFinish();
+			selectedID = postProc.selectObject();
+			showGUI = !showGUI;
+		}
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+		{
+			isFisrtPress = true;
+		}
+
+		if (showGUI)
+			renderer.changeParams(selectedID);
+
+		// Rendering ImGui
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -289,7 +310,7 @@ void ShowScene::scene3()
 void ShowScene::scene4()
 {
 	// load
-	std::string pathStr = "resources/assimp/my room/my room test.obj";
+	std::string pathStr = "resources/assimp/my room/My room test.obj";
 	SceneLoader assets(&pathStr[0]);
 
 	LoadPrograms programs;
@@ -337,7 +358,7 @@ void ShowScene::scene4()
 		// RENDER SCENE AND LIGHTS
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		renderer.renderAssets(kamera);
-		lights.render(programs.programs[1], kamera);
+		//lights.render(programs.programs[1], kamera);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

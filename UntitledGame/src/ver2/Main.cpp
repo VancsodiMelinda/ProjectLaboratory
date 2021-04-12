@@ -83,7 +83,6 @@ int main(void)
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
 
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -103,7 +102,7 @@ int main(void)
 
 	// RENDER
 	ShowScene show(window, kamera);
-	show.scene4();
+	show.scene1();
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

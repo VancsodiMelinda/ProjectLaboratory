@@ -338,7 +338,9 @@ void Render::generateIDs()
 
 	for (int i = 0; i < models.size(); i++)  // new
 	{
+		std::cout << "model name: " << models[i].name << std::endl;
 		models[i].ID = ID;
+		std::cout << "model ID: " << models[i].ID << std::endl;
 		ID++;
 	}
 
@@ -395,5 +397,34 @@ void Render::renderAssets(Kamera& kamera_)
 	{
 		renderAsset(models[i]);
 	}
+}
+
+void Render::changeParams(int selectedID)
+{
+	/*
+	ImGui::Begin("rotate selected object");
+	float angle = 0.0f;
+	ImGui::SliderFloat("angle", &angle, 0.0f, 1.0f);
+	ImGui::End();
+	*/
+	
+	
+	if (selectedID < models.size())
+	{
+		// draw gui
+		ImGui::Begin("rotate selected");
+
+		float angle = 0.0f;
+		ImGui::SliderAngle("angle", &angle, 0.0f, 360.0f);
+
+		// change model matrix
+		glm::mat4 modelMatrix = models[selectedID].modelMatrix;
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // zero rotation
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		models[selectedID].modelMatrix = modelMatrix;
+
+		ImGui::End();
+	}
+	
 }
 

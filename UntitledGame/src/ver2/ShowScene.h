@@ -13,6 +13,8 @@
 #include "DeferredRendering.h"
 
 #include <glm/glm.hpp>
+#include "../imgui/imgui_impl_glfw.h"
+#include "../imgui/imgui_impl_opengl3.h"
 
 #include <vector>
 #include <string>
@@ -23,6 +25,9 @@ class ShowScene
 private:
 	GLFWwindow* window;
 	Kamera& kamera;
+	bool showGUI = false;
+	bool isFisrtPress = true;
+
 public:
 	ShowScene(GLFWwindow* window_, Kamera& kamera_);
 	void scene1();

@@ -154,7 +154,7 @@ vec4 calcSelectionColor()
 	int B = (ID & 0x00FF0000) >> 16;
 
 	return vec4(R/255.0, G/255.0, B/255.0, 1.0);
-	//return vec4(ID, 0.0, 0.0, 1.0);
+	//return vec4(1.0, 0.0, 0.0, 1.0);
 }
 
 vec4 vertexColor()

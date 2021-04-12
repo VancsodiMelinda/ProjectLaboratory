@@ -43,7 +43,7 @@ private:
 	ObjectContainer createQuad();
 
 public:
-	void selectObject();
+	int selectObject();
 	void render();
 };
 

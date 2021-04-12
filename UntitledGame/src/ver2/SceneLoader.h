@@ -18,6 +18,7 @@ public:
 	void draw(GLuint programID);
 	std::vector<ObjectContainer> models;
 
+	GLuint defaultDiffuseMapID = 0;
 	GLuint defaultSpecularMapID = 0;
 
 private:

@@ -2,9 +2,13 @@
 
 SceneLoader::SceneLoader(char* path)
 {
+    // load default diffuse map
+    CreateTexture tex1(TextureType::diffuseMap);
+    defaultDiffuseMapID = tex1.textureContainer.ID;
+
     // load default specular map
-    CreateTexture tex1(TextureType::specularMap);
-    defaultSpecularMapID = tex1.textureContainer.ID;
+    CreateTexture tex2(TextureType::specularMap);
+    defaultSpecularMapID = tex2.textureContainer.ID;
 
     // load obj file
     loadScene(path);
@@ -155,6 +159,8 @@ Mesh SceneLoader::processMesh(aiMesh* mesh, const aiScene* scene)
 
         if (!diffuseMaps.empty())
             myDiffuseMap = diffuseMaps[0].id;
+        else
+            myDiffuseMap = defaultDiffuseMapID;
 
         // specular maps
         std::vector<ModelTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");

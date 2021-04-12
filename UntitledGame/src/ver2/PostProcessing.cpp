@@ -164,36 +164,18 @@ ObjectContainer PostProcessing::createQuad()
 	return object;
 }
 
-void PostProcessing::selectObject()
+int PostProcessing::selectObject()
 {
 	
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, postProcContainer.fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	unsigned char pixel[4];
-	glReadPixels(WINDOW_WIDTH/2, WINDOW_WIDTH/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-	std::cout << "RGBA: " << (int)pixel[0] << ", " << (int)pixel[1] << ", " << (int)pixel[2] << ", " << (int)pixel[3] << std::endl;
-	
+	glReadPixels(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+	//std::cout << "RGBA: " << (int)pixel[0] << ", " << (int)pixel[1] << ", " << (int)pixel[2] << ", " << (int)pixel[3] << std::endl;
+	int pickedID = pixel[0] + pixel[1] * 256 + pixel[2] * 256 * 256;
+	//std::cout << "ID: " << pickedID << std::endl;
 
-	/*
-	GLubyte* pixels = new GLubyte[WINDOW_WIDTH * WINDOW_HEIGHT * 3];
-	//glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-	//glBindTexture(GL_TEXTURE_2D, postProcContainer.selectionTexture);
-	glGetTextureImage(postProcContainer.selectionTexture, 0, GL_RGB, GL_UNSIGNED_BYTE, WINDOW_WIDTH * WINDOW_HEIGHT * 3, pixels);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-	size_t x = WINDOW_HEIGHT / 2;
-	size_t y = WINDOW_WIDTH / 2;
-
-	size_t elementsPerLine = 256 * 3;
-	size_t row = y * elementsPerLine;
-	size_t column = x * 3;
-
-	GLuint R = pixels[row + column];
-	GLuint G = pixels[row + column + 1];
-	GLuint B = pixels[row + column + 2];
-
-	std::cout << "RGB: " << R << ", " << G << ", " << B << std::endl;
-	*/
+	return pickedID;
 }
 
 void PostProcessing::render()

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../imgui/imgui.h"
+
 #include "LoadAssets.h"
 #include "Kamera.h"
 #include "LoadLights.h"
@@ -58,5 +60,6 @@ public:
 	void generateIDs();
 	void configAssets();
 	void renderAssets(Kamera& kamera_);
+	void changeParams(int selectedID);
 };
 
