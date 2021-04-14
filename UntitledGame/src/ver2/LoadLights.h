@@ -18,6 +18,7 @@
 #include "ConstantVariables.h"
 #include "CreateModel.h"
 #include "Instrumentor.h"
+#include "CreateTexture.h"
 
 class LoadLights
 {
@@ -32,6 +33,7 @@ public:
 	std::vector<SpotLightContainer> spotLights;
 
 	LoadLights();
+	LoadLights(std::string scene);
 
 private:
 	void loadDirectionalLights();

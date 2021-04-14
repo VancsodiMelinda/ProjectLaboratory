@@ -364,3 +364,61 @@ void ShowScene::scene4()
 		glfwPollEvents();
 	}
 }
+
+void ShowScene::demoScene()
+{
+	// load
+	std::string pathStr = "resources/assimp/demo/demo scene.obj";
+	SceneLoader assets(&pathStr[0]);
+
+	LoadPrograms programs;
+	LoadLights lights("demo");
+	LoadShadows shadows(lights, assets.models, programs);
+	LoadSkyboxes skybox;  // not used
+
+	// init renderer
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();
+	lights.config(programs.programs[1]);
+	shadows.config();
+	//skybox.config(programs.programs[4]);
+
+	glEnable(GL_DEPTH_TEST);
+
+	// render
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);	// WASD + R
+
+		// specify clear values for the buffers
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+
+		// clear all buffers of the default fbo
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// RENDER SHADOWS
+		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+		//glEnable(GL_DEPTH_TEST);
+		//glDisable(GL_STENCIL_TEST);
+		shadows.render();
+
+		// RENDER SCENE AND LIGHTS
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		renderer.renderAssets(kamera);
+		lights.render(programs.programs[1], kamera);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}

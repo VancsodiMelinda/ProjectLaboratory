@@ -102,7 +102,7 @@ int main(void)
 
 	// RENDER
 	ShowScene show(window, kamera);
-	show.scene1();
+	show.demoScene();
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

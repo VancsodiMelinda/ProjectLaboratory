@@ -3,6 +3,7 @@
 CreateDirLight::CreateDirLight()
 {
 	dirLightContainer.position = glm::vec3(0.0f, 3.0f, -2.0f);
+	dirLightContainer.target = glm::vec3(0.0f);
 	dirLightContainer.color = glm::vec3(1.0f);
 
 	dirLightContainer.ambientStrength = 0.2f;

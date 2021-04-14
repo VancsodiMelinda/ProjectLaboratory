@@ -33,6 +33,7 @@ uniform Camera camera;
 
 // DIRECTIONAL LIGHT
 struct DirLight{
+	vec3 position;
 	vec3 direction;
 	vec3 color;
 	
@@ -43,7 +44,7 @@ struct DirLight{
 	sampler2D shadowMap;
 	mat4 lightSpaceMatrix;
 };
-const int NR_DIR_LIGHTS  = 2;
+const int NR_DIR_LIGHTS  = 1;
 uniform DirLight dirLightArray[NR_DIR_LIGHTS];
 
 // POINT LIGHT
@@ -61,7 +62,7 @@ struct PointLight{
 
 	samplerCube shadowBox;
 };
-const int NR_POINT_LIGHTS = 2;
+const int NR_POINT_LIGHTS = 5;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
 // SPOT LIGHT
@@ -82,8 +83,11 @@ struct SpotLight{
 
 	sampler2D shadowMap;
 	mat4 lightSpaceMatrix;
+
+	bool hasProjective;
+	sampler2D projectiveMap;
 };
-const int NR_SPOT_LIGHTS = 2;
+const int NR_SPOT_LIGHTS = 4;
 uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
 
 uniform samplerCube skybox;
@@ -96,6 +100,7 @@ float calcPointShadow(PointLight pointLight);
 
 vec3 calcSpotLight(SpotLight spotLight);
 float calcSpotShadow(SpotLight spotLight);
+vec3 calcProjectiveTexture(SpotLight spotLight);
 
 vec4 calcSelectionColor();
 vec4 vertexColor();
@@ -105,6 +110,7 @@ vec4 directionalLightingWithShadows();
 vec4 pointLightingWithShadows();
 vec4 spotLightingWithShadows();
 vec4 allLightingWithShadows();
+vec4 pointAndSpotWithShadows();
 vec4 reflection();
 vec4 refraction();
 vec4 depthBuffer();
@@ -120,11 +126,12 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	fragColor = plainTexture();
+	//fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
+	fragColor = pointAndSpotWithShadows();
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
 	//fragColor = refraction();
@@ -213,7 +220,10 @@ vec4 spotLightingWithShadows()
 
 	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
 	{
-		finalColor += calcSpotLight(spotLightArray[i]);
+		if (spotLightArray[i].hasProjective)
+			finalColor += calcProjectiveTexture(spotLightArray[i]);
+		else
+			finalColor += calcSpotLight(spotLightArray[i]);
 	}
 
 	return vec4(finalColor, 1.0);
@@ -227,12 +237,40 @@ vec4 allLightingWithShadows()
 
 	for (int i = 0; i < NR_DIR_LIGHTS; i++)
 	{
-		finalColor += ((calcDirLight(dirLightArray[i]))/intensityFactor);
+		finalColor += (calcDirLight(dirLightArray[i]));
 	}
 
-	for (int j = 0; j < NR_POINT_LIGHTS; j++)
+	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
-		finalColor += caclPointLight(pointLightArray[j]);
+		finalColor += caclPointLight(pointLightArray[i]);
+	}
+
+	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
+	{
+		if (spotLightArray[i].hasProjective)
+			finalColor += calcProjectiveTexture(spotLightArray[i]);
+		else
+			finalColor += calcSpotLight(spotLightArray[i]);
+	}
+
+	return vec4(finalColor, 1.0);
+}
+
+vec4 pointAndSpotWithShadows()
+{
+	vec3 finalColor = vec3(0.0);
+
+	for (int i = 0; i < NR_POINT_LIGHTS; i++)
+	{
+		finalColor += caclPointLight(pointLightArray[i]);
+	}
+
+	for (int i = 0; i < NR_SPOT_LIGHTS; i++)
+	{
+		if (spotLightArray[i].hasProjective)
+			finalColor += calcProjectiveTexture(spotLightArray[i]);
+		else
+			finalColor += calcSpotLight(spotLightArray[i]);
 	}
 
 	return vec4(finalColor, 1.0);
@@ -262,8 +300,8 @@ vec3 calcDirLight(DirLight dirLight)
 
 
 	float shadow = calcDirShadow(dirLight);
-	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;
-	//vec3 color = (ambient + diffuse + specular) * dirLight.color;
+	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * dirLight.color;  // with shadows
+	//vec3 color = (ambient + diffuse + specular) * dirLight.color;  // without shadow
 
 	return color;
 }
@@ -274,7 +312,9 @@ float calcDirShadow(DirLight dirLight)
 	vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;	// [-1, 1]
 	projCoords = (projCoords * 0.5) + 0.5;								// [0, 1]
 	//float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, lightPosition - out_worldVertexPos)), 0.005);  // annyira nem tunik jonak
-	float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, (-dirLight.direction) - out_worldVertexPos)), 0.005);
+	vec3 vertexToLight = normalize((-dirLight.direction) - out_worldVertexPos);
+	//float shadowBias = max(0.05 * (1.0 - dot(out_normalVec, (-dirLight.direction) - out_worldVertexPos)), 0.005);
+	float shadowBias = max(0.05 * (1.0 - dot(normalize(out_normalVec), vertexToLight)), 0.005);
 	float closestDepth = texture(dirLight.shadowMap, projCoords.xy).r;	// depth in scene
 	float currentDepth = projCoords.z - shadowBias;						// cure shadow acne
 	
@@ -295,6 +335,12 @@ float calcDirShadow(DirLight dirLight)
 	if (projCoords.z > 1.0)
 		shadow = 0.0;
 
+	
+	vec3 positionToVertex = normalize(out_worldVertexPos - dirLight.position);
+	float angle = dot(normalize(dirLight.direction), positionToVertex);
+	if (angle < 0.0)
+		shadow = 1.0;
+	
 	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
 	return shadow;
@@ -427,6 +473,86 @@ float calcSpotShadow(SpotLight spotLight)
 	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
 	return shadow;
+}
+
+vec3 calcProjectiveTexture(SpotLight spotLight)
+{
+	vec3 color = vec3(1.0);
+
+	vec3 normalVector = normalize(out_normalVec);
+	if (hasNormalMap == 1)
+		normalVector = normalize(out_TBN * (texture(material.normalMap, out_textureCoords).rgb * 2.0 - 1.0));
+
+	vec3 lightDir = normalize(spotLight.position - out_worldVertexPos);
+	float theta = dot(lightDir, normalize(-spotLight.direction));
+
+	if (theta > spotLight.cutOffCos)
+	{
+		vec4 out_lightVertexPos =  spotLight.lightSpaceMatrix * out_modelMatrix * rawVertexPosition;
+		vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;	// [-1, 1]
+		projCoords = (projCoords * 0.5) + 0.5;								// [0, 1]
+
+		// AMBIENT
+		vec3 ambient = spotLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+
+		// DIFFUSE
+		vec3 lightDirection = normalize(spotLight.position - out_worldVertexPos);
+		float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
+		//float diffuseImpact = dot(normalVector, lightDirection) >= 0.0 ? 1.0 : 0.0;
+		vec3 diffuse = diffuseImpact * spotLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;  // original color
+		vec3 projective = diffuseImpact * spotLight.diffuseStrength * texture(spotLight.projectiveMap, projCoords.xy).rgb;  // projective color
+
+		// SPECULAR
+		vec3 viewVector = normalize(camera.position - out_worldVertexPos);
+		vec3 reflectDir = reflect(-lightDirection, normalVector);
+		float spec = pow(max(dot(viewVector, reflectDir), 0.0), material.shininess);
+		vec3 specular = spec * spotLight.specularStrength * texture(spotLight.projectiveMap, projCoords.xy).rgb;
+
+		float dist = length(spotLight.position - out_worldVertexPos);
+		float attenuation = 1.0 / (spotLight.constant + spotLight.linear * dist + spotLight.quadratic * dist * dist);
+
+		//ambient *= attenuation;
+		diffuse *= attenuation;
+		specular *= attenuation;
+
+		float shadow = calcSpotShadow(spotLight);
+
+		//color = (ambient + diffuse + specular) * spotLight.color;
+		//color = ambient + (1.0 - shadow) * (diffuse * 0.5 + projecive * 0.5 + specular);
+		color = diffuse + (1.0 - shadow) * projective;
+	}
+	else
+	{
+		color = spotLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+	}
+
+	/*
+	vec3 pixelColor = spotLight.ambientStrength * texture(material.diffuseMap, out_textureCoords).rgb;
+	
+	vec4 out_lightVertexPos =  spotLight.lightSpaceMatrix * out_modelMatrix * rawVertexPosition;
+	vec3 projCoords = out_lightVertexPos.xyz / out_lightVertexPos.w;	// [-1, 1]
+	projCoords = (projCoords * 0.5) + 0.5;								// [0, 1]
+
+	//vec3 lightDirection = normalize(-spotLight.direction);
+	//float bias = max(0.05 * (1.0 - dot(normalize(out_normalVec), lightDirection)), 0.005);
+	//float closestDepth = texture(spotLight.shadowMap, projCoords.xy).r;	// depth in shadow map
+	//float currentDepth = projCoords.z;			// depth in scene
+
+	vec3 lightDir = normalize(spotLight.position - out_worldVertexPos);  // fragment to light
+	float theta = dot(lightDir, normalize(-spotLight.direction));
+	float shadow = calcSpotShadow(spotLight);
+
+	bool condition1 = theta > spotLight.cutOffCos;	// if vertex is in the frustum
+	bool condition2 = dot(normalize(out_normalVec), normalize(-spotLight.direction)) >= 0.0;	// if vertex is "facing" the lightsource
+	bool condition3 = shadow == 0;	// not in shadow
+
+	if (condition1 && condition2 && condition3)
+	{
+		pixelColor = texture(spotLight.projectiveMap, projCoords.xy).rgb;
+		//pixelColor = vec3(1.0, 0.0, 0.0);
+	}
+	*/
+	return color;
 }
 
 

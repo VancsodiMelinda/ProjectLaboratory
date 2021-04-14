@@ -21,50 +21,149 @@ LoadLights::LoadLights()
 	std::cout << std::endl;
 }
 
+LoadLights::LoadLights(std::string scene)
+{
+	if (scene == "demo")
+	{
+		std::cout << "Loading light models..." << std::endl;
+		loadLightModels();
+		std::cout << std::endl;
+
+		std::cout << "Demo lights are being loaded." << std::endl;
+		// DIRECTIONAL LIGHTS
+		{
+			CreateDirLight light1;
+			light1.dirLightContainer.position = glm::vec3(1.0f, 20.0f, 1.0f);
+			light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+			light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			dirLights_.push_back(light1.dirLightContainer);
+		}
+
+		// POINT LIGHTS
+		{
+			CreatePointLight light1;
+			light1.pointLightContainer.position = glm::vec3(-2.0f, 1.5f, 0.0f);
+			light1.pointLightContainer.color = glm::vec3(0.0f, 0.0f, 1.0f);  // blue
+			light1.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light1.pointLightContainer);
+
+			CreatePointLight light2;
+			light2.pointLightContainer.position = glm::vec3(0.0f, 1.5f, -2.0f);
+			light2.pointLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);  // red
+			light2.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light2.pointLightContainer);
+
+			CreatePointLight light3;
+			light3.pointLightContainer.position = glm::vec3(2.0f, 1.5f, 0.0f);
+			light3.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green
+			light3.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light3.pointLightContainer);
+
+			CreatePointLight light4;
+			light4.pointLightContainer.position = glm::vec3(0.0f, 1.5f, 2.0f);
+			light4.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 0.0f);  // yellow
+			light4.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light4.pointLightContainer);
+
+			CreatePointLight light5;
+			light5.pointLightContainer.position = glm::vec3(0.0f, 4.0f, 0.0f);
+			light5.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light5.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light5.pointLightContainer);
+		}
+
+		// SPOT LIGHTS
+		{
+			// little nightmare árnyékhoz
+			CreateSpotLight light1;
+			light1.spotLightContainer.position = glm::vec3(0.0f, 1.5f, 12.0f);
+			light1.spotLightContainer.target = glm::vec3(0.0f, 1.5f, 15.0f);
+			light1.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.spotLightContainer.ambientStrength = 0.1f;
+			light1.spotLightContainer.cutOffAngle = 15.0f;
+			light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			spotLights.push_back(light1.spotLightContainer);
+
+			// projektív textúrához
+			CreateTexture tex1("resources/projective/logo1.png", TextureType::projectiveMap);
+			//CreateTexture tex1(TextureType::projectiveMap);
+			CreateSpotLight light2;
+			light2.spotLightContainer.position = glm::vec3(-1.05f, 2.0f, -15.0f);
+			light2.spotLightContainer.target = glm::vec3(-1.05f, 2.0f, -18.0f);
+			light2.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light2.spotLightContainer.ambientStrength = 0.0f;
+			light2.spotLightContainer.cutOffAngle = 45.0f;
+			light2.spotLightContainer.hasProjective = true;
+			light2.spotLightContainer.projectiveMapID = tex1.textureContainer.ID;
+			light2.spotLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
+			spotLights.push_back(light2.spotLightContainer);
+
+			// projektív textúrához
+			CreateTexture tex2("resources/projective/logo2.png", TextureType::projectiveMap);
+			//CreateTexture tex1(TextureType::projectiveMap);
+			CreateSpotLight light3;
+			light3.spotLightContainer.position = glm::vec3(0.0f, 2.0f, -15.0f);
+			light3.spotLightContainer.target = glm::vec3(0.0f, 2.0f, -18.0f);
+			light3.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light3.spotLightContainer.ambientStrength = 0.0f;
+			light3.spotLightContainer.cutOffAngle = 45.0f;
+			light3.spotLightContainer.hasProjective = true;
+			light3.spotLightContainer.projectiveMapID = tex2.textureContainer.ID;
+			light3.spotLightContainer.lightSpaceMatrix = light3.createLightSpaceMatrix();
+			spotLights.push_back(light3.spotLightContainer);
+
+			// projektív textúrához
+			CreateTexture tex3("resources/projective/logo3.png", TextureType::projectiveMap);
+			//CreateTexture tex1(TextureType::projectiveMap);
+			CreateSpotLight light4;
+			light4.spotLightContainer.position = glm::vec3(0.90f, 2.0f, -15.0f);
+			light4.spotLightContainer.target = glm::vec3(0.90f, 2.0f, -18.0f);
+			light4.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light4.spotLightContainer.ambientStrength = 0.0f;
+			light4.spotLightContainer.cutOffAngle = 45.0f;
+			light4.spotLightContainer.hasProjective = true;
+			light4.spotLightContainer.projectiveMapID = tex3.textureContainer.ID;
+			light4.spotLightContainer.lightSpaceMatrix = light4.createLightSpaceMatrix();
+			spotLights.push_back(light4.spotLightContainer);
+		}
+	}
+}
+
 void LoadLights::loadDirectionalLights()
 {
 	//InstrumentationTimer timer("Load dir lights");
 	
 	CreateDirLight light1;
-	light1.dirLightContainer.position = glm::vec3(1.0f, 2.0f, 5.0f);
-	light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+	light1.dirLightContainer.position = glm::vec3(0.0f, 1.0f, 12.0f);
+	light1.dirLightContainer.target = glm::vec3(0.0f, 1.0f, 15.0f);
 	light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light1.dirLightContainer.ambientStrength = 0.1f;
-	light1.dirLightContainer.diffuseStrength = 0.8f;
-	light1.dirLightContainer.specularStrength = 0.9f;
+	light1.dirLightContainer.diffuseStrength = 0.5f;
+	light1.dirLightContainer.specularStrength = 0.2f;
 	light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	dirLights_.push_back(light1.dirLightContainer);
 	
+	/*
 	CreateDirLight light2;
-	light2.dirLightContainer.position = glm::vec3(-1.0f, 2.0f, 5.0f);
+	light2.dirLightContainer.position = glm::vec3(-2.0f, 1.0f, -2.0f);
 	light2.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
-	light2.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light2.dirLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);  // red
 	light2.dirLightContainer.ambientStrength = 0.1f;
 	light2.dirLightContainer.diffuseStrength = 0.8f;
 	light2.dirLightContainer.specularStrength = 1.0f;
 	light2.dirLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	dirLights_.push_back(light2.dirLightContainer);
 
-	/*
 	CreateDirLight light3;
-	light3.dirLightContainer.position = glm::vec3(0.0f, 3.0f, 5.0f);
-	light3.dirLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);
+	light3.dirLightContainer.position = glm::vec3(2.0f, 1.0f, -2.0f);
+	light3.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+	light3.dirLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green
 	light3.dirLightContainer.ambientStrength = 0.0f;
 	light3.dirLightContainer.diffuseStrength = 0.8f;
 	light3.dirLightContainer.specularStrength = 1.0f;
 	light3.dirLightContainer.lightSpaceMatrix = light3.createLightSpaceMatrix();
-	//dirLights[2] = light3.dirLightContainer;
 	dirLights_.push_back(light3.dirLightContainer);
-	
-	CreateDirLight light4;
-	light4.dirLightContainer.position = glm::vec3(5.0f, 3.0f, 0.0f);
-	light4.dirLightContainer.color = glm::vec3(0.0f, 0.0f, 1.0f);
-	light4.dirLightContainer.ambientStrength = 0.0f;
-	light4.dirLightContainer.diffuseStrength = 0.8f;
-	light4.dirLightContainer.specularStrength = 1.0f;
-	light4.dirLightContainer.lightSpaceMatrix = light4.createLightSpaceMatrix();
-	//dirLights[3] = light4.dirLightContainer;
-	dirLights_.push_back(light4.dirLightContainer);
 	*/
 }
 
@@ -73,31 +172,36 @@ void LoadLights::loadPointLights()
 	//InstrumentationTimer timer("Load point lights");
 	
 	CreatePointLight light1;
-	light1.pointLightContainer.color  = glm::vec3(1.0f, 0.5f, 0.3f);
+	light1.pointLightContainer.position = glm::vec3(-2.0f, 1.0f, 2.0f);
+	light1.pointLightContainer.color  = glm::vec3(0.0f, 0.0f, 1.0f);  // blue
 	pointLights_.push_back(light1.pointLightContainer);
 
 	CreatePointLight light2;
-	light2.pointLightContainer.position = glm::vec3(3.0f, 3.0f, 3.0f);
-	light2.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 1.0f);
-	light2.pointLightContainer.ambientStrength = 0.3f;
-	light2.pointLightContainer.diffuseStrength = 0.9f;
-	light2.pointLightContainer.specularStrength = 0.8f;
-	light2.pointLightContainer.constant = 1.0f;
-	light2.pointLightContainer.linear = 0.045f;
-	light2.pointLightContainer.quadratic = 0.0075f;
+	light2.pointLightContainer.position = glm::vec3(-2.0f, 1.0f, -2.0f);
+	light2.pointLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);  // red
 	pointLights_.push_back(light2.pointLightContainer);
+
+	CreatePointLight light3;
+	light3.pointLightContainer.position = glm::vec3(2.0f, 1.0f, -2.0f);
+	light3.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green
+	pointLights_.push_back(light3.pointLightContainer);
+
+	CreatePointLight light4;
+	light4.pointLightContainer.position = glm::vec3(2.0f, 1.0f, 2.0f);
+	light4.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);  // white
+	pointLights_.push_back(light4.pointLightContainer);
 }
 
 void LoadLights::loadSpotLights()
 {
 	CreateSpotLight light1;
-	light1.spotLightContainer.position = glm::vec3(0.0f, 1.0f, 2.0f);
-	light1.spotLightContainer.target = glm::vec3(0.0f, 1.0f, -2.0f);
-	light1.spotLightContainer.color = glm::vec3(0.7f, 1.0f, 0.7f);
+	light1.spotLightContainer.position = glm::vec3(0.0f, 1.5f, 10.0f);
+	light1.spotLightContainer.target = glm::vec3(0.0f, 1.5f, 15.0f);
+	light1.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
 	spotLights.push_back(light1.spotLightContainer);
 
-	
+	/*
 	CreateSpotLight light2;
 	light2.spotLightContainer.position = glm::vec3(-4.0f, 1.3f, 2.0f);
 	light2.spotLightContainer.target = glm::vec3(0.0f, 1.0f, -1.0f);
@@ -105,6 +209,7 @@ void LoadLights::loadSpotLights()
 	light2.spotLightContainer.cutOffAngle = 20.0f;
 	light2.spotLightContainer.lightSpaceMatrix = light2.createLightSpaceMatrix();
 	spotLights.push_back(light2.spotLightContainer);
+	*/
 }
 
 void LoadLights::loadLightModels()

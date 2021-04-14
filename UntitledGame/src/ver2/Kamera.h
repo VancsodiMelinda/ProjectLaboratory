@@ -43,6 +43,7 @@ private:
 	void updateProjectionMatrix();
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+	float fixHeight = 2.0f;
 
 public:
 	void processKeyboardInput(GLFWwindow* window);

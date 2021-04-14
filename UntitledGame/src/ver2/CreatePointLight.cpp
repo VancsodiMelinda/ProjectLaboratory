@@ -6,7 +6,7 @@ CreatePointLight::CreatePointLight()
 	pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	pointLightContainer.ambientStrength = 0.2f;
-	pointLightContainer.diffuseStrength = 0.8f;
+	pointLightContainer.diffuseStrength = 1.0f;
 	pointLightContainer.specularStrength = 0.5f;
 
 	pointLightContainer.constant = 1.0f;

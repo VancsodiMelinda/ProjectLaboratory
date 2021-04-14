@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -26,6 +27,9 @@ struct SpotLightContainer
 	glm::mat4 lightSpaceMatrix;
 
 	int ID;
+
+	bool hasProjective;
+	GLuint projectiveMapID;
 };
 
 class CreateSpotLight

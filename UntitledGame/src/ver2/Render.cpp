@@ -109,6 +109,7 @@ void Render::getUniformLocations()
 		*/
 
 		std::vector<int> temp;
+		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].position").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].direction").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("dirLightArray[" + std::to_string(i) + "].color").c_str()));
 
@@ -176,6 +177,9 @@ void Render::getUniformLocations()
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].shadowMap").c_str()));
 		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].lightSpaceMatrix").c_str()));
 
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].hasProjective").c_str()));
+		temp.push_back(glGetUniformLocation(programID, ("spotLightArray[" + std::to_string(i) + "].projectiveMap").c_str()));
+
 		uniformLocations.spotLightLocs.push_back(temp);
 	}
 }
@@ -226,6 +230,9 @@ void Render::renderAsset(ObjectContainer& object)
 	{
 		glActiveTexture(GL_TEXTURE0 + k); k++;
 		glBindTexture(GL_TEXTURE_2D, shadows.spotShadows[i].shadowMap);
+
+		glActiveTexture(GL_TEXTURE0 + k); k++;
+		glBindTexture(GL_TEXTURE_2D, lights.spotLights[i].projectiveMapID);
 	}
 
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
@@ -269,16 +276,17 @@ void Render::uploadUniforms(ObjectContainer& object)
 	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
 		glm::vec3 direction = lights.dirLights_[i].target - lights.dirLights_[i].position;
-		glUniform3fv(uniformLocations.dirLightLocs_[i][0], 1, glm::value_ptr(direction));
-		glUniform3fv(uniformLocations.dirLightLocs_[i][1], 1, glm::value_ptr(lights.dirLights_[i].color));
+		glUniform3fv(uniformLocations.dirLightLocs_[i][0], 1, glm::value_ptr(lights.dirLights_[i].position));
+		glUniform3fv(uniformLocations.dirLightLocs_[i][1], 1, glm::value_ptr(direction));
+		glUniform3fv(uniformLocations.dirLightLocs_[i][2], 1, glm::value_ptr(lights.dirLights_[i].color));
 
-		glUniform1f(uniformLocations.dirLightLocs_[i][2], lights.dirLights_[i].ambientStrength);
-		glUniform1f(uniformLocations.dirLightLocs_[i][3], lights.dirLights_[i].diffuseStrength);
-		glUniform1f(uniformLocations.dirLightLocs_[i][4], lights.dirLights_[i].specularStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][3], lights.dirLights_[i].ambientStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][4], lights.dirLights_[i].diffuseStrength);
+		glUniform1f(uniformLocations.dirLightLocs_[i][5], lights.dirLights_[i].specularStrength);
 
 		//glUniform1i(uniformLocations.dirLightLocs_[i][5], 4 + i);  // tex
-		glUniform1i(uniformLocations.dirLightLocs_[i][5], ++c);  // tex
-		glUniformMatrix4fv(uniformLocations.dirLightLocs_[i][6], 1, GL_FALSE, glm::value_ptr(lights.dirLights_[i].lightSpaceMatrix));
+		glUniform1i(uniformLocations.dirLightLocs_[i][6], ++c);  // tex
+		glUniformMatrix4fv(uniformLocations.dirLightLocs_[i][7], 1, GL_FALSE, glm::value_ptr(lights.dirLights_[i].lightSpaceMatrix));
 	}
 
 	for (int i = 0; i < lights.pointLights_.size(); i++)
@@ -318,6 +326,10 @@ void Render::uploadUniforms(ObjectContainer& object)
 
 		glUniform1i(uniformLocations.spotLightLocs[i][10], ++c);  // tex
 		glUniformMatrix4fv(uniformLocations.spotLightLocs[i][11], 1, GL_FALSE, glm::value_ptr(lights.spotLights[i].lightSpaceMatrix));
+
+		int hasProjective = lights.spotLights[i].hasProjective ? 1 : 0;
+		glUniform1i(uniformLocations.spotLightLocs[i][12], hasProjective);
+		glUniform1i(uniformLocations.spotLightLocs[i][13], ++c);  // tex
 	}
 }
 

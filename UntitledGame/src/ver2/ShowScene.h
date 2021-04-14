@@ -34,5 +34,6 @@ public:
 	void scene2();
 	void scene3();  // deferred rendering
 	void scene4();  // lights demo
+	void demoScene();
 };
 

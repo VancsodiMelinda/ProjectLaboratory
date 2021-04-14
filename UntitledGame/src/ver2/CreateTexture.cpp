@@ -23,7 +23,13 @@ CreateTexture::CreateTexture(TextureType textureType)
 		setUpTexture();
 		loadTexture(textureContainer.name);
 	}
-	
+	else if (textureType == TextureType::projectiveMap)
+	{
+		textureContainer.name = "resources/projective/default projective map.jpg";
+		textureContainer.type = TextureType::projectiveMap;
+		setUpTexture();
+		loadTexture(textureContainer.name);
+	}
 }
 
 CreateTexture::CreateTexture(std::string textureFileName, TextureType textureType)
@@ -46,6 +52,13 @@ CreateTexture::CreateTexture(std::string textureFileName, TextureType textureTyp
 	{
 		textureContainer.name = textureFileName;
 		textureContainer.type = TextureType::normalMap;
+		setUpTexture();
+		loadTexture(textureFileName);
+	}
+	else if (textureType == TextureType::projectiveMap)
+	{
+		textureContainer.name = textureFileName;
+		textureContainer.type = TextureType::projectiveMap;
 		setUpTexture();
 		loadTexture(textureFileName);
 	}
