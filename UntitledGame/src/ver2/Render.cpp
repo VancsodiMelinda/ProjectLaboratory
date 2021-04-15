@@ -243,8 +243,8 @@ void Render::uploadUniforms(ObjectContainer& object)
 {
 	int c = 0;
 	glm::mat4 modelMatrix = recalculateM(object.position, object.scale, object.angle, object.axes);
-	//glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
-	glm::mat4 MVP = updateMVP(modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
+	object.modelMatrix = modelMatrix;
+	glm::mat4 MVP = updateMVP(object.modelMatrix, kamera.cameraContainer.viewMatrix, kamera.cameraContainer.projectionMatrix);
 
 	// vertex shader
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
@@ -342,10 +342,9 @@ glm::mat4 Render::recalculateM(glm::vec3 translate, glm::vec3 scale, float angle
 {
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-	modelMatrix = glm::translate(modelMatrix, translate);
+	modelMatrix = glm::translate(modelMatrix, translate);  // 4. translate back to original position
 
-	modelMatrix = glm::scale(modelMatrix, scale);
-
+	// 3. rotate
 	if ((axes == "x") || (axes == "X"))
 	{
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -363,6 +362,10 @@ glm::mat4 Render::recalculateM(glm::vec3 translate, glm::vec3 scale, float angle
 		std::cout << "The rotation angle is not correct!" << std::endl;
 	}
 
+	modelMatrix = glm::scale(modelMatrix, scale);  // 2. scale
+
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f));  // 1. move object to world origo
+
 	return modelMatrix;
 }
 
@@ -370,30 +373,28 @@ void Render::generateIDs()
 {
 	int ID = 0;
 
-	/*
-	for (int i = 0; i < NUMBER_OF_OBJECTS; i++)
+	for (int i = 0; i < models.size(); i++)
 	{
-		assets.models[i].ID = ID;
-		ID++;
-	}
-	*/
-
-	for (int i = 0; i < models.size(); i++)  // new
-	{
-		std::cout << "model name: " << models[i].name << std::endl;
 		models[i].ID = ID;
-		std::cout << "model ID: " << models[i].ID << std::endl;
 		ID++;
 	}
 
 	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
-
+		lights.dirLights_[i].ID = ID;
+		ID++;
 	}
 
 	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
+		lights.pointLights_[i].ID = ID;
+		ID++;
+	}
 
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		lights.spotLights[i].ID = ID;
+		ID++;
 	}
 }
 
@@ -450,8 +451,8 @@ void Render::changeParams(int selectedID)
 	ImGui::End();
 	*/
 	
-	
-	if (selectedID < models.size())
+	/*
+	if (selectedID == (models.size() - 1))
 	{
 		// draw gui
 		ImGui::Begin("ROTATE OBJECT");
@@ -466,6 +467,122 @@ void Render::changeParams(int selectedID)
 		//models[selectedID].modelMatrix = modelMatrix;
 
 		ImGui::End();
+	}
+	*/
+
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+	float X = 0.0f;
+	float Y = 0.0f;
+	float Z = 0.0f;
+
+	switch (selectedID)
+	{
+	case 5:  // little nightmare logo
+		ImGui::Begin("ROTATE OBJECT");
+		ImGui::SliderFloat("angle", &models[selectedID].angle, 0.0f, 360.0f);
+		ImGui::End();
+		//std::cout << "six is selected" << std::endl;
+		break;
+
+	case 7:  // point light
+		ImGui::Begin("CHANGE COLOR");
+		R = lights.pointLights_[0].color.x;
+		G = lights.pointLights_[0].color.y;
+		B = lights.pointLights_[0].color.z;
+		ImGui::SliderFloat("R", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B", &B, 0.0f, 1.0f);
+		lights.pointLights_[0].color = glm::vec3(R, G, B);
+		ImGui::End();
+		//std::cout << "point lamp 1 is selected" << std::endl;
+		break;
+	case 8:  // point light
+		ImGui::Begin("CHANGE COLOR");
+		R = lights.pointLights_[1].color.x;
+		G = lights.pointLights_[1].color.y;
+		B = lights.pointLights_[1].color.z;
+		ImGui::SliderFloat("R", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B", &B, 0.0f, 1.0f);
+		lights.pointLights_[1].color = glm::vec3(R, G, B);
+		ImGui::End();
+		//std::cout << "point lamp 2 is selected" << std::endl;
+		break;
+	case 9:  // point light
+		ImGui::Begin("CHANGE COLOR");
+		R = lights.pointLights_[2].color.x;
+		G = lights.pointLights_[2].color.y;
+		B = lights.pointLights_[2].color.z;
+		ImGui::SliderFloat("R", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B", &B, 0.0f, 1.0f);
+		lights.pointLights_[2].color = glm::vec3(R, G, B);
+		ImGui::End();
+		//std::cout << "point lamp 3 is selected" << std::endl;
+		break;
+	case 10:  // point light
+		ImGui::Begin("CHANGE COLOR");
+		R = lights.pointLights_[3].color.x;
+		G = lights.pointLights_[3].color.y;
+		B = lights.pointLights_[3].color.z;
+		ImGui::SliderFloat("R", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B", &B, 0.0f, 1.0f);
+		lights.pointLights_[3].color = glm::vec3(R, G, B);
+		ImGui::End();
+		//std::cout << "point lamp 4 is selected" << std::endl;
+		break;
+
+	case 13:  // spot light
+		ImGui::Begin("CHANGE POSITION");
+		X = lights.spotLights[1].position.x;
+		Y = lights.spotLights[1].position.y;
+		Z = lights.spotLights[1].position.z;
+		ImGui::SliderFloat("X", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y", &Y, 0.2f, 3.0f);
+		ImGui::SliderFloat("Z", &Z, -14.0f, -16.0f);
+		lights.spotLights[1].position.x = X;
+		lights.spotLights[1].target.x = X;
+		lights.spotLights[1].position.y = Y;
+		lights.spotLights[1].target.y = Y;
+		lights.spotLights[1].position.z = Z;
+		ImGui::End();
+		//std::cout << "spot lamp 1 is selected" << std::endl;
+		break;
+	case 14:  // spot light
+		ImGui::Begin("CHANGE POSITION");
+		X = lights.spotLights[2].position.x;
+		Y = lights.spotLights[2].position.y;
+		Z = lights.spotLights[2].position.z;
+		ImGui::SliderFloat("X", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y", &Y, 0.2f, 3.0f);
+		ImGui::SliderFloat("Z", &Z, -14.0f, -16.0f);
+		lights.spotLights[2].position.x = X;
+		lights.spotLights[2].target.x = X;
+		lights.spotLights[2].position.y = Y;
+		lights.spotLights[2].target.y = Y;
+		lights.spotLights[2].position.z = Z;
+		ImGui::End();
+		//std::cout << "spot lamp 2 is selected" << std::endl;
+		break;
+	case 15:  // spot light
+		ImGui::Begin("CHANGE POSITION");
+		X = lights.spotLights[3].position.x;
+		Y = lights.spotLights[3].position.y;
+		Z = lights.spotLights[3].position.z;
+		ImGui::SliderFloat("X", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y", &Y, 0.2f, 3.0f);
+		ImGui::SliderFloat("Z", &Z, -14.0f, -16.0f);
+		lights.spotLights[3].position.x = X;
+		lights.spotLights[3].target.x = X;
+		lights.spotLights[3].position.y = Y;
+		lights.spotLights[3].target.y = Y;
+		lights.spotLights[3].position.z = Z;
+		ImGui::End();
+		//std::cout << "spot lamp 3 is selected" << std::endl;
+		break;
 	}
 }
 

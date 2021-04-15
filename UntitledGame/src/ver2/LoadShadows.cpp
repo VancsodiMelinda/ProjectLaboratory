@@ -222,8 +222,66 @@ void LoadShadows::config()
 
 void LoadShadows::render()
 {
-	//glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
-	//glEnable(GL_DEPTH_TEST);
+	glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+	glEnable(GL_DEPTH_TEST);
+	//InstrumentationTimer timer("Render shadows");
+
+	// RENDER DIRECTIONAL LIGHT SHADOWS
+	for (int i = 0; i < lights.dirLights_.size(); i++)
+	{
+		//InstrumentationTimer timer("Render dir shadows");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows_[i].fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		for (int j = 0; j < models.size(); j++)
+		{
+			renderDirShadow(lights.dirLights_[i], models[j], dirShadowProgramContainer.ID);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// RENDER SPOTLIGHT SHADOWS
+	for (int i = 0; i < lights.pointLights_.size(); i++)
+	{
+		//InstrumentationTimer timer("Render point shadows");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows_[i].fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		for (int j = 0; j < models.size(); j++)
+		{
+			renderPointShadow(lights.pointLights_[i], models[j], pointShadowProgramContainer.ID);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// RENDER SPOTLIGHT SHADOW
+	for (int i = 0; i < lights.spotLights.size(); i++)
+	{
+		//InstrumentationTimer timer("Render dir shadows");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, spotShadows[i].fbo);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		for (int j = 0; j < models.size(); j++)
+		{
+			renderSpotShadow(lights.spotLights[i], models[j], dirShadowProgramContainer.ID);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void LoadShadows::renderDynamic(std::vector<ObjectContainer>& newModels)
+{
+	// update models
+	models = newModels;
+
+	glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+	glEnable(GL_DEPTH_TEST);
 	//InstrumentationTimer timer("Render shadows");
 
 	// RENDER DIRECTIONAL LIGHT SHADOWS

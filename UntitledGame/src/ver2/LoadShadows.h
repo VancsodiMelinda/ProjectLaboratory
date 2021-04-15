@@ -60,5 +60,6 @@ private:
 public:
 	void config();
 	void render();
+	void renderDynamic(std::vector<ObjectContainer>& newModels);
 };
 

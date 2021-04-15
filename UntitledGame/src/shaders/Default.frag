@@ -131,7 +131,7 @@ void main()
 	//fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
-	fragColor = pointAndSpotWithShadows();
+	fragColor = pointAndSpotWithShadows();  // use this for demo
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
 	//fragColor = refraction();
@@ -262,7 +262,7 @@ vec4 pointAndSpotWithShadows()
 
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
-		finalColor += caclPointLight(pointLightArray[i]);
+		finalColor += (caclPointLight(pointLightArray[i])*1.0);
 	}
 
 	for (int i = 0; i < NR_SPOT_LIGHTS; i++)

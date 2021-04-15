@@ -7,7 +7,7 @@ CreateModel::CreateModel()
 	loadObjectData(objectContainer.name);		// data
 	createVAOandVBOs();		// vao, vbo, ibo
 	fillVBOs();				// vbo, ibo
-	objectContainer.modelMatrix = glm::mat4();	// identity matrix
+	objectContainer.modelMatrix = glm::mat4(1.0f);	// identity matrix
 }
 
 
@@ -24,10 +24,15 @@ CreateModel::CreateModel(std::string objectFileName)
 CreateModel::CreateModel(std::string objectFileName, glm::vec3 translate, glm::vec3 scale, float rotate, std::string rotateAxis)
 {
 	objectContainer.name = objectFileName;
+	objectContainer.position = translate;
+	objectContainer.scale = scale;
+	objectContainer.angle = rotate;
+	objectContainer.axes = rotateAxis;
+	objectContainer.modelMatrix = createModelMatrix(translate, scale, rotate, rotateAxis);
+
 	loadObjectData(objectFileName);		// data
 	createVAOandVBOs();		// vao, vbo, ibo
 	fillVBOs();				// vbo, ibo
-	objectContainer.modelMatrix = createModelMatrix(translate, scale, rotate, rotateAxis);
 }
 
 void CreateModel::loadObjectData(std::string objectFileName)
@@ -83,7 +88,7 @@ glm::mat4 CreateModel::createModelMatrix(glm::vec3 translate, glm::vec3 scale, f
 
 	modelMatrix = glm::translate(modelMatrix, translate);
 
-	modelMatrix = glm::scale(modelMatrix, scale);
+	//modelMatrix = glm::scale(modelMatrix, scale);
 
 	if ((rotateAxis == "x") || (rotateAxis == "X"))
 	{
@@ -101,6 +106,8 @@ glm::mat4 CreateModel::createModelMatrix(glm::vec3 translate, glm::vec3 scale, f
 	{
 		std::cout << "The rotation angle is not correct!" << std::endl;
 	}
+
+	modelMatrix = glm::scale(modelMatrix, scale);
 
 	return modelMatrix;
 }

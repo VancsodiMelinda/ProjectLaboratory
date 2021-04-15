@@ -51,13 +51,18 @@ private:
 	struct UniformLocations {
 		GLint MVPloc = 0;
 		GLint colorLoc = 0;
+		GLint IDloc = 0;
 	};
 	UniformLocations uniformLocations;
+
+	glm::mat4 updateLightViewMatrix(SpotLightContainer currentSpotLight);
 
 public:
 	//void config(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer);
 	//void render(ObjectContainer& dirLightObject, ObjectContainer& pointLightObject, ProgramContainer programContainer, Kamera& kamera);
 	void config(ProgramContainer programContainer);
 	void render(ProgramContainer programContainer, Kamera& kamera);
+	void renderDynamic(ProgramContainer programContainer, Kamera& kamera,
+		std::vector<DirLightContainer>& dir, std::vector<PointLightContainer>& point, std::vector<SpotLightContainer>& spot);
 };
 

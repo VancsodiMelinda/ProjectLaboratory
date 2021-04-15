@@ -22,5 +22,7 @@ private:
 	void loadObjectData(std::string objectFileName);
 	void createVAOandVBOs();
 	void fillVBOs();
+
+public:
 	glm::mat4 createModelMatrix(glm::vec3 translate, glm::vec3 scale, float rotateAngle, std::string rotateAxis);
 };

@@ -24,7 +24,7 @@ vec4 pixelate();
 
 void main()
 {
-	fragColor = showSelectionTexture();
+	fragColor = normal();
 	//fragColor = inversion();
 }
 

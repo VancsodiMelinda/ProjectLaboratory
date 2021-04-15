@@ -2,16 +2,25 @@
 
 Kamera::Kamera()
 {
-	//cameraContainer.cameraPosition	= glm::vec3(0.0f, 1.0f, 8.0f);
+	// camera for demo screen shots
+	/*
+	cameraContainer.cameraPosition = glm::vec3(4.0f, 2.5f, 4.0f);
+	cameraContainer.cameraTarget = glm::vec3(-2.0f, 0.0f, -2.0f);
+	cameraContainer.cameraFront = glm::normalize(cameraContainer.cameraTarget - cameraContainer.cameraPosition);
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	cameraContainer.cameraRight = glm::vec3(glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront)));
+	cameraContainer.cameraUp = glm::cross(cameraContainer.cameraFront, cameraContainer.cameraRight);
+	*/
+
+	
 	cameraContainer.cameraFront		= glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
-	cameraContainer.cameraPosition	= glm::vec3(0.0f, 2.5f, 10.0f);
-	//cameraContainer.cameraPosition = glm::vec3(0.0f, fixHeight, 0.0f);
-	//cameraContainer.cameraFront		= glm::normalize(glm::vec3(1.0f, 0.0f, -1.0f));
+	//cameraContainer.cameraPosition	= glm::vec3(0.0f, 2.5f, 10.0f);
+	cameraContainer.cameraPosition = glm::vec3(0.0f, fixHeight, 0.0f);  // FOR FIXED CAMERA
 	cameraContainer.cameraTarget	= cameraContainer.cameraPosition + cameraContainer.cameraFront;
 	glm::vec3 worldUp				= glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraContainer.cameraRight		= glm::vec3(glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront)));
 	cameraContainer.cameraUp		= glm::cross(cameraContainer.cameraFront, cameraContainer.cameraRight);
-
+	
 	updateViewMatrix();
 	updateProjectionMatrix();
 }
@@ -64,7 +73,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	if (button == "W")
 	{
 		cameraContainer.cameraPosition += cameraSpeed * cameraContainer.cameraFront;
-		//cameraContainer.cameraPosition.y = fixHeight;  //
+		cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "W" << std::endl;
 		updateViewMatrix();
@@ -73,7 +82,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	else if (button == "S")
 	{
 		cameraContainer.cameraPosition -= cameraSpeed * cameraContainer.cameraFront;
-		//cameraContainer.cameraPosition.y = fixHeight;  //
+		cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "S" << std::endl;
 		updateViewMatrix();
@@ -83,7 +92,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	{
 		//cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		cameraContainer.cameraPosition += cameraContainer.cameraRight * cameraSpeed;
-		//cameraContainer.cameraPosition.y = fixHeight;  //
+		cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "A" << std::endl;
 		updateViewMatrix();
@@ -93,7 +102,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	{
 		//cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		cameraContainer.cameraPosition -= cameraContainer.cameraRight * cameraSpeed;
-		//cameraContainer.cameraPosition.y = fixHeight;  //
+		cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "D" << std::endl;
 		updateViewMatrix();
@@ -102,7 +111,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	else if (button == "R")  // rotate camera around origo
 	{
 		cameraContainer.cameraPosition -= cameraContainer.cameraRight * 0.05f;  // 0.05f
-		//cameraContainer.cameraPosition.y = fixHeight;  //
+		cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraFront = glm::vec3(cameraContainer.cameraPosition - cameraContainer.cameraTarget);
 		cameraContainer.cameraRight = glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront));
 		//std::cout << "R" << std::endl;

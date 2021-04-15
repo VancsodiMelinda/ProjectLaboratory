@@ -13,12 +13,13 @@
 
 class Render
 {
-private:
+public:
 	//LoadAssets& assets;
 	std::vector<ObjectContainer> models;  //
+	LoadLights& lights; //
+private:
 	LoadPrograms& programs;
 	Kamera& kamera;
-	LoadLights& lights;
 	LoadShadows& shadows;
 	SkyboxContainer skybox;
 	GLuint programID = 0;

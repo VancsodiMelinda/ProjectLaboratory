@@ -44,25 +44,25 @@ LoadLights::LoadLights(std::string scene)
 		{
 			CreatePointLight light1;
 			light1.pointLightContainer.position = glm::vec3(-2.0f, 1.5f, 0.0f);
-			light1.pointLightContainer.color = glm::vec3(0.0f, 0.0f, 1.0f);  // blue
+			light1.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);  // blue
 			light1.pointLightContainer.ambientStrength = 0.0f;
 			pointLights_.push_back(light1.pointLightContainer);
 
 			CreatePointLight light2;
 			light2.pointLightContainer.position = glm::vec3(0.0f, 1.5f, -2.0f);
-			light2.pointLightContainer.color = glm::vec3(1.0f, 0.0f, 0.0f);  // red
+			light2.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);  // red
 			light2.pointLightContainer.ambientStrength = 0.0f;
 			pointLights_.push_back(light2.pointLightContainer);
 
 			CreatePointLight light3;
 			light3.pointLightContainer.position = glm::vec3(2.0f, 1.5f, 0.0f);
-			light3.pointLightContainer.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green
+			light3.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);  // green
 			light3.pointLightContainer.ambientStrength = 0.0f;
 			pointLights_.push_back(light3.pointLightContainer);
 
 			CreatePointLight light4;
 			light4.pointLightContainer.position = glm::vec3(0.0f, 1.5f, 2.0f);
-			light4.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 0.0f);  // yellow
+			light4.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);  // yellow
 			light4.pointLightContainer.ambientStrength = 0.0f;
 			pointLights_.push_back(light4.pointLightContainer);
 
@@ -256,6 +256,7 @@ void LoadLights::configLight(ObjectContainer& object, GLuint programID)
 	//// GET UNIFORM LOACTIONS
 	uniformLocations.MVPloc = glGetUniformLocation(programID, "MVP");
 	uniformLocations.colorLoc = glGetUniformLocation(programID, "lightColor");
+	uniformLocations.IDloc = glGetUniformLocation(programID, "ID");
 }
 
 void LoadLights::renderDirLight(DirLightContainer& dirLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
@@ -271,6 +272,7 @@ void LoadLights::renderDirLight(DirLightContainer& dirLight, ObjectContainer& ob
 	// upload uniforms
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(dirLight.color));
+	glUniform1i(uniformLocations.IDloc, dirLight.ID);  //
 
 	// draw
 	glBindVertexArray(object.vao);
@@ -291,6 +293,7 @@ void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContain
 	// upload uniforms
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(pointLight.color));
+	glUniform1i(uniformLocations.IDloc, pointLight.ID);  //
 
 	// draw
 	glBindVertexArray(object.vao);
@@ -301,6 +304,9 @@ void LoadLights::renderPointLight(PointLightContainer& pointLight, ObjectContain
 void LoadLights::renderSpotLight(SpotLightContainer& spotLight, ObjectContainer& object, GLuint programID, Kamera& kamera)
 {
 	glUseProgram(programID);
+
+	// NEW: update lightspace matrix
+	spotLight.lightSpaceMatrix = updateLightViewMatrix(spotLight);
 
 	// calculate angles
 	glm::vec3 dir = spotLight.target - spotLight.position;
@@ -328,11 +334,30 @@ void LoadLights::renderSpotLight(SpotLightContainer& spotLight, ObjectContainer&
 	// upload uniforms
 	glUniformMatrix4fv(uniformLocations.MVPloc, 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniform3fv(uniformLocations.colorLoc, 1, glm::value_ptr(spotLight.color));
+	glUniform1i(uniformLocations.IDloc, spotLight.ID);  //
 
 	// draw
 	glBindVertexArray(object.vao);
 	glDrawElements(GL_TRIANGLES, object.data.indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+}
+
+glm::mat4 LoadLights::updateLightViewMatrix(SpotLightContainer currentSpotLight)
+{
+	glm::mat4 lightViewMatrix = glm::lookAt(currentSpotLight.position, currentSpotLight.target, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// create projection matrix (perspective)
+	float aspect = (float)POINT_SHADOW_WIDTH_ / (float)POINT_SHADOW_HEIGHT_;
+	float nearPlane = 1.0f;
+	float farPlane = 20.0f;
+	glm::mat4 lightProjMatrix = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
+
+	if (!currentSpotLight.hasProjective)
+		lightProjMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, nearPlane, farPlane);  // projection matrix (orthogonal)
+
+	glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix;
+
+	return lightSpaceMatrix;
 }
 
 void LoadLights::config(ProgramContainer programContainer)
@@ -366,6 +391,35 @@ void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 		renderDirLight(dirLights_[i], models[0], programContainer.ID, kamera);
 	}
 	
+	// render point lights
+	for (int i = 0; i < pointLights_.size(); i++)
+	{
+		//InstrumentationTimer timer("Render point lights");
+
+		renderPointLight(pointLights_[i], models[1], programContainer.ID, kamera);
+	}
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		renderSpotLight(spotLights[i], models[2], programContainer.ID, kamera);
+	}
+}
+
+void LoadLights::renderDynamic(ProgramContainer programContainer, Kamera& kamera, std::vector<DirLightContainer>& dir, std::vector<PointLightContainer>& point, std::vector<SpotLightContainer>& spot)
+{
+	// update lights
+	dirLights_ = dir;
+	pointLights_ = point;
+	spotLights = spot;
+
+	// render directional lights
+	for (int i = 0; i < dirLights_.size(); i++)
+	{
+		//InstrumentationTimer timer("Render dir lights");
+
+		renderDirLight(dirLights_[i], models[0], programContainer.ID, kamera);
+	}
+
 	// render point lights
 	for (int i = 0; i < pointLights_.size(); i++)
 	{

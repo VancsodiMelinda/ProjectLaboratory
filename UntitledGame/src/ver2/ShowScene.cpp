@@ -367,14 +367,24 @@ void ShowScene::scene4()
 
 void ShowScene::demoScene()
 {
-	// load
+	// load models with textures
 	std::string pathStr = "resources/assimp/demo/demo scene.obj";
 	SceneLoader assets(&pathStr[0]);
 
+	// load puzzle model with textures separately
+	CreateTexture diffuseMap("resources/assimp/demo/six gray 4px.png", TextureType::diffuseMap);
+	CreateTexture specularMap(TextureType::specularMap);
+	CreateModel six("resources/assimp/demo/little nightmares logo.obj", glm::vec3(0.0f, 1.5f, 14.5f), glm::vec3(0.65f), 0.0f, "y");
+	six.objectContainer.material.diffuseMap = diffuseMap.textureContainer.ID;
+	six.objectContainer.material.specularMap = specularMap.textureContainer.ID;
+	assets.models.push_back(six.objectContainer);
+
+	// load other stuff
 	LoadPrograms programs;
 	LoadLights lights("demo");
 	LoadShadows shadows(lights, assets.models, programs);
 	LoadSkyboxes skybox;  // not used
+	PostProcessing postProc(programs.programs[5]);  // for object selection
 
 	// init renderer
 	Render renderer(
@@ -393,10 +403,15 @@ void ShowScene::demoScene()
 	//skybox.config(programs.programs[4]);
 
 	glEnable(GL_DEPTH_TEST);
+	int selectedID = -1;
 
 	// render
 	while (!glfwWindowShouldClose(window))
 	{
+		ImGui_ImplOpenGL3_NewFrame();  // IMGUI
+		ImGui_ImplGlfw_NewFrame();  // IMGUI
+		ImGui::NewFrame();  // IMGUI
+
 		kamera.processKeyboardInput(window);	// WASD + R
 
 		// specify clear values for the buffers
@@ -408,15 +423,42 @@ void ShowScene::demoScene()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// RENDER SHADOWS
-		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+		//glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 		//glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_STENCIL_TEST);
-		shadows.render();
+		shadows.renderDynamic(renderer.models);
 
 		// RENDER SCENE AND LIGHTS
+		glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.renderAssets(kamera);
 		lights.render(programs.programs[1], kamera);
+
+		// POST PROCESSING
+		postProc.render();
+
+		// OBJECT SELECTION
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && isFisrtPress)
+		{
+			isFisrtPress = false;
+			glFlush();
+			glFinish();
+			selectedID = postProc.selectObject();
+			showGUI = !showGUI;
+		}
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+		{
+			isFisrtPress = true;
+		}
+
+		if (showGUI)
+			renderer.changeParams(selectedID);
+
+		ImGui::Render();  // IMGUI
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());  // IMGUI
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
