@@ -32,7 +32,7 @@ CreateDirLight::CreateDirLight(glm::vec3 position, glm::vec3 color, float ambien
 glm::mat4 CreateDirLight::createLightSpaceMatrix()
 {
 	float nearPlane = 0.1f;
-	float farPlane = 20.0f;
+	float farPlane = 100.0f;
 
 	//glm::vec3 position = dirLightContainer.position;
 	//glm::vec3 target = dirLightContainer.target;

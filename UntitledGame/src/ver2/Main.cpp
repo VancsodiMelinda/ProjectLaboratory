@@ -56,7 +56,7 @@ int main(void)
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	//glfwSetCursorEnterCallback(window, cursor_enter_callback);
 	//glfwSetMouseButtonCallback(window, mouse_button_callback);
-	//glfwSetScrollCallback(window, scroll_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -102,7 +102,7 @@ int main(void)
 
 	// RENDER
 	ShowScene show(window, kamera);
-	show.demoScene();
+	show.deferredRenderingScene();
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

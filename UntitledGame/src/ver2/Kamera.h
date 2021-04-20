@@ -43,12 +43,12 @@ private:
 	void updateProjectionMatrix();
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
-	float fixHeight = 2.0f;
+	float fixHeight = 1.5f;
 
 public:
 	void processKeyboardInput(GLFWwindow* window);
 	void processKeyInput(std::string button, float deltaTime);
 	void processMouseMovement(float xOffset, float yOffset);
-	void processMouseScroll();
+	void processMouseScroll(double yoffset);
 };
 

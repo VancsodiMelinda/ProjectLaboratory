@@ -27,7 +27,8 @@ void main()
 	vec3 position = texture(gPosition, fs_uv).rgb;
 	vec3 normal = texture(gNormal, fs_uv).rgb;
 	vec3 albedo = texture(gAlbedoSpecular, fs_uv).rgb;
-	float specular = texture(gAlbedoSpecular, fs_uv).a;
+	//float specular = texture(gAlbedoSpecular, fs_uv).a;
+	float specular = 0.0;
 	
 	vec3 finalColor = vec3(0.0);
 

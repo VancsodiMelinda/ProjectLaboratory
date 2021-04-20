@@ -358,8 +358,8 @@ void DeferredRendering::renderLightingPass()
 			glm::value_ptr(lightPassData.lightColors[i]));
 
 		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].constant").c_str()), 1.0f);
-		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].linear").c_str()), 0.35f);
-		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].quadratic").c_str()), 0.44f);
+		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].linear").c_str()), 0.22f);
+		glUniform1f(glGetUniformLocation(lightPassData.programID, ("lights[" + std::to_string(i) + "].quadratic").c_str()), 0.2f);
 	}
 
 	// render quad

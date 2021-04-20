@@ -32,8 +32,8 @@ public:
 	ShowScene(GLFWwindow* window_, Kamera& kamera_);
 	void scene1();
 	void scene2();
-	void scene3();  // deferred rendering
-	void scene4();  // lights demo
+	void deferredRenderingScene();  // deferred rendering
+	void myRoom();  // lights demo
 	void demoScene();
 };
 

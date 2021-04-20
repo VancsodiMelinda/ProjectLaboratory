@@ -62,7 +62,7 @@ struct PointLight{
 
 	samplerCube shadowBox;
 };
-const int NR_POINT_LIGHTS = 5;
+const int NR_POINT_LIGHTS = 2;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
 // SPOT LIGHT
@@ -87,7 +87,7 @@ struct SpotLight{
 	bool hasProjective;
 	sampler2D projectiveMap;
 };
-const int NR_SPOT_LIGHTS = 4;
+const int NR_SPOT_LIGHTS = 1;
 uniform SpotLight spotLightArray[NR_SPOT_LIGHTS];
 
 uniform samplerCube skybox;
@@ -126,12 +126,12 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	//fragColor = plainTexture();
+	fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
 	//fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
-	fragColor = pointAndSpotWithShadows();  // use this for demo
+	//fragColor = pointAndSpotWithShadows();  // use this for demo
 	//fragColor = depthBuffer();
 	//fragColor = reflection();
 	//fragColor = refraction();
@@ -582,7 +582,7 @@ vec4 depthBuffer()
 	float depth = gl_FragCoord.z;
 	float z = depth * 2.0 - 1.0;
 	float near = 0.1; 
-	float far  = 5.0; 
+	float far  = 2.0; 
 	float color = (2.0 * near * far) / (far + near - z * (far - near));
 
 	return vec4(vec3(color) / far, 1.0);

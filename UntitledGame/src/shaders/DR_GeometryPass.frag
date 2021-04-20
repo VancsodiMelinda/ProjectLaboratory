@@ -23,9 +23,8 @@ void main()
 	gAlbedoSpecular.a = 0.0f;
 	*/
 
-	// normal from normal map - enhance normal map
+	//
 	gPosition = vec4(fs_worldPosition, 1.0);
 	gNormal = vec4(normalize(fs_TBN * (texture(normalMap, fs_uv).rgb * 2.0 - 1.0)), 1.0);
-	gAlbedoSpecular.rgb = vec3(1.0);
-	gAlbedoSpecular.a = 0.0f;
+	gAlbedoSpecular = vec4(texture(diffuseMap, fs_uv).rgb, 1.0);
 }

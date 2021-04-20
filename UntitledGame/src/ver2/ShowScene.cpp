@@ -280,7 +280,7 @@ void ShowScene::scene2()
 /// <summary>
 /// Scene with 9 textured sphere objects (moon) and 24 pointlights around them
 /// </summary>
-void ShowScene::scene3()
+void ShowScene::deferredRenderingScene()
 {
 	DeferredRendering dr(kamera);
 
@@ -304,19 +304,18 @@ void ShowScene::scene3()
 	}
 }
 
-/// <summary>
-/// Scene with spot lights.
-/// </summary>
-void ShowScene::scene4()
+
+void ShowScene::myRoom()
 {
 	// load
-	std::string pathStr = "resources/assimp/my room/My room test.obj";
+	std::string pathStr = "resources/assimp/my room/my room.obj";
 	SceneLoader assets(&pathStr[0]);
 
 	LoadPrograms programs;
-	LoadLights lights;
+	LoadLights lights("room");
 	LoadShadows shadows(lights, assets.models, programs);
-	LoadSkyboxes skybox;
+	LoadSkyboxes skybox;  // not used
+	PostProcessing postProc(programs.programs[5]);
 
 	// init renderer
 	Render renderer(
@@ -342,7 +341,8 @@ void ShowScene::scene4()
 		kamera.processKeyboardInput(window);	// WASD + R
 
 		// specify clear values for the buffers
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClearDepth(1);  // default
 		glClearStencil(0);  // default
 
@@ -356,9 +356,15 @@ void ShowScene::scene4()
 		shadows.render();
 
 		// RENDER SCENE AND LIGHTS
+		//glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glEnable(GL_DEPTH_TEST);
+
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		renderer.renderAssets(kamera);
 		//lights.render(programs.programs[1], kamera);
+
+		//postProc.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -405,9 +411,18 @@ void ShowScene::demoScene()
 	glEnable(GL_DEPTH_TEST);
 	int selectedID = -1;
 
+	float timeInterval = 0.0f;
+	float lastFrameTime = 0.0f;
+
 	// render
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrameTime = (float)glfwGetTime();
+		timeInterval = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+
+		//std::cout << "FPS: " << (1.0f / timeInterval) << std::endl;
+
 		ImGui_ImplOpenGL3_NewFrame();  // IMGUI
 		ImGui_ImplGlfw_NewFrame();  // IMGUI
 		ImGui::NewFrame();  // IMGUI
@@ -454,7 +469,7 @@ void ShowScene::demoScene()
 			isFisrtPress = true;
 		}
 
-		if (showGUI)
+		if (true)
 			renderer.changeParams(selectedID);
 
 		ImGui::Render();  // IMGUI

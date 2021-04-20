@@ -1,5 +1,5 @@
-# Blender MTL File: 'My room test.blend'
-# Material Count: 31
+# Blender MTL File: 'my room clean.blend'
+# Material Count: 39
 
 newmtl 3x3_done_pink_mat
 Ns 225.000000
@@ -89,6 +89,50 @@ d 1.000000
 illum 2
 map_Kd bed 32px.png
 
+newmtl book_blue_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd book blue px.png
+
+newmtl book_green_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd book green 16px.png
+
+newmtl book_orange_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd book orange 16px.png
+
+newmtl book_pink_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd book pink 16px.png
+
 newmtl bookshelf_mat
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
@@ -99,6 +143,39 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd bookshelf 4px.png
+
+newmtl box_mat_1
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd box 1 16px.png
+
+newmtl box_mat_2
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd box 2 16px.png
+
+newmtl box_mat_3
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd box 3 16px.png
 
 newmtl cabinet_mat
 Ns 225.000000
@@ -298,6 +375,17 @@ d 1.000000
 illum 2
 map_Kd shelf drawer 4px.png
 
+newmtl six_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd six 4px.png
+
 newmtl standing_lamp_mat
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
@@ -320,7 +408,7 @@ d 1.000000
 illum 2
 map_Kd table 4x4px.png
 
-newmtl wall_mat
+newmtl wall_mat.001
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000

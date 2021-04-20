@@ -444,32 +444,78 @@ void Render::renderAssets(Kamera& kamera_)
 
 void Render::changeParams(int selectedID)
 {
-	/*
-	ImGui::Begin("rotate selected object");
-	float angle = 0.0f;
-	ImGui::SliderFloat("angle", &angle, 0.0f, 1.0f);
+	/* ROOM 2
+	ImGui::Begin("CHANGE COLORS");
+	{
+		//ImGui::Begin("CHANGE COLOR 1");
+		float R = lights.pointLights_[2].color.x;
+		float G = lights.pointLights_[2].color.y;
+		float B = lights.pointLights_[2].color.z;
+		ImGui::SliderFloat("R 1", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G 1", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B 1", &B, 0.0f, 1.0f);
+		lights.pointLights_[2].color = glm::vec3(R, G, B);
+		//ImGui::End();
+	}
+	{
+		//ImGui::Begin("CHANGE COLOR 2");
+		float R = lights.pointLights_[3].color.x;
+		float G = lights.pointLights_[3].color.y;
+		float B = lights.pointLights_[3].color.z;
+		ImGui::SliderFloat("R 2", &R, 0.0f, 1.0f);
+		ImGui::SliderFloat("G 2", &G, 0.0f, 1.0f);
+		ImGui::SliderFloat("B 2", &B, 0.0f, 1.0f);
+		lights.pointLights_[3].color = glm::vec3(R, G, B);
+		//ImGui::End();
+	}
 	ImGui::End();
 	*/
-	
-	/*
-	if (selectedID == (models.size() - 1))
+
+	/*  ROOM 3
+	ImGui::Begin("CHANGE POSITIONS");
 	{
-		// draw gui
-		ImGui::Begin("ROTATE OBJECT");
-
-		//float angle = 0.0f;
-		ImGui::SliderFloat("angle", &models[selectedID].angle, 0.0f, 360.0f);
-
-		// change model matrix
-		//glm::mat4 modelMatrix = models[selectedID].modelMatrix;
-		//modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // zero rotation
-		//modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
-		//models[selectedID].modelMatrix = modelMatrix;
-
-		ImGui::End();
+		float X = lights.spotLights[1].position.x;
+		float Y = lights.spotLights[1].position.y;
+		float Z = lights.spotLights[1].position.z;
+		ImGui::SliderFloat("X 1", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y 1", &Y, 0.2f, 3.0f);
+		//ImGui::SliderFloat("Z 1", &Z, -14.0f, -16.0f);
+		lights.spotLights[1].position.x = X;
+		lights.spotLights[1].target.x = X;
+		lights.spotLights[1].position.y = Y;
+		lights.spotLights[1].target.y = Y;
+		//lights.spotLights[1].position.z = Z;
 	}
+	{
+		float X = lights.spotLights[2].position.x;
+		float Y = lights.spotLights[2].position.y;
+		float Z = lights.spotLights[2].position.z;
+		ImGui::SliderFloat("X 2", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y 2", &Y, 0.2f, 3.0f);
+		//ImGui::SliderFloat("Z 2", &Z, -14.0f, -16.0f);
+		lights.spotLights[2].position.x = X;
+		lights.spotLights[2].target.x = X;
+		lights.spotLights[2].position.y = Y;
+		lights.spotLights[2].target.y = Y;
+		//lights.spotLights[2].position.z = Z;
+	}
+	{
+		float X = lights.spotLights[3].position.x;
+		float Y = lights.spotLights[3].position.y;
+		float Z = lights.spotLights[3].position.z;
+		ImGui::SliderFloat("X 3", &X, -3.0f, 3.0f);
+		ImGui::SliderFloat("Y 3", &Y, 0.2f, 3.0f);
+		//ImGui::SliderFloat("Z 3", &Z, -14.0f, -16.0f);
+		lights.spotLights[3].position.x = X;
+		lights.spotLights[3].target.x = X;
+		lights.spotLights[3].position.y = Y;
+		lights.spotLights[3].target.y = Y;
+		//lights.spotLights[3].position.z = Z;
+	}
+	ImGui::End();
 	*/
 
+	
 	float R = 0.0f;
 	float G = 0.0f;
 	float B = 0.0f;
@@ -481,7 +527,7 @@ void Render::changeParams(int selectedID)
 	{
 	case 5:  // little nightmare logo
 		ImGui::Begin("ROTATE OBJECT");
-		ImGui::SliderFloat("angle", &models[selectedID].angle, 0.0f, 360.0f);
+		ImGui::SliderFloat("angle", &models[selectedID].angle, 0.0f, 180.0f);
 		ImGui::End();
 		//std::cout << "six is selected" << std::endl;
 		break;
@@ -584,5 +630,6 @@ void Render::changeParams(int selectedID)
 		//std::cout << "spot lamp 3 is selected" << std::endl;
 		break;
 	}
+	
 }
 

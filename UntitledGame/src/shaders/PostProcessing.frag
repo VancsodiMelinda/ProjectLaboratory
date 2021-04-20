@@ -25,7 +25,7 @@ vec4 pixelate();
 void main()
 {
 	fragColor = normal();
-	//fragColor = inversion();
+	//fragColor = pixelate();
 }
 
 vec4 showSelectionTexture()
@@ -144,7 +144,7 @@ vec4 emboss()
 vec4 pixelate()
 {
 	// source: http://coding-experiments.blogspot.com/2010/06/pixelation.html
-	float param = 10.0;  // at 100.0 you get back the original resolution (1920x1080) I think
+	float param = 15.0;  // at 100.0 you get back the original resolution (1920x1080) I think
 	float uPixels = 192.0 * param;
 	float vPixels = 108.0 * param;
     float dx = 10.0 * (1.0 / uPixels);

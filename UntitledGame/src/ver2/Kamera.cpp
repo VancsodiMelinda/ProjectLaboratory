@@ -14,8 +14,8 @@ Kamera::Kamera()
 
 	
 	cameraContainer.cameraFront		= glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
-	//cameraContainer.cameraPosition	= glm::vec3(0.0f, 2.5f, 10.0f);
-	cameraContainer.cameraPosition = glm::vec3(0.0f, fixHeight, 0.0f);  // FOR FIXED CAMERA
+	cameraContainer.cameraPosition	= glm::vec3(5.0f, 2.5f, 0.0f);
+	//cameraContainer.cameraPosition = glm::vec3(0.0f, fixHeight, 0.0f);  // FOR FIXED CAMERA
 	cameraContainer.cameraTarget	= cameraContainer.cameraPosition + cameraContainer.cameraFront;
 	glm::vec3 worldUp				= glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraContainer.cameraRight		= glm::vec3(glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront)));
@@ -67,13 +67,14 @@ void Kamera::processKeyboardInput(GLFWwindow* window)  // gets called every fram
 
 void Kamera::processKeyInput(std::string button, float deltaTime)
 {
+	//float cameraSpeed = 5.0f * deltaTime;
 	float cameraSpeed = 5.0f * deltaTime;
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	if (button == "W")
 	{
 		cameraContainer.cameraPosition += cameraSpeed * cameraContainer.cameraFront;
-		cameraContainer.cameraPosition.y = fixHeight;  //
+		//cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "W" << std::endl;
 		updateViewMatrix();
@@ -82,7 +83,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	else if (button == "S")
 	{
 		cameraContainer.cameraPosition -= cameraSpeed * cameraContainer.cameraFront;
-		cameraContainer.cameraPosition.y = fixHeight;  //
+		//cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "S" << std::endl;
 		updateViewMatrix();
@@ -92,7 +93,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	{
 		//cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		cameraContainer.cameraPosition += cameraContainer.cameraRight * cameraSpeed;
-		cameraContainer.cameraPosition.y = fixHeight;  //
+		//cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "A" << std::endl;
 		updateViewMatrix();
@@ -102,7 +103,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	{
 		//cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		cameraContainer.cameraPosition -= cameraContainer.cameraRight * cameraSpeed;
-		cameraContainer.cameraPosition.y = fixHeight;  //
+		//cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraTarget = glm::vec3(cameraContainer.cameraPosition + cameraContainer.cameraFront);
 		//std::cout << "D" << std::endl;
 		updateViewMatrix();
@@ -111,7 +112,7 @@ void Kamera::processKeyInput(std::string button, float deltaTime)
 	else if (button == "R")  // rotate camera around origo
 	{
 		cameraContainer.cameraPosition -= cameraContainer.cameraRight * 0.05f;  // 0.05f
-		cameraContainer.cameraPosition.y = fixHeight;  //
+		//cameraContainer.cameraPosition.y = fixHeight;  //
 		cameraContainer.cameraFront = glm::vec3(cameraContainer.cameraPosition - cameraContainer.cameraTarget);
 		cameraContainer.cameraRight = glm::normalize(glm::cross(worldUp, cameraContainer.cameraFront));
 		//std::cout << "R" << std::endl;
@@ -153,7 +154,21 @@ void Kamera::processMouseMovement(float xOffset, float yOffset)
 	updateProjectionMatrix();
 }
 
-void Kamera::processMouseScroll()
+void Kamera::processMouseScroll(double yoffset)
 {
+	if (cameraContainer.fov >= 1.0f && cameraContainer.fov <= 45.0f)
+	{
+		cameraContainer.fov -= (float)yoffset;
+	}
+	if (cameraContainer.fov <= 1.0f)
+	{
+		cameraContainer.fov = 1.0f;
+	}
+	if (cameraContainer.fov >= 45.0f)
+	{
+		cameraContainer.fov = 45.0f;
+	}
+	
+	updateProjectionMatrix();
 }
 
