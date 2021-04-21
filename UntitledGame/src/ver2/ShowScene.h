@@ -31,9 +31,9 @@ private:
 public:
 	ShowScene(GLFWwindow* window_, Kamera& kamera_);
 	void scene1();
-	void scene2();
+	void skyboxScene();  // skybox
 	void deferredRenderingScene();  // deferred rendering
-	void myRoom();  // lights demo
-	void demoScene();
+	void myRoom();  // my room model
+	void demoScene();  // demo game
 };
 

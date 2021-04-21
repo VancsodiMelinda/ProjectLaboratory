@@ -62,7 +62,7 @@ struct PointLight{
 
 	samplerCube shadowBox;
 };
-const int NR_POINT_LIGHTS = 2;
+const int NR_POINT_LIGHTS = 1;
 uniform PointLight pointLightArray[NR_POINT_LIGHTS];
 
 // SPOT LIGHT
@@ -126,9 +126,9 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	fragColor = plainTexture();
+	//fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
-	//fragColor = pointLightingWithShadows();
+	fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = pointAndSpotWithShadows();  // use this for demo
@@ -373,9 +373,9 @@ vec3 caclPointLight(PointLight pointLight)
 	float dist = length(pointLight.position - out_worldVertexPos);
 	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * dist * dist);
 
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
+	//ambient *= attenuation;
+	//diffuse *= attenuation;
+	//specular *= attenuation;
 
 	float shadow = calcPointShadow(pointLight);
 	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
@@ -389,7 +389,7 @@ float calcPointShadow(PointLight pointLight)
 	float mapDepth = texture(pointLight.shadowBox, lightToFrag).r * camera.farPlane;
 	float sceneDepth = length(lightToFrag);
 
-	float bias = 0.05;
+	float bias = 0.3;  // 0.05
 	float shadow = sceneDepth - bias > mapDepth ? 1.0 : 0.0;
 
 	return shadow;

@@ -12,7 +12,7 @@ LoadSkyboxes::LoadSkyboxes()
 	skyboxes[0] = sky1.skyboxContainer;
 	std::cout << std::endl;
 
-	CreateSkybox sky2("interstellar", "png");
+	CreateSkybox sky2("space", "png");
 	skyboxes[1] = sky2.skyboxContainer;
 	std::cout << std::endl;
 }

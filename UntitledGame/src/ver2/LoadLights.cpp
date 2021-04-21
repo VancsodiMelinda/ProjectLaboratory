@@ -173,6 +173,43 @@ LoadLights::LoadLights(std::string scene)
 			spotLights.push_back(light1.spotLightContainer);
 		}
 	}
+	if (scene == "space")
+	{
+		std::cout << "Loading light models..." << std::endl;
+		loadLightModels();
+		std::cout << std::endl;
+
+		// DIRECTIONAL LIGHTS
+		{
+			CreateDirLight light1;
+			light1.dirLightContainer.position = glm::vec3(-3.0f, 20.0f, -10.0f);
+			light1.dirLightContainer.target = glm::vec3(3.0f, 0.0f, 10.0f);
+			light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			dirLights_.push_back(light1.dirLightContainer);
+		}
+
+		// POINT LIGHT
+		{
+			CreatePointLight light1;
+			light1.pointLightContainer.position = glm::vec3(0.0f, 2.0f, 0.0f);
+			light1.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.pointLightContainer.ambientStrength = 0.0f;
+			pointLights_.push_back(light1.pointLightContainer);
+		}
+
+		// SPOT LIGHTS
+		{
+			CreateSpotLight light1;
+			light1.spotLightContainer.position = glm::vec3(0.0f, 20.0f, 3.0f);
+			light1.spotLightContainer.target = glm::vec3(0.0f, 1.5f, 5.0f);
+			light1.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.spotLightContainer.ambientStrength = 0.1f;
+			light1.spotLightContainer.cutOffAngle = 15.0f;
+			light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			spotLights.push_back(light1.spotLightContainer);
+		}
+	}
 }
 
 void LoadLights::loadDirectionalLights()

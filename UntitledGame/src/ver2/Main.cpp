@@ -102,7 +102,7 @@ int main(void)
 
 	// RENDER
 	ShowScene show(window, kamera);
-	show.deferredRenderingScene();
+	show.skyboxScene();
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
