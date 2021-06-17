@@ -53,5 +53,5 @@ To see some screenshots from the engine and videos demonstrating the demo app, c
 - [Textures](https://www.textures.com/)
 
 ### Visual benchmarking:
-- [code from TheCherno](https://gist.github.com/TheCherno)
+- Code from TheCherno: [Instrumentor.h](https://gist.github.com/TheCherno)
 - chrome://tracing/
