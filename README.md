@@ -1,7 +1,8 @@
+# About the project
 An OpenGL based graphics engine made as my master's thesis work at BME.
 Written in C++ and GLSL using the Glad OpenGL loading library.
 
-Main functionalities:
+## Main functionalities
 - model loading
 - texturing
 - normal mapping
@@ -18,26 +19,36 @@ Main functionalities:
 - post-processing
 - object picking
 
-OpenGL documentations:
+## Useful links and resources used in this project
+### OpenGL documentations:
 - [OpenGL wiki](https://www.khronos.org/opengl/wiki)
 - [OpenGL API documentation](http://docs.gl/)
 
-OpenGL tutorials:
+### OpenGL tutorials:
 - [learnopengl](https://learnopengl.com/)
 - [opengl-tutorial](http://www.opengl-tutorial.org/)
 - [ogldev](http://ogldev.atspace.co.uk/index.html)
 - [lighthouse3d](http://www.lighthouse3d.com/)
 
-Libraries, tools:
-- [GLFW](https://github.com/glfw/glfw)
-- [Glad](https://github.com/Dav1dde/glad)
-- [GLM](https://github.com/g-truc/glm)
-- [Assimp](https://github.com/assimp/assimp)
-- [stb_image](https://github.com/nothings/stb)
-- [Dear ImGUI](https://github.com/ocornut/imgui)
-- [RenderDoc](https://github.com/baldurk/renderdoc)
+### Libraries, tools:
+- Create window and handle input: [GLFW](https://github.com/glfw/glfw)
+- OpenGL loading library: [Glad](https://github.com/Dav1dde/glad)
+- Mathematics library: [GLM](https://github.com/g-truc/glm)
+- Asset loading library: [Assimp](https://github.com/assimp/assimp)
+- Image loading library: [stb_image](https://github.com/nothings/stb)
+- GUI library: [Dear ImGUI](https://github.com/ocornut/imgui)
+- Graphics debugger: [RenderDoc](https://github.com/baldurk/renderdoc)
 
-Models and textures were creates in:
+### Models and textures were created in:
 - [Blender](https://www.blender.org/)
 - [Pixilart](https://www.pixilart.com/)
 
+### Textures:
+- [Solar System Scope](https://www.solarsystemscope.com/)
+- [OpenGameArt](https://opengameart.org/)
+- [Texture Haven](https://texturehaven.com/)
+- [Textures](https://www.textures.com/)
+
+### Visual benchmarking:
+- [code from TheCherno](https://gist.github.com/TheCherno)
+- chrome://tracing/
