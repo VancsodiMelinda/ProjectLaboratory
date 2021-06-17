@@ -26,7 +26,7 @@ Render::Render(std::vector<ObjectContainer>& models_, LoadPrograms& programs_, K
 
 void Render::configAsset(ObjectContainer& object)
 {
-	//InstrumentationTimer timer("Config assets");
+	//InstrumentationTimer timer("configAsset");
 
 	configVertexAttributes(object);
 	getUniformLocations();
@@ -34,7 +34,7 @@ void Render::configAsset(ObjectContainer& object)
 
 void Render::configVertexAttributes(ObjectContainer& object)
 {
-	//InstrumentationTimer timer("Config vertex attribs");
+	//InstrumentationTimer timer("configVertexAttributes");
 
 	glBindVertexArray(object.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, object.vbo);
@@ -73,7 +73,7 @@ void Render::configVertexAttributes(ObjectContainer& object)
 
 void Render::getUniformLocations()
 {
-	InstrumentationTimer timer("Get uniform locs");
+	//InstrumentationTimer timer("getUniformLocations");
 
 	// vertex shader
 	uniformLocations.MVPloc = glGetUniformLocation(programID, "MVP");
@@ -408,6 +408,8 @@ void Render::configAssets()
 	}
 	*/
 
+	InstrumentationTimer timer("configAssets");
+
 	for (int i = 0; i < models.size(); i++)  // new
 	{
 		configAsset(models[i]);
@@ -420,7 +422,7 @@ void Render::configAssets()
 
 void Render::renderAssets(Kamera& kamera_)
 {
-	//InstrumentationTimer timer("Render models");
+	InstrumentationTimer timer("renderAssets");
 
 	kamera = kamera_;
 	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -35,8 +35,8 @@ glm::mat4 CreateSpotLight::createLightSpaceMatrix()
 	float farPlane = 20.0f;
 	glm::mat4 lightProjMatrix = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 
-	if (!spotLightContainer.hasProjective)
-		lightProjMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, nearPlane, farPlane);  // projection matrix (orthogonal)
+	//if (!spotLightContainer.hasProjective)
+		//lightProjMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, nearPlane, farPlane);  // projection matrix (orthogonal)
 
 	glm::mat4 lightSpaceMatrix = lightProjMatrix * lightViewMatrix;
 

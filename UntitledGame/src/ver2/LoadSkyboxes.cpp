@@ -2,7 +2,7 @@
 
 LoadSkyboxes::LoadSkyboxes()
 {
-	InstrumentationTimer timer("Load skyboxes");
+	InstrumentationTimer timer("LoadSkyboxes");
 
 	std::cout << "Loading skyboxes..." << std::endl;
 
@@ -12,7 +12,7 @@ LoadSkyboxes::LoadSkyboxes()
 	skyboxes[0] = sky1.skyboxContainer;
 	std::cout << std::endl;
 
-	CreateSkybox sky2("space", "png");
+	CreateSkybox sky2("interstellar", "png");
 	skyboxes[1] = sky2.skyboxContainer;
 	std::cout << std::endl;
 }
@@ -25,7 +25,7 @@ void LoadSkyboxes::loadSkyboxModel()
 
 void LoadSkyboxes::config(ProgramContainer programContainer)
 {
-	InstrumentationTimer timer("Config skyboxes");
+	InstrumentationTimer timer("configSkyboxes");
 
 	if (programContainer.type == ProgramType::skybox)
 	{
@@ -57,8 +57,7 @@ void LoadSkyboxes::config(ProgramContainer programContainer)
 
 void LoadSkyboxes::render(ProgramContainer programContainer, Kamera& kamera)
 {
-	InstrumentationTimer timer("Render skybox");
-
+	InstrumentationTimer timer("renderSkybox");
 
 	glUseProgram(programContainer.ID);
 

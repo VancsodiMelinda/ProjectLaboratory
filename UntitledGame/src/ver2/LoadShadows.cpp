@@ -22,7 +22,7 @@ LoadShadows::LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>
 	models(models_),
 	programs(programs_)
 {
-	//InstrumentationTimer timer("Load shadows");
+	InstrumentationTimer timer("LoadShadows");
 
 	// get programs
 	dirShadowProgramContainer = programs.programs[2];
@@ -35,7 +35,7 @@ LoadShadows::LoadShadows(LoadLights& lights_, const std::vector<ObjectContainer>
 
 void LoadShadows::loadDirShadows()
 {
-	//InstrumentationTimer timer("Load dir shadows");
+	InstrumentationTimer timer("loadDirShadows");
 
 	std::cout << "Load directional shadows..." << std::endl;
 	for (int i = 0; i < lights.dirLights_.size(); i++)
@@ -50,7 +50,7 @@ void LoadShadows::loadDirShadows()
 
 void LoadShadows::loadPointShadows()
 {
-	//InstrumentationTimer timer("Load point shadows");
+	InstrumentationTimer timer("loadPointShadows");
 
 	std::cout << "Load point shadows..." << std::endl;
 	for (int i = 0; i < lights.pointLights_.size(); i++)
@@ -65,6 +65,8 @@ void LoadShadows::loadPointShadows()
 
 void LoadShadows::loadSpotShadows()
 {
+	InstrumentationTimer timer("loadSpotShadows");
+
 	std::cout << "Load spot shadows..." << std::endl;
 	for (int i = 0; i < lights.spotLights.size(); i++)
 	{
@@ -142,8 +144,8 @@ void LoadShadows::renderPointShadow(PointLightContainer light, ObjectContainer& 
 
 	// create projection matrix
 	float aspect = (float)POINT_SHADOW_WIDTH_ / (float)POINT_SHADOW_HEIGHT_;
-	float near = 1.0f;
-	float farPlane = 100.0f;
+	float near = 0.1f;
+	float farPlane = 20.0f;
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
 
 
@@ -187,7 +189,7 @@ void LoadShadows::renderSpotShadow(SpotLightContainer light, ObjectContainer& ob
 
 void LoadShadows::config()
 {
-	//InstrumentationTimer timer("Config shadows");
+	InstrumentationTimer timer("configShadows");
 
 	if (dirShadowProgramContainer.type == ProgramType::directionalShadow)
 	{
@@ -222,14 +224,15 @@ void LoadShadows::config()
 
 void LoadShadows::render()
 {
+	InstrumentationTimer timer1("renderShadows");
+
 	glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
 	glEnable(GL_DEPTH_TEST);
-	//InstrumentationTimer timer("Render shadows");
 
 	// RENDER DIRECTIONAL LIGHT SHADOWS
 	for (int i = 0; i < lights.dirLights_.size(); i++)
 	{
-		//InstrumentationTimer timer("Render dir shadows");
+		InstrumentationTimer timer("dir shadows");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, dirShadows_[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -245,7 +248,7 @@ void LoadShadows::render()
 	// RENDER SPOTLIGHT SHADOWS
 	for (int i = 0; i < lights.pointLights_.size(); i++)
 	{
-		//InstrumentationTimer timer("Render point shadows");
+		InstrumentationTimer timer("point shadows");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, pointShadows_[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -261,7 +264,7 @@ void LoadShadows::render()
 	// RENDER SPOTLIGHT SHADOW
 	for (int i = 0; i < lights.spotLights.size(); i++)
 	{
-		//InstrumentationTimer timer("Render dir shadows");
+		InstrumentationTimer timer("spot shadows");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, spotShadows[i].fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);

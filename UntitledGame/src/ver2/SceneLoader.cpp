@@ -2,6 +2,8 @@
 
 SceneLoader::SceneLoader(char* path)
 {
+    InstrumentationTimer timer("SceneLoader");
+
     // load default diffuse map
     CreateTexture tex1(TextureType::diffuseMap);
     defaultDiffuseMapID = tex1.textureContainer.ID;

@@ -126,9 +126,9 @@ void main()
 
 	//fragColor = vertexColor();
 	//fragColor = normalColor();
-	//fragColor = plainTexture();
+	fragColor = plainTexture();
 	//fragColor = directionalLightingWithShadows();
-	fragColor = pointLightingWithShadows();
+	//fragColor = pointLightingWithShadows();
 	//fragColor = spotLightingWithShadows();
 	//fragColor = allLightingWithShadows();
 	//fragColor = pointAndSpotWithShadows();  // use this for demo
@@ -335,13 +335,14 @@ float calcDirShadow(DirLight dirLight)
 	if (projCoords.z > 1.0)
 		shadow = 0.0;
 
-	
+	/*
 	vec3 positionToVertex = normalize(out_worldVertexPos - dirLight.position);
 	float angle = dot(normalize(dirLight.direction), positionToVertex);
 	if (angle < 0.0)
 		shadow = 1.0;
-	
-	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+	*/
+
+	//shadow = currentDepth > closestDepth  ? 1.0 : 0.0;  // no pcf
 
 	return shadow;
 }
@@ -373,9 +374,9 @@ vec3 caclPointLight(PointLight pointLight)
 	float dist = length(pointLight.position - out_worldVertexPos);
 	float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * dist * dist);
 
-	//ambient *= attenuation;
-	//diffuse *= attenuation;
-	//specular *= attenuation;
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
 
 	float shadow = calcPointShadow(pointLight);
 	vec3 color = (ambient + (1.0 - shadow) * (diffuse + specular)) * pointLight.color;
@@ -386,7 +387,8 @@ vec3 caclPointLight(PointLight pointLight)
 float calcPointShadow(PointLight pointLight)
 {
 	vec3 lightToFrag = out_worldVertexPos - pointLight.position;
-	float mapDepth = texture(pointLight.shadowBox, lightToFrag).r * camera.farPlane;
+	//float mapDepth = texture(pointLight.shadowBox, lightToFrag).r * camera.farPlane;
+	float mapDepth = texture(pointLight.shadowBox, lightToFrag).r * 20.0;
 	float sceneDepth = length(lightToFrag);
 
 	float bias = 0.3;  // 0.05
@@ -500,7 +502,7 @@ vec3 calcProjectiveTexture(SpotLight spotLight)
 		float diffuseImpact = max(dot(normalVector, lightDirection), 0.0);			// cos of angle
 		//float diffuseImpact = dot(normalVector, lightDirection) >= 0.0 ? 1.0 : 0.0;
 		vec3 diffuse = diffuseImpact * spotLight.diffuseStrength * texture(material.diffuseMap, out_textureCoords).rgb;  // original color
-		vec3 projective = diffuseImpact * spotLight.diffuseStrength * texture(spotLight.projectiveMap, projCoords.xy).rgb;  // projective color
+		vec3 projective = diffuseImpact * spotLight.diffuseStrength * texture(spotLight.projectiveMap, out_textureCoords).rgb;  // projective color
 
 		// SPECULAR
 		vec3 viewVector = normalize(camera.position - out_worldVertexPos);

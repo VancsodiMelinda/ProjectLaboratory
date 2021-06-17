@@ -10,6 +10,7 @@
 #include "../stb_image.h"
 #include "ModelData.h"
 #include "CreateTexture.h"
+#include "Instrumentor.h"
 
 class SceneLoader
 {

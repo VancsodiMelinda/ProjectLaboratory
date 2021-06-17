@@ -14,7 +14,7 @@ Kamera::Kamera()
 
 	
 	cameraContainer.cameraFront		= glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
-	cameraContainer.cameraPosition	= glm::vec3(5.0f, 2.5f, 0.0f);
+	cameraContainer.cameraPosition	= glm::vec3(0.0f, 0.1f, 3.3f);
 	//cameraContainer.cameraPosition = glm::vec3(0.0f, fixHeight, 0.0f);  // FOR FIXED CAMERA
 	cameraContainer.cameraTarget	= cameraContainer.cameraPosition + cameraContainer.cameraFront;
 	glm::vec3 worldUp				= glm::vec3(0.0f, 1.0f, 0.0f);
@@ -37,12 +37,14 @@ void Kamera::updateProjectionMatrix()
 
 void Kamera::processKeyboardInput(GLFWwindow* window)  // gets called every frame
 {
+	InstrumentationTimer timer("processKeyboardInput");
+
 	// time calculations
 	float currentFrame = (float)glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	float cameraSpeed = 2.5f * deltaTime;
+	float cameraSpeed = 0.1f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		processKeyInput("W", deltaTime);

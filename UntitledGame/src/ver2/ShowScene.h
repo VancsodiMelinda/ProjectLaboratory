@@ -35,5 +35,10 @@ public:
 	void deferredRenderingScene();  // deferred rendering
 	void myRoom();  // my room model
 	void demoScene();  // demo game
+	void lightsScene();  // lights demo
+	void normalMapping();  // normal mapping
+	void environmentMapping();  // environment mapping (reflection, refraction)
+	void outlining();  // outlining with stencil testing
+	void benchmarking();  // benchmarking
 };
 

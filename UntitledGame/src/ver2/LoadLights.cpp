@@ -2,7 +2,7 @@
 
 LoadLights::LoadLights()
 {
-	//InstrumentationTimer timer("Load lights");
+	//InstrumentationTimer timer("LoadLights");
 
 	std::cout << "Loading light models..." << std::endl;
 	loadLightModels();
@@ -23,6 +23,8 @@ LoadLights::LoadLights()
 
 LoadLights::LoadLights(std::string scene)
 {
+	InstrumentationTimer timer("LoadLights");
+
 	if (scene == "demo")
 	{
 		std::cout << "Loading light models..." << std::endl;
@@ -210,6 +212,88 @@ LoadLights::LoadLights(std::string scene)
 			spotLights.push_back(light1.spotLightContainer);
 		}
 	}
+	if (scene == "lights")
+	{
+		std::cout << "Loading light models..." << std::endl;
+		loadLightModels();
+		std::cout << std::endl;
+
+		// DIRECTIONAL LIGHTS
+		{
+			CreateDirLight light1;
+			light1.dirLightContainer.position = glm::vec3(0.0f, -3.0f, 3.0f);
+			light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+			light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.dirLightContainer.ambientStrength = 0.3f;
+			light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			dirLights_.push_back(light1.dirLightContainer);
+		}
+
+		// POINT LIGHT
+		{
+			CreatePointLight light1;
+			light1.pointLightContainer.position = glm::vec3(0.0f, -5.0f, 0.0f);
+			light1.pointLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.pointLightContainer.ambientStrength = 0.4f;
+			light1.pointLightContainer.constant = 1.0f;
+			light1.pointLightContainer.linear = 0.027f;
+			light1.pointLightContainer.quadratic = 0.0028f;
+			pointLights_.push_back(light1.pointLightContainer);
+		}
+
+		// SPOT LIGHTS
+		{
+			CreateTexture tex1("resources/projective/default projective map.jpg", TextureType::projectiveMap);
+			CreateSpotLight light1;
+			light1.spotLightContainer.position = glm::vec3(4.0f, 3.0f, -4.0f);
+			light1.spotLightContainer.target = glm::vec3(1.0f, 0.0f, -1.0f);
+			light1.spotLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.spotLightContainer.cutOffAngle = 17.0f;
+			light1.spotLightContainer.ambientStrength = 0.2f;
+			light1.spotLightContainer.constant = 1.0f;
+			light1.spotLightContainer.linear = 0.07f;
+			light1.spotLightContainer.quadratic = 0.017f;
+			light1.spotLightContainer.hasProjective = true;
+			light1.spotLightContainer.projectiveMapID = tex1.textureContainer.ID;
+			light1.spotLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			spotLights.push_back(light1.spotLightContainer);
+		}
+	}
+
+	if (scene == "normal")
+	{
+		std::cout << "Loading light models..." << std::endl;
+		loadLightModels();
+		std::cout << std::endl;
+
+		// DIRECTIONAL LIGHTS
+		{
+			InstrumentationTimer timer("Diretional");
+			CreateDirLight light1;
+			light1.dirLightContainer.position = glm::vec3(5.0f, 0.0f, 0.0f);
+			light1.dirLightContainer.target = glm::vec3(0.0f, 0.0f, 0.0f);
+			light1.dirLightContainer.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			light1.dirLightContainer.ambientStrength = 0.1f;
+			light1.dirLightContainer.lightSpaceMatrix = light1.createLightSpaceMatrix();
+			dirLights_.push_back(light1.dirLightContainer);
+		}
+
+		// POINT LIGHT
+		{
+			InstrumentationTimer timer("Point");
+			CreatePointLight light1;
+			light1.pointLightContainer.position = glm::vec3(0.0f, -5.0f, 0.0f);
+			pointLights_.push_back(light1.pointLightContainer);
+		}
+
+		// SPOT LIGHTS
+		{
+			InstrumentationTimer timer("Spot");
+			CreateSpotLight light1;
+			light1.spotLightContainer.position = glm::vec3(0.0f, -5.0f, 0.0f);
+			spotLights.push_back(light1.spotLightContainer);
+		}
+	}
 }
 
 void LoadLights::loadDirectionalLights()
@@ -296,7 +380,7 @@ void LoadLights::loadSpotLights()
 
 void LoadLights::loadLightModels()
 {
-	//InstrumentationTimer timer("Load light models");
+	InstrumentationTimer timer("loadLightModels");
 
 	// model for directional light
 	CreateModel sphere("resources/models/sphere.obj");
@@ -444,7 +528,7 @@ glm::mat4 LoadLights::updateLightViewMatrix(SpotLightContainer currentSpotLight)
 
 void LoadLights::config(ProgramContainer programContainer)
 {
-	//InstrumentationTimer timer("Config point lights");
+	InstrumentationTimer timer("configLights");
 
 	if (programContainer.type == ProgramType::light)
 	{
@@ -463,7 +547,7 @@ void LoadLights::config(ProgramContainer programContainer)
 
 void LoadLights::render(ProgramContainer programContainer, Kamera& kamera)
 {
-	//InstrumentationTimer timer("Render lights");
+	InstrumentationTimer timer("renderLights");
 
 	// render directional lights
 	for (int i = 0; i < dirLights_.size(); i++)

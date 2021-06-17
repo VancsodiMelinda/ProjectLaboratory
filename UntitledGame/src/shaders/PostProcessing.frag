@@ -24,7 +24,7 @@ vec4 pixelate();
 
 void main()
 {
-	fragColor = normal();
+	fragColor = inversion();
 	//fragColor = pixelate();
 }
 

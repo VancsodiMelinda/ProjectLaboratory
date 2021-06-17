@@ -417,3 +417,358 @@ void ShowScene::demoScene()
 		glfwPollEvents();
 	}
 }
+
+void ShowScene::lightsScene()
+{
+	// load models with textures
+	//std::string pathStr = "resources/assimp/light scenes/dir lights scene/desk area.obj";  // dir light scene
+	//std::string pathStr = "resources/assimp/light scenes/dir lights scene/pcf scene.obj";  // dir light pcf scene
+	//std::string pathStr = "resources/assimp/light scenes/point light scene/point light scene.obj";  // point light scene
+	std::string pathStr = "resources/assimp/light scenes/point light scene/spot light scene.obj";  // spot light scene
+	SceneLoader assets(&pathStr[0]);
+
+	// load other stuff
+	LoadPrograms programs;
+	LoadLights lights("lights");
+	LoadShadows shadows(lights, assets.models, programs);
+	LoadSkyboxes skybox;  // not used
+
+	// init renderer
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();
+	lights.config(programs.programs[1]);
+	shadows.config();
+	//skybox.config(programs.programs[4]);
+
+	glEnable(GL_DEPTH_TEST);
+
+	// render
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);	// WASD + R
+
+		// specify clear values for the buffers
+		glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+
+		// clear all buffers of the default fbo
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// RENDER SHADOWS
+		shadows.render();
+
+		// RENDER SCENE AND LIGHTS
+		glEnable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderer.renderAssets(kamera);
+		lights.render(programs.programs[1], kamera);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}
+
+void ShowScene::normalMapping()
+{
+	std::string pathStr = "resources/assimp/moon/moon.obj";  // scene with normal map
+	//std::string pathStr = "resources/assimp/moon/moon2.obj";  // scene without normal map
+	SceneLoader assets(&pathStr[0]);
+
+	// load other stuff
+	LoadPrograms programs;
+	LoadLights lights("normal");
+	LoadShadows shadows(lights, assets.models, programs);
+	LoadSkyboxes skybox;  // not used
+
+	// init renderer
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();
+	lights.config(programs.programs[1]);
+	shadows.config();
+	//skybox.config(programs.programs[4]);
+
+	glEnable(GL_DEPTH_TEST);
+
+	// render
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);	// WASD + R
+
+		// specify clear values for the buffers
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+
+		// clear all buffers of the default fbo
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// RENDER SHADOWS
+		shadows.render();
+
+		// RENDER SCENE AND LIGHTS
+		glEnable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderer.renderAssets(kamera);
+		lights.render(programs.programs[1], kamera);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}
+
+void ShowScene::environmentMapping()
+{
+	//std::string pathStr = "resources/assimp/Suzanne/suzanne.obj";  // scene for enfironment mapping
+	std::string pathStr = "resources/assimp/moon/moon.obj";
+	SceneLoader assets(&pathStr[0]);
+
+	// load other stuff
+	LoadPrograms programs;
+	LoadLights lights("normal");
+	LoadShadows shadows(lights, assets.models, programs);
+	LoadSkyboxes skybox;
+
+	// init renderer
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();
+	lights.config(programs.programs[1]);
+	shadows.config();
+	skybox.config(programs.programs[4]);
+
+	glEnable(GL_DEPTH_TEST);
+
+	// render
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);	// WASD + R
+
+		// specify clear values for the buffers
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+
+		// clear all buffers of the default fbo
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// RENDER SHADOWS
+		//shadows.render();
+
+		// RENDER SCENE AND LIGHTS
+		glEnable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderer.renderAssets(kamera);
+		//lights.render(programs.programs[1], kamera);
+
+		// RENDER SKYBOX
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		skybox.render(programs.programs[4], kamera);
+		glDepthFunc(GL_LESS);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}
+
+void ShowScene::outlining()
+{
+	std::string pathStr = "resources/assimp/outline/rubiks cube.obj";  // scene for outlining
+	SceneLoader assets(&pathStr[0]);
+
+	// load other stuff
+	LoadPrograms programs;
+	LoadLights lights("normal");
+	LoadShadows shadows(lights, assets.models, programs);
+	LoadSkyboxes skybox;
+	LoadOutlines outlines(assets.models, programs.programs[6]);
+
+	// init renderer
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();
+	lights.config(programs.programs[1]);
+	shadows.config();
+	//skybox.config(programs.programs[4]);
+	outlines.config();
+
+	glEnable(GL_DEPTH_TEST);
+
+	// render
+	while (!glfwWindowShouldClose(window))
+	{
+		kamera.processKeyboardInput(window);	// WASD + R
+
+		// specify clear values for the buffers
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+
+		// clear all buffers of the default fbo
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// RENDER SHADOWS
+		//shadows.render();
+
+		// RENDER SCENE AND LIGHTS
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+		renderer.renderAssets(kamera);
+		//lights.render(programs.programs[1], kamera);
+
+		// RENDER OUTLINES
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		//glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);  // draw outline on top of everything
+		outlines.render(kamera);  // ok
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}
+
+void ShowScene::benchmarking()
+{
+	
+	// load
+	std::string pathStr = "resources/assimp/my room/my room.obj";
+	SceneLoader assets(&pathStr[0]);  // ok
+	LoadPrograms programs;  // ok
+	LoadLights lights("normal");  // ok
+	LoadShadows shadows(lights, assets.models, programs);  // ok
+	LoadSkyboxes skybox;  // ok
+	PostProcessing postProc(programs.programs[5]);  // ok
+
+	Render renderer(
+		assets.models,
+		programs,
+		kamera,
+		lights,
+		shadows,
+		skybox.skyboxes[1]
+	);
+
+	// config
+	renderer.configAssets();  // ok
+	lights.config(programs.programs[1]);  // ok
+	shadows.config();  // ok
+	skybox.config(programs.programs[4]);  // ok
+	
+
+	Instrumentor::Get().BeginSession("game loop", "game_loop2.json");
+
+	//float timeInterval = 0.0f;
+	//float lastFrameTime = 0.0f;
+	
+	int i = 1;
+	
+	while (!glfwWindowShouldClose(window))
+	{
+		//float currentFrameTime = (float)glfwGetTime();
+		//timeInterval = currentFrameTime - lastFrameTime;
+		//lastFrameTime = currentFrameTime;
+		//std::cout << "FPS: " << (1.0f / timeInterval) << std::endl;
+
+		std::string title = std::to_string(i) + ". loop";
+		const char* title_ = title.c_str();
+		InstrumentationTimer timer(title_);
+
+		kamera.processKeyboardInput(window);	// ok
+
+		// specify clear values for the buffers
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearDepth(1);  // default
+		glClearStencil(0);  // default
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // clear all buffers
+
+		// RENDER SHADOWS
+		glViewport(0, 0, DIR_SHADOW_WIDTH, DIR_SHADOW_HEIGHT);
+		shadows.render();  // ok
+
+		// RENDER SCENE (OBJECTS AND LIGHTS)
+		glBindFramebuffer(GL_FRAMEBUFFER, postProc.postProcContainer.fbo);  // for post-processing
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);  // render to default fbo
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+		renderer.renderAssets(kamera);  // ok
+		lights.render(programs.programs[1], kamera);  // ok
+		
+		// RENDER SKYBOX
+		glDisable(GL_STENCIL_TEST);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		skybox.render(programs.programs[4], kamera);  // ok
+		glDepthFunc(GL_LESS);
+
+		// POST PROCESSING
+		postProc.render();  // ok
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
+		i++;
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		//glFinish();
+		
+		if (i > 100)
+			break;
+	}
+
+	Instrumentor::Get().EndSession();
+}

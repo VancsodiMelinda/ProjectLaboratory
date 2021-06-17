@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "GlobalVariables.h"
+#include "Instrumentor.h"
 
 // these values change in every frame as the camera moves
 struct CameraContainer
