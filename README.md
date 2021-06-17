@@ -1,6 +1,9 @@
 # About the project
 An OpenGL based graphics engine made as my master's thesis work at BME.
 Written in C++ and GLSL using the Glad OpenGL loading library.
+I also created a demo application built on the engine.
+To see some screenshots from the engine and videos demonstrating the demo app, check out the
+[wiki page](https://github.com/VancsodiMelinda/ProjectLaboratory/wiki).
 
 ## Main functionalities
 - model loading
