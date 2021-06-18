@@ -51,6 +51,7 @@ To see some screenshots from the engine and videos demonstrating the demo app, c
 - [OpenGameArt](https://opengameart.org/)
 - [Texture Haven](https://texturehaven.com/)
 - [Textures](https://www.textures.com/)
+- [Humus Textures](https://www.humus.name/index.php?page=Textures)
 
 ### Visual benchmarking:
 - Code from TheCherno: [Instrumentor.h](https://gist.github.com/TheCherno)
